@@ -39,7 +39,7 @@
         <a href="admin/" class="nav__link nav__link--staff">Вход для сотрудников</a>
       </nav>
       <div class="header__actions">
-        <a href="admin/" class="btn btn--ghost btn--small header__admin">Вход</a>
+        <a href="admin/" class="btn btn--ghost btn--small header__admin">Вход для сотрудников</a>
         <a href="https://vk.com/id838426893" target="_blank" rel="noopener" class="btn btn--small header__cta">Записаться</a>
       </div>
       <button class="burger" aria-label="Открыть меню" aria-expanded="false">
@@ -908,9 +908,14 @@
       let touchStartY = 0;
       let touchLocked = false;
 
+      function getReviewSlideWidth() {
+        return track.getBoundingClientRect().width || track.offsetWidth;
+      }
+
       function goToReview(i) {
         reviewIndex = (i + cards.length) % cards.length;
-        track.style.transform = `translate3d(-${reviewIndex * 100}%, 0, 0)`;
+        const slideWidth = getReviewSlideWidth();
+        track.style.transform = `translate3d(-${reviewIndex * slideWidth}px, 0, 0)`;
         dots.forEach((d, idx) => d.classList.toggle('is-active', idx === reviewIndex));
         if (progressBar) {
           progressBar.style.width = `${((reviewIndex + 1) / cards.length) * 100}%`;
@@ -930,8 +935,39 @@
         autoplayId = setInterval(() => goToReview(reviewIndex + 1), 6000);
       }
 
-      goToReview(0);
+      function syncReviewSlider() {
+        if (!getReviewSlideWidth()) return;
+        goToReview(reviewIndex);
+      }
+
+      requestAnimationFrame(() => syncReviewSlider());
       startAutoplay();
+
+      const reviewsReveal = track.closest('.reveal');
+      if (reviewsReveal && typeof ResizeObserver !== 'undefined') {
+        const reviewResizeObs = new ResizeObserver(() => syncReviewSlider());
+        reviewResizeObs.observe(track);
+      }
+
+      if (reviewsReveal && !reviewsReveal.classList.contains('is-visible')) {
+        const reviewRevealObs = new IntersectionObserver((entries) => {
+          if (entries[0]?.isIntersecting) {
+            requestAnimationFrame(() => syncReviewSlider());
+            reviewRevealObs.disconnect();
+          }
+        }, { threshold: 0.05 });
+        reviewRevealObs.observe(reviewsReveal);
+      }
+
+      let reviewResizeTicking = false;
+      window.addEventListener('resize', () => {
+        if (reviewResizeTicking) return;
+        reviewResizeTicking = true;
+        requestAnimationFrame(() => {
+          syncReviewSlider();
+          reviewResizeTicking = false;
+        });
+      }, { passive: true });
 
       document.getElementById('reviewsPrev')?.addEventListener('click', () => {
         stopAutoplay();

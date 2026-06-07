@@ -361,8 +361,14 @@ ul {
 }
 
 .header__admin {
-  padding: 12px 20px;
-  font-size: 11px;
+  padding: 12px 16px;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.nav__link--staff {
+  display: none;
 }
 
 .logo {
@@ -1843,7 +1849,7 @@ ul {
 .reviews-slider {
   position: relative;
   width: 100%;
-  overflow: visible;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1857,6 +1863,8 @@ ul {
   border-radius: var(--radius-xl);
   transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+  align-items: stretch;
+  will-change: transform;
 }
 
 .reviews-slider__track::before,
@@ -1882,14 +1890,20 @@ ul {
 
 .reviews-slider .review-card,
 .reviews-slider .review-card.reveal-item {
-  opacity: 1;
-  transform: none;
-  transition: none;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+  transition: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 .review-card {
   flex: 0 0 100%;
   flex-shrink: 0;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   background: var(--card-gradient-warm);
   border: var(--border-mint);
   border-radius: var(--radius-xl);
@@ -2820,6 +2834,10 @@ ul {
     touch-action: manipulation;
   }
 
+  .nav__link--staff {
+    display: flex;
+  }
+
   .nav--open {
     display: flex;
   }
@@ -2850,7 +2868,6 @@ ul {
   .benefit-card,
   .faq-item,
   .format-card,
-  .review-card,
   .rituals,
   .price-list--inline .price-item,
   .consultation-block__steps,
@@ -3197,13 +3214,13 @@ ul {
 
 .faq-item:hover,
 .benefits-list li:hover,
-.format-card:hover,
-.review-card {
+.format-card:hover {
   transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
 }
 
 .review-card {
   border: var(--border-mint);
+  transition: box-shadow var(--transition), border-color var(--transition);
 }
 
 .master__portrait {
@@ -3249,7 +3266,6 @@ ul {
   .benefit-card,
   .faq-item,
   .format-card,
-  .review-card,
   .rituals,
   .price-list--inline .price-item,
   .hero__top,
