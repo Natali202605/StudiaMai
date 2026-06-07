@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Админ-панель — Студия «Май»</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div id="loginScreen" class="login">
+    <form class="login__card" id="loginForm">
+      <h1 class="login__title">Студия «Май»</h1>
+      <p class="login__sub">Вход для сотрудников</p>
+      <label class="login__field">
+        <span>Логин</span>
+        <input type="text" name="username" autocomplete="username" required>
+      </label>
+      <label class="login__field">
+        <span>Пароль</span>
+        <input type="password" name="password" autocomplete="current-password" required>
+      </label>
+      <p class="login__error" id="loginError" hidden></p>
+      <button type="submit" class="admin-btn admin-btn--primary">Войти</button>
+    </form>
+  </div>
+
+  <div id="adminApp" class="admin" hidden>
+    <aside class="admin__sidebar">
+      <div class="admin__brand">Студия «Май»</div>
+      <nav class="admin__nav">
+        <button type="button" class="admin__nav-btn is-active" data-tab="dashboard">Обзор</button>
+        <button type="button" class="admin__nav-btn" data-tab="leads">Заявки <span class="admin__badge" id="badgeLeads">0</span></button>
+        <button type="button" class="admin__nav-btn" data-tab="bookings">Записи <span class="admin__badge" id="badgeBookings">0</span></button>
+        <button type="button" class="admin__nav-btn" data-tab="content">Тексты</button>
+        <button type="button" class="admin__nav-btn" data-tab="photos">Фото</button>
+        <button type="button" class="admin__nav-btn" data-tab="procedures">Процедуры</button>
+        <button type="button" class="admin__nav-btn" data-tab="settings">Настройки</button>
+      </nav>
+      <button type="button" class="admin__logout" id="logoutBtn">Выйти</button>
+    </aside>
+
+    <main class="admin__main">
+      <section class="admin__panel is-active" data-panel="dashboard">
+        <h2>Обзор</h2>
+        <div class="admin__stats">
+          <div class="admin__stat"><span class="admin__stat-num" id="statLeadsNew">0</span><span>Новых заявок</span></div>
+          <div class="admin__stat"><span class="admin__stat-num" id="statBookingsNew">0</span><span>Новых записей</span></div>
+          <div class="admin__stat"><span class="admin__stat-num" id="statLeadsTotal">0</span><span>Всего заявок</span></div>
+          <div class="admin__stat"><span class="admin__stat-num" id="statBookingsTotal">0</span><span>Всего записей</span></div>
+        </div>
+      </section>
+
+      <section class="admin__panel" data-panel="leads">
+        <h2>Заявки с сайта</h2>
+        <div class="admin__table-wrap" id="leadsTable"></div>
+      </section>
+
+      <section class="admin__panel" data-panel="bookings">
+        <h2>Онлайн-запись на процедуры</h2>
+        <div class="admin__table-wrap" id="bookingsTable"></div>
+      </section>
+
+      <section class="admin__panel" data-panel="content">
+        <h2>Тексты на сайте</h2>
+        <form class="admin__form" id="contentForm">
+          <label class="admin__field"><span>Текст hero (абзац 1)</span><textarea name="hero_text" rows="3"></textarea></label>
+          <label class="admin__field"><span>Текст hero (абзац 2)</span><textarea name="hero_subtext" rows="3"></textarea></label>
+          <label class="admin__field"><span>Телефон в подвале</span><input type="text" name="footer_phone"></label>
+          <label class="admin__field"><span>Адрес</span><input type="text" name="footer_address"></label>
+          <label class="admin__field"><span>Вход</span><input type="text" name="footer_entrance"></label>
+          <label class="admin__field"><span>Часы работы</span><input type="text" name="footer_hours"></label>
+          <label class="admin__field"><span>Специализация мастера</span><input type="text" name="master_role"></label>
+          <button type="submit" class="admin-btn admin-btn--primary">Сохранить тексты</button>
+        </form>
+      </section>
+
+      <section class="admin__panel" data-panel="photos">
+        <h2>Фотографии</h2>
+        <div class="admin__photos" id="photosGrid"></div>
+      </section>
+
+      <section class="admin__panel" data-panel="procedures">
+        <h2>Процедуры для онлайн-записи</h2>
+        <div id="proceduresList"></div>
+        <button type="button" class="admin-btn admin-btn--ghost" id="addProcedure">+ Добавить процедуру</button>
+        <button type="button" class="admin-btn admin-btn--primary" id="saveProcedures">Сохранить список</button>
+      </section>
+
+      <section class="admin__panel" data-panel="settings">
+        <h2>Смена пароля</h2>
+        <form class="admin__form" id="passwordForm">
+          <label class="admin__field"><span>Текущий пароль</span><input type="password" name="currentPassword" required></label>
+          <label class="admin__field"><span>Новый пароль</span><input type="password" name="newPassword" required minlength="6"></label>
+          <p class="admin__msg" id="passwordMsg" hidden></p>
+          <button type="submit" class="admin-btn admin-btn--primary">Обновить пароль</button>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <script src="../js/config.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

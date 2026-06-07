@@ -2,3 +2,7 @@ Thumbs.db
 desktop.ini
 .DS_Store
 *.log
+server/node_modules/
+server/data/db.json
+uploads/
+.env

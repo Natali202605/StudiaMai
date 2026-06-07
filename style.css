@@ -44,6 +44,8 @@
   --shadow-float-btn: 0 2px 4px rgba(5, 150, 105, 0.14), 0 6px 16px rgba(5, 150, 105, 0.16), 0 14px 28px rgba(5, 150, 105, 0.12);
   --shadow-float-btn-hover: 0 4px 8px rgba(5, 150, 105, 0.18), 0 10px 24px rgba(5, 150, 105, 0.22), 0 20px 40px rgba(5, 150, 105, 0.16);
   --shadow-float-card-dark: 0 4px 12px rgba(0, 0, 0, 0.14), 0 14px 32px rgba(0, 0, 0, 0.18), 0 28px 56px rgba(0, 0, 0, 0.12);
+  --shadow-float-card-accent: 0 2px 6px rgba(0, 0, 0, 0.1), 0 10px 24px rgba(0, 0, 0, 0.16), 0 22px 48px rgba(4, 120, 87, 0.28), 0 36px 72px rgba(0, 0, 0, 0.14);
+  --shadow-float-card-accent-hover: 0 4px 10px rgba(0, 0, 0, 0.12), 0 16px 36px rgba(0, 0, 0, 0.2), 0 30px 60px rgba(4, 120, 87, 0.34), 0 44px 88px rgba(0, 0, 0, 0.16);
   --border-soft: 1px solid rgba(52, 211, 153, 0.22);
   --border-mint: 1px solid rgba(16, 185, 129, 0.32);
   --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
@@ -59,6 +61,9 @@
   --bg-light-overlay: linear-gradient(150deg, rgba(255, 255, 255, 0.52) 0%, rgba(255, 248, 240, 0.48) 50%, rgba(209, 250, 229, 0.44) 100%);
   --bg-light-overlay-soft: linear-gradient(165deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 245, 235, 0.46) 100%);
   --bg-light-overlay-section: linear-gradient(180deg, rgba(255, 255, 255, 0.48) 0%, rgba(255, 248, 242, 0.42) 50%, rgba(167, 243, 208, 0.38) 100%);
+  --bg-ornament-base: var(--bg-light-image);
+  --bg-ornament-pattern: var(--pattern-vector);
+  --bg-ornament-tint: var(--bg-light-overlay-section);
   --glass-blur: blur(12px);
 
   --card-gradient: linear-gradient(152deg, rgba(255, 255, 255, 0.54) 0%, rgba(255, 240, 224, 0.50) 28%, rgba(167, 243, 208, 0.48) 62%, rgba(245, 224, 208, 0.50) 100%);
@@ -688,16 +693,28 @@ ul {
 }
 
 .section--accent {
-  background:
-    radial-gradient(ellipse at 15% 0%, rgba(255, 255, 255, 0.18) 0%, transparent 50%),
-    linear-gradient(155deg, #059669 0%, #10B981 38%, #34D399 72%, #6EE7B7 100%);
+  background-image:
+    radial-gradient(ellipse at 15% 0%, rgba(255, 255, 255, 0.16) 0%, transparent 50%),
+    linear-gradient(155deg, rgba(5, 150, 105, 0.72) 0%, rgba(16, 185, 129, 0.68) 38%, rgba(52, 211, 153, 0.64) 72%, rgba(110, 231, 183, 0.58) 100%),
+    var(--bg-ornament-tint),
+    var(--bg-ornament-pattern),
+    var(--bg-ornament-base);
+  background-size: 100% 100%, 100% 100%, cover, 140px 140px, cover;
+  background-position: center, center, center, center, center;
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat, no-repeat;
   color: var(--color-white);
 }
 
 .section--cta {
-  background:
-    radial-gradient(ellipse at 100% 50%, rgba(167, 243, 208, 0.28) 0%, transparent 50%),
-    linear-gradient(160deg, #047857 0%, #059669 32%, #10B981 60%, #34D399 85%, #6EE7B7 100%);
+  background-image:
+    radial-gradient(ellipse at 100% 50%, rgba(167, 243, 208, 0.22) 0%, transparent 50%),
+    linear-gradient(160deg, rgba(4, 120, 87, 0.74) 0%, rgba(5, 150, 105, 0.7) 32%, rgba(16, 185, 129, 0.66) 60%, rgba(52, 211, 153, 0.6) 85%, rgba(110, 231, 183, 0.55) 100%),
+    var(--bg-ornament-tint),
+    var(--bg-ornament-pattern),
+    var(--bg-ornament-base);
+  background-size: 100% 100%, 100% 100%, cover, 140px 140px, cover;
+  background-position: center, center, center, center, center;
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat, no-repeat;
   color: var(--color-white);
 }
 
@@ -1026,12 +1043,14 @@ ul {
 }
 
 .consultation-block__steps {
-  background: rgba(255, 255, 255, 0.14);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.28);
   border-radius: var(--radius-xl);
   padding: 36px 40px;
-  backdrop-filter: blur(8px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--shadow-float-card-accent), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  color: #000000;
 }
 
 .consultation-block__steps h3 {
@@ -1039,6 +1058,7 @@ ul {
   font-size: 26px;
   font-weight: 500;
   margin-bottom: 24px;
+  color: #000000;
 }
 
 .consultation-block__steps ul li {
@@ -1056,7 +1076,7 @@ ul {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--color-powder-light);
+  background: var(--color-accent-dark);
 }
 
 .consultation-block__free {
@@ -1066,20 +1086,24 @@ ul {
 }
 
 .free-card {
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.32);
   border-radius: var(--radius-lg);
   padding: 24px 28px;
   display: flex;
   align-items: center;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   gap: 18px;
-  backdrop-filter: blur(6px);
+  box-shadow: var(--shadow-float-card-accent), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  color: #000000;
   transition: var(--transition);
 }
 
 .free-card:hover {
-  background: rgba(255, 255, 255, 0.26);
-  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: var(--shadow-float-card-accent-hover), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  transform: translateY(-4px);
 }
 
 .free-card__label {
@@ -1098,6 +1122,7 @@ ul {
 .free-card p {
   font-size: 16px;
   line-height: 1.5;
+  color: #000000;
 }
 
 /* ============================================
@@ -1741,34 +1766,40 @@ ul {
 .reviews-slider {
   position: relative;
   width: 100%;
-  overflow: hidden;
-  border-radius: var(--radius-xl);
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.reviews-slider::before,
-.reviews-slider::after {
+.reviews-slider__track {
+  display: flex;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.reviews-slider__track::before,
+.reviews-slider__track::after {
   content: '';
   position: absolute;
   top: 0;
-  bottom: 56px;
+  bottom: 0;
   width: 48px;
   z-index: 2;
   pointer-events: none;
 }
 
-.reviews-slider::before {
+.reviews-slider__track::before {
   left: 0;
   background: linear-gradient(90deg, rgba(250, 246, 240, 0.9), transparent);
 }
 
-.reviews-slider::after {
+.reviews-slider__track::after {
   right: 0;
   background: linear-gradient(270deg, rgba(250, 246, 240, 0.9), transparent);
-}
-
-.reviews-slider__track {
-  display: flex;
-  transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .review-card {
@@ -1808,13 +1839,13 @@ ul {
 
 .review-card__text {
   font-family: var(--font-serif);
-  font-size: clamp(22px, 3.2vw, 30px);
+  font-size: clamp(26px, 3.8vw, 36px);
   font-weight: 400;
   font-style: italic;
   color: var(--color-text);
   flex: 1;
   margin-bottom: 24px;
-  line-height: 1.62;
+  line-height: 1.58;
   letter-spacing: 0.01em;
 }
 
@@ -1826,10 +1857,11 @@ ul {
 }
 
 .reviews-slider__progress {
+  width: 100%;
   height: 3px;
   background: rgba(168, 196, 184, 0.25);
   border-radius: 100px;
-  margin-top: 28px;
+  margin-top: 24px;
   overflow: hidden;
 }
 
@@ -1846,67 +1878,75 @@ ul {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 28px;
-  margin-top: 28px;
+  gap: 20px;
+  width: 100%;
+  margin-top: 22px;
+  padding: 0 8px;
 }
 
 .reviews-slider__btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 68px;
-  height: 68px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  border: 1px solid rgba(167, 243, 208, 0.55);
-  background: linear-gradient(135deg, #34D399 0%, #10B981 50%, #059669 100%);
-  color: var(--color-white);
+  border: 1px solid rgba(16, 185, 129, 0.32);
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--color-accent-dark);
   cursor: pointer;
   flex-shrink: 0;
-  transition: transform var(--transition), box-shadow var(--transition), background var(--transition), border-color var(--transition);
-  box-shadow: var(--shadow-float-btn), var(--neon-emerald), var(--shadow-inner);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: transform var(--transition), box-shadow var(--transition), background var(--transition), border-color var(--transition), color var(--transition);
+  box-shadow: 0 2px 8px rgba(141, 155, 132, 0.12), 0 6px 18px rgba(5, 150, 105, 0.1);
 }
 
 .reviews-slider__btn svg {
-  width: 28px;
-  height: 28px;
-  stroke-width: 2.5;
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
 }
 
 .reviews-slider__btn:hover {
-  background: linear-gradient(135deg, #10B981 0%, #059669 50%, #047857 100%);
-  border-color: rgba(167, 243, 208, 0.75);
-  color: var(--color-white);
-  transform: scale(1.08);
-  box-shadow: var(--shadow-float-btn-hover), var(--neon-emerald-strong), var(--shadow-inner);
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(16, 185, 129, 0.5);
+  color: var(--color-emerald-deep);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-float-btn), var(--neon-emerald-sm);
 }
 
 .reviews-slider__btn:active {
-  transform: scale(1.02);
+  transform: translateY(0);
 }
 
 .reviews-slider__dots {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
   justify-content: center;
-  max-width: 200px;
+  align-items: center;
+  max-width: min(280px, 100%);
 }
 
 .reviews-slider__dot {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  border: none;
-  background: rgba(168, 196, 184, 0.5);
+  border: 1px solid rgba(168, 196, 184, 0.35);
+  background: rgba(255, 255, 255, 0.55);
   cursor: pointer;
   padding: 0;
   transition: var(--transition);
 }
 
 .reviews-slider__dot.is-active {
-  background: var(--color-accent);
-  transform: scale(1.35);
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.45);
+  width: 24px;
+  border-radius: 100px;
+  background: linear-gradient(90deg, var(--color-mint), var(--color-accent));
+  border-color: rgba(16, 185, 129, 0.45);
+  transform: none;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.35);
 }
 
 .reviews-slider__dot:hover {
@@ -2011,12 +2051,12 @@ ul {
 }
 
 .booking-form {
-  background: rgba(255, 255, 255, 0.22);
-  border: 1px solid rgba(255, 255, 255, 0.32);
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.36);
   border-radius: var(--radius-xl);
   padding: clamp(32px, 5vw, 44px);
   backdrop-filter: blur(16px);
-  box-shadow: var(--shadow-float-card), inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 20px 56px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-float-card-accent), inset 0 1px 0 rgba(255, 255, 255, 0.26);
   position: relative;
   color: #000000;
 }
@@ -2075,7 +2115,9 @@ ul {
 
 .booking-form input[type="text"],
 .booking-form input[type="tel"],
-.booking-form input[type="email"] {
+.booking-form input[type="email"],
+.booking-form input[type="date"],
+.booking-form__select {
   width: 100%;
   padding: 20px 28px;
   border: 1px solid rgba(0, 0, 0, 0.18);
@@ -2109,8 +2151,38 @@ ul {
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
 }
 
-.booking-form__online {
-  margin-bottom: 16px;
+.booking-form__select {
+  appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%232a2a2a' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 24px center;
+  padding-right: 48px;
+}
+
+.booking-form__online,
+.booking-form__save-lead,
+#submitBooking {
+  margin-bottom: 12px;
+}
+
+.booking-form__message {
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+}
+
+.booking-form__message--ok {
+  background: rgba(209, 250, 229, 0.75);
+  color: #047857;
+}
+
+.booking-form__message--err {
+  background: rgba(254, 226, 226, 0.85);
+  color: #991b1b;
 }
 
 .booking-form__agree {
@@ -2216,12 +2288,25 @@ ul {
    ============================================ */
 
 .footer {
-  background:
+  position: relative;
+  overflow: hidden;
+  background-image:
     radial-gradient(ellipse at 20% 0%, rgba(168, 196, 184, 0.1) 0%, transparent 50%),
-    linear-gradient(168deg, #3D4540 0%, #4A5548 45%, #5E6D60 100%);
+    linear-gradient(168deg, rgba(61, 69, 64, 0.78) 0%, rgba(74, 85, 72, 0.74) 45%, rgba(94, 109, 96, 0.7) 100%),
+    var(--bg-ornament-tint),
+    var(--bg-ornament-pattern),
+    var(--bg-ornament-base);
+  background-size: 100% 100%, 100% 100%, cover, 140px 140px, cover;
+  background-position: center, center, center, center, center;
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat, no-repeat;
   color: rgba(255, 255, 255, 0.85);
   padding-top: clamp(60px, 8vw, 80px);
   border-top: 2px solid rgba(168, 196, 184, 0.25);
+}
+
+.footer .container {
+  position: relative;
+  z-index: 1;
 }
 
 .footer__inner {
@@ -2238,10 +2323,12 @@ ul {
   align-items: center;
   justify-content: center;
   padding: 10px;
-  background: rgba(255, 255, 255, 0.14);
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.26);
   border-radius: var(--radius);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--shadow-float-card-dark), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .footer__logo {
@@ -2273,8 +2360,8 @@ ul {
 }
 
 .footer__card {
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.24);
   border-radius: var(--radius-xl);
   padding: clamp(32px, 4vw, 44px);
   backdrop-filter: blur(12px);
@@ -2329,6 +2416,15 @@ ul {
   width: 100%;
   margin-bottom: 20px;
   justify-content: center;
+  color: #10B981;
+  font-weight: 700;
+  box-shadow: var(--shadow-float-btn), var(--neon-emerald-strong), 0 14px 36px rgba(0, 0, 0, 0.2);
+}
+
+.footer__cta:hover {
+  color: #34D399;
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-float-btn-hover), var(--neon-emerald-strong), 0 20px 48px rgba(0, 0, 0, 0.24);
 }
 
 .footer__contacts-title {
@@ -2441,8 +2537,8 @@ ul {
     opacity: 0.35;
   }
 
-  .reviews-slider::before,
-  .reviews-slider::after {
+  .reviews-slider__track::before,
+  .reviews-slider__track::after {
     display: none;
   }
 
@@ -2607,8 +2703,11 @@ ul {
   .review-card,
   .rituals,
   .price-list--inline .price-item,
+  .consultation-block__steps,
+  .free-card,
   .booking-form,
-  .footer__card {
+  .footer__card,
+  .footer__logo-wrap {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
@@ -2619,14 +2718,15 @@ ul {
   }
 
   .reviews-slider__dots {
-    max-width: none;
-    flex: 1 1 auto;
-    gap: 8px;
+    max-width: min(240px, 100%);
+    flex: 0 1 auto;
+    gap: 7px;
   }
 
   .reviews-slider__controls {
-    gap: 16px;
-    flex-wrap: wrap;
+    gap: 14px;
+    flex-wrap: nowrap;
+    justify-content: center;
   }
 
   .reviews-slider {
@@ -2824,17 +2924,17 @@ ul {
   }
 
   .review-card__text {
-    font-size: clamp(20px, 5.5vw, 26px);
+    font-size: clamp(22px, 5.8vw, 30px);
   }
 
   .reviews-slider__btn {
-    width: 60px;
-    height: 60px;
+    width: 44px;
+    height: 44px;
   }
 
   .reviews-slider__btn svg {
-    width: 24px;
-    height: 24px;
+    width: 18px;
+    height: 18px;
   }
 
   .container {
@@ -2954,7 +3054,7 @@ ul {
 
 .booking-form {
   border-color: rgba(167, 243, 208, 0.38);
-  box-shadow: var(--shadow-float-card), var(--neon-emerald-sm), var(--shadow-inner);
+  box-shadow: var(--shadow-float-card-accent), inset 0 1px 0 rgba(255, 255, 255, 0.26);
 }
 
 .price-item__details summary {
@@ -3016,10 +3116,14 @@ ul {
 .master__info,
 .audience-list,
 .approach-principles,
-.rituals,
-.free-card,
-.booking-form {
+.rituals {
   box-shadow: var(--shadow-float-card), var(--neon-emerald-sm), var(--shadow-inner);
+}
+
+.section--accent .consultation-block__steps,
+.section--accent .free-card,
+.section--cta .booking-form {
+  box-shadow: var(--shadow-float-card-accent), inset 0 1px 0 rgba(255, 255, 255, 0.22);
 }
 
 .master__credentials img {
@@ -3066,8 +3170,8 @@ ul {
 }
 
 .reviews-slider__btn:hover {
-  box-shadow: var(--shadow-float-btn-hover), var(--neon-emerald-strong), var(--shadow-inner);
-  border-color: rgba(167, 243, 208, 0.75);
+  box-shadow: var(--shadow-float-btn), var(--neon-emerald-sm);
+  border-color: rgba(16, 185, 129, 0.5);
 }
 
 @media (max-width: 1200px) {
