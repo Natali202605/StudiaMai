@@ -1267,12 +1267,30 @@ ul {
    Подход
    ============================================ */
 
+.approach-card {
+  margin-bottom: 28px;
+  background: var(--card-gradient-beige);
+  border: var(--border-mint);
+  border-radius: var(--radius-xl);
+  padding: clamp(28px, 4vw, 40px) clamp(28px, 4vw, 44px);
+}
+
+.approach-card__title {
+  font-family: var(--font-serif);
+  font-size: clamp(20px, 2.5vw, 24px);
+  font-weight: 500;
+  color: #000000;
+  margin-bottom: 20px;
+  line-height: 1.35;
+  text-transform: lowercase;
+}
+
 .approach-grid {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
   gap: 12px;
-  margin-bottom: 28px;
+  margin-bottom: 0;
 }
 
 .approach-item {
@@ -2826,6 +2844,7 @@ ul {
   .checklist li,
   .audience-list,
   .master__info,
+  .approach-card,
   .approach-principles,
   .approach-item,
   .service-card,
@@ -3117,6 +3136,7 @@ ul {
 .card-surface,
 .checklist li,
 .audience-list,
+.approach-card,
 .approach-principles,
 .master__info,
 .service-card,
@@ -3223,6 +3243,7 @@ ul {
   .checklist li,
   .audience-list,
   .master__info,
+  .approach-card,
   .approach-principles,
   .approach-item,
   .service-card,
@@ -3250,8 +3271,8 @@ ul {
 .checklist li,
 .audience-list,
 .master__info,
+.approach-card,
 .approach-principles,
-.approach-item,
 .service-card,
 .benefits-list li,
 .benefit-card,
@@ -3276,6 +3297,10 @@ ul {
 .section--accent .free-card,
 .section--cta .booking-form {
   box-shadow: var(--shadow-float-card-accent), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+.approach-card .approach-item {
+  box-shadow: var(--shadow-sm), var(--shadow-inner);
 }
 
 .benefit-card__num {

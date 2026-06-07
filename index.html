@@ -216,14 +216,17 @@
           <p class="section__lead section__lead--left">Каждый человек приходит со своей историей. Поэтому вместо стандартных схем мы учитываем:</p>
         </div>
         <div class="section-row__body">
-      <div class="approach-grid">
-        <div class="approach-item">особенности лица</div>
-        <div class="approach-item">состояние кожи</div>
-        <div class="approach-item">направление роста волосков</div>
-        <div class="approach-item">образ жизни</div>
-        <div class="approach-item">пожелания клиента</div>
-      </div>
-      <div class="approach-principles">
+          <div class="approach-card">
+            <h3 class="approach-card__title">мы учитываем <span class="accent">все</span></h3>
+            <div class="approach-grid">
+              <div class="approach-item">особенности лица</div>
+              <div class="approach-item">состояние кожи</div>
+              <div class="approach-item">направление роста волосков</div>
+              <div class="approach-item">образ жизни</div>
+              <div class="approach-item">пожелания клиента</div>
+            </div>
+          </div>
+          <div class="approach-principles">
         <p>Мы всегда объясняем, что делаем и зачем.</p>
         <ul>
           <li>Без сложных терминов</li>
@@ -862,7 +865,7 @@
       });
     }, { passive: true });
 
-    const staggerSelectors = '.checklist li, .free-card, .approach-item, .service-card, .benefit-card, .faq-item, .format-card, .master__credentials img, .price-item, .rituals';
+    const staggerSelectors = '.checklist li, .free-card, .approach-card, .approach-item, .service-card, .benefit-card, .faq-item, .format-card, .master__credentials img, .price-item, .rituals';
     const revealEls = document.querySelectorAll('.reveal');
     const staggerStep = isMobile() ? 0.03 : 0.07;
     const staggerMax = isMobile() ? 0.18 : 0.45;
