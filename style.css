@@ -1288,7 +1288,6 @@ ul {
   color: #000000;
   margin-bottom: 20px;
   line-height: 1.35;
-  text-transform: lowercase;
 }
 
 .approach-grid {
@@ -3314,7 +3313,12 @@ ul {
 }
 
 .approach-card .approach-item {
-  box-shadow: var(--shadow-sm), var(--shadow-inner);
+  box-shadow: var(--shadow-float-card), var(--neon-emerald-sm), var(--shadow-inner);
+}
+
+.approach-card .approach-item:hover {
+  box-shadow: var(--shadow-float-card-hover), var(--neon-emerald-strong), var(--shadow-inner);
+  transform: translateY(-3px);
 }
 
 .benefit-card__num {

@@ -52,21 +52,49 @@ function ensureDirs() {
   });
 }
 
+function normalizeDb(raw) {
+  const db = { ...raw };
+  if (db.setupComplete === undefined) {
+    db.setupComplete = Boolean(db.user?.username && db.user?.passwordHash);
+  }
+  if (!db.user) db.user = null;
+  if (!Array.isArray(db.leads)) db.leads = [];
+  if (!Array.isArray(db.bookings)) db.bookings = [];
+  if (!db.content) db.content = {};
+  if (!db.images) db.images = { ...DEFAULT_IMAGES };
+  if (!db.procedures) db.procedures = [...DEFAULT_PROCEDURES];
+  return db;
+}
+
 function loadDb() {
   if (!fs.existsSync(DB_PATH)) {
-    const hash = bcrypt.hashSync(ADMIN_PASSWORD, 10);
-    const db = {
-      user: { username: ADMIN_USERNAME, passwordHash: hash },
+    const db = normalizeDb({
+      user: null,
+      setupComplete: false,
       content: {},
       images: { ...DEFAULT_IMAGES },
       procedures: [...DEFAULT_PROCEDURES],
       leads: [],
       bookings: []
-    };
+    });
     saveDb(db);
     return db;
   }
-  return JSON.parse(fs.readFileSync(DB_PATH, 'utf8'));
+  return normalizeDb(JSON.parse(fs.readFileSync(DB_PATH, 'utf8')));
+}
+
+function validateUsername(username) {
+  const value = String(username || '').trim();
+  if (value.length < 3) return 'Логин — минимум 3 символа';
+  if (value.length > 64) return 'Логин — не более 64 символов';
+  return null;
+}
+
+function validatePassword(password) {
+  const value = String(password || '');
+  if (value.length < 6) return 'Пароль — минимум 6 символов';
+  if (value.length > 128) return 'Пароль — не более 128 символов';
+  return null;
 }
 
 function saveDb(db) {
@@ -104,26 +132,66 @@ app.use('/uploads', express.static(UPLOADS_DIR));
 app.use('/admin', express.static(path.join(ROOT, 'admin')));
 app.use(express.static(ROOT));
 
+app.get('/api/auth/status', (_req, res) => {
+  res.json({
+    setupComplete: Boolean(db.setupComplete),
+    hasUser: Boolean(db.user?.username)
+  });
+});
+
+app.post('/api/auth/register', (req, res) => {
+  if (db.setupComplete) {
+    return res.status(403).json({ error: 'Регистрация уже выполнена. Войдите или смените данные в настройках.' });
+  }
+  const { username, password, passwordConfirm } = req.body || {};
+  const usernameError = validateUsername(username);
+  if (usernameError) return res.status(400).json({ error: usernameError });
+  const passwordError = validatePassword(password);
+  if (passwordError) return res.status(400).json({ error: passwordError });
+  if (password !== passwordConfirm) {
+    return res.status(400).json({ error: 'Пароли не совпадают' });
+  }
+  const cleanUsername = String(username).trim();
+  db.user = { username: cleanUsername, passwordHash: bcrypt.hashSync(password, 10) };
+  db.setupComplete = true;
+  saveDb(db);
+  const token = jwt.sign({ role: 'admin', username: cleanUsername }, JWT_SECRET, { expiresIn: '12h' });
+  res.json({ token, username: cleanUsername });
+});
+
 app.post('/api/auth/login', (req, res) => {
+  if (!db.user?.username) {
+    return res.status(403).json({ error: 'Сначала зарегистрируйте логин и пароль администратора' });
+  }
   const { username, password } = req.body || {};
-  if (username !== db.user.username || !bcrypt.compareSync(password || '', db.user.passwordHash)) {
+  const cleanUsername = String(username || '').trim();
+  if (cleanUsername !== db.user.username || !bcrypt.compareSync(password || '', db.user.passwordHash)) {
     return res.status(401).json({ error: 'Неверный логин или пароль' });
   }
-  const token = jwt.sign({ role: 'admin', username }, JWT_SECRET, { expiresIn: '12h' });
-  res.json({ token, username });
+  const token = jwt.sign({ role: 'admin', username: cleanUsername }, JWT_SECRET, { expiresIn: '12h' });
+  res.json({ token, username: cleanUsername });
 });
 
 app.post('/api/auth/change-password', authMiddleware, (req, res) => {
-  const { currentPassword, newPassword } = req.body || {};
+  const { currentPassword, newPassword, newUsername } = req.body || {};
   if (!bcrypt.compareSync(currentPassword || '', db.user.passwordHash)) {
     return res.status(400).json({ error: 'Текущий пароль неверен' });
   }
-  if (!newPassword || newPassword.length < 6) {
-    return res.status(400).json({ error: 'Новый пароль — минимум 6 символов' });
+  if (newUsername) {
+    const usernameError = validateUsername(newUsername);
+    if (usernameError) return res.status(400).json({ error: usernameError });
+    db.user.username = String(newUsername).trim();
   }
-  db.user.passwordHash = bcrypt.hashSync(newPassword, 10);
+  if (newPassword) {
+    const passwordError = validatePassword(newPassword);
+    if (passwordError) return res.status(400).json({ error: passwordError });
+    db.user.passwordHash = bcrypt.hashSync(newPassword, 10);
+  }
+  if (!newUsername && !newPassword) {
+    return res.status(400).json({ error: 'Укажите новый логин и/или новый пароль' });
+  }
   saveDb(db);
-  res.json({ ok: true });
+  res.json({ ok: true, username: db.user.username });
 });
 
 app.get('/api/content', (_req, res) => {
@@ -260,5 +328,9 @@ ensureDirs();
 app.listen(PORT, () => {
   console.log(`Студия «Май» — сервер: http://localhost:${PORT}`);
   console.log(`Админ-панель: http://localhost:${PORT}/admin`);
-  console.log(`Логин: ${ADMIN_USERNAME} / Пароль: ${ADMIN_PASSWORD}`);
+  if (!db.setupComplete) {
+    console.log('Первый вход: зарегистрируйте логин и пароль на странице входа.');
+  } else {
+    console.log(`Администратор: ${db.user.username}`);
+  }
 });

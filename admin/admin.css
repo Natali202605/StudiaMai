@@ -63,7 +63,8 @@ body {
   color: var(--adm-muted);
 }
 
-.login__field input, .admin__field input, .admin__field textarea, .admin__field select {
+.login__field input, .admin__field input, .admin__field textarea, .admin__field select,
+.login__password-wrap input {
   padding: 14px 16px;
   border: 1px solid var(--adm-border);
   border-radius: 12px;
@@ -71,6 +72,69 @@ body {
   font-size: 15px;
   color: var(--adm-text);
   background: #fff;
+}
+
+.login__tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.login__tab {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid var(--adm-border);
+  border-radius: 100px;
+  background: #fff;
+  color: var(--adm-muted);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.login__tab.is-active {
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--adm-accent-dark);
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+.login__password-wrap {
+  position: relative;
+  display: block;
+}
+
+.login__password-wrap input {
+  width: 100%;
+  padding-right: 96px;
+}
+
+.login__password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  border: none;
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--adm-accent-dark);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.login__password-toggle.is-visible {
+  background: rgba(16, 185, 129, 0.18);
+}
+
+.admin-btn--block {
+  width: 100%;
+  margin-top: 4px;
 }
 
 .login__hint {

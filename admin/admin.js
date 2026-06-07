@@ -4,8 +4,10 @@
     if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
       return location.port === '3000' ? '' : `http://${location.hostname}:3000`;
     }
-    return '';
+    return null;
   })();
+
+  const SERVER_REQUIRED_MSG = 'Админ-панель работает при запущенном сервере. В терминале: cd server && npm install && npm start';
   const TOKEN_KEY = 'studia_mai_admin_token';
 
   const PHOTO_LABELS = {
@@ -33,28 +35,112 @@
 
   function token() { return localStorage.getItem(TOKEN_KEY); }
 
+  function escapeHtml(value) {
+    return String(value ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function apiUrl(path) {
+    if (API === null) return null;
+    return `${API}${path}`;
+  }
+
   async function api(path, options = {}) {
+    const url = apiUrl(path);
+    if (!url) throw new Error(SERVER_REQUIRED_MSG);
+
     const headers = { ...(options.headers || {}) };
     if (token()) headers.Authorization = `Bearer ${token()}`;
     if (options.body && !(options.body instanceof FormData)) {
       headers['Content-Type'] = 'application/json';
       options.body = JSON.stringify(options.body);
     }
-    const base = API;
+
     let res;
     try {
-      res = await fetch(`${base}${path}`, { ...options, headers });
+      res = await fetch(url, { ...options, headers });
     } catch {
-      throw new Error('Не удалось подключиться к серверу. Запустите: cd server && npm install && npm start');
+      throw new Error(SERVER_REQUIRED_MSG);
     }
+
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
-      if (res.status === 404 && !base) {
-        throw new Error('Админ-панель работает при запущенном сервере (npm start в папке server).');
-      }
-      throw new Error(data.error || 'Ошибка запроса');
+      if (data.error) throw new Error(data.error);
+      if (res.status === 401) throw new Error('Неверный логин или пароль');
+      if (res.status === 403) throw new Error('Доступ запрещён');
+      if (res.status === 404) throw new Error(SERVER_REQUIRED_MSG);
+      throw new Error('Ошибка запроса');
     }
     return data;
+  }
+
+  function initPasswordToggles(root = document) {
+    root.querySelectorAll('[data-password-toggle]').forEach(btn => {
+      if (btn.dataset.bound) return;
+      btn.dataset.bound = '1';
+      btn.addEventListener('click', () => {
+        const input = btn.parentElement?.querySelector('input');
+        if (!input) return;
+        const show = input.type === 'password';
+        input.type = show ? 'text' : 'password';
+        btn.textContent = show ? 'Скрыть' : 'Показать';
+        btn.classList.toggle('is-visible', show);
+        btn.setAttribute('aria-label', show ? 'Скрыть пароль' : 'Показать пароль');
+      });
+    });
+  }
+
+  function showAuthError(el, message) {
+    if (!el) return;
+    el.textContent = message;
+    el.hidden = false;
+  }
+
+  function hideAuthErrors() {
+    ['loginError', 'registerError'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.hidden = true;
+    });
+  }
+
+  function setAuthMode(mode) {
+    const isRegister = mode === 'register';
+    document.getElementById('loginForm').hidden = isRegister;
+    document.getElementById('registerForm').hidden = !isRegister;
+    document.querySelectorAll('[data-auth-tab]').forEach(tab => {
+      tab.classList.toggle('is-active', tab.dataset.authTab === mode);
+    });
+    document.getElementById('loginSubtitle').textContent = isRegister
+      ? 'Первичная регистрация администратора'
+      : 'Вход для сотрудников';
+    hideAuthErrors();
+  }
+
+  async function loadAuthStatus() {
+    const tabs = document.getElementById('loginTabs');
+    const hint = document.getElementById('loginHint');
+    if (API === null) {
+      if (hint) hint.textContent = SERVER_REQUIRED_MSG;
+      return;
+    }
+    try {
+      const status = await api('/api/auth/status');
+      if (!status.setupComplete) {
+        tabs.hidden = false;
+        setAuthMode('register');
+        if (hint) {
+          hint.textContent = 'Создайте логин и пароль для первого входа в админ-панель.';
+        }
+      } else {
+        tabs.hidden = true;
+        setAuthMode('login');
+      }
+    } catch (ex) {
+      if (hint) hint.textContent = ex.message;
+    }
   }
 
   function showLogin() {
@@ -99,11 +185,11 @@
       <th>Дата</th><th>Имя</th><th>Телефон</th><th>Email</th><th>Статус</th><th></th>
     </tr></thead><tbody>${leads.map(l => `<tr>
       <td>${formatDate(l.createdAt)}</td>
-      <td>${l.name} ${l.surname || ''}</td>
-      <td><a href="tel:${l.phone}">${l.phone}</a></td>
-      <td>${l.email || '—'}</td>
+      <td>${escapeHtml(l.name)} ${escapeHtml(l.surname || '')}</td>
+      <td><a href="tel:${escapeHtml(l.phone)}">${escapeHtml(l.phone)}</a></td>
+      <td>${escapeHtml(l.email || '—')}</td>
       <td>${statusBadge(l.status)}</td>
-      <td>${l.status !== 'done' ? `<button type="button" class="admin-btn admin-btn--ghost" data-done-lead="${l.id}">Готово</button>` : ''}</td>
+      <td>${l.status !== 'done' ? `<button type="button" class="admin-btn admin-btn--ghost" data-done-lead="${escapeHtml(l.id)}">Готово</button>` : ''}</td>
     </tr>`).join('')}</tbody></table>`;
 
     wrap.querySelectorAll('[data-done-lead]').forEach(btn => {
@@ -123,15 +209,15 @@
       return;
     }
     wrap.innerHTML = `<table class="admin__table"><thead><tr>
-      <th>Дата</th><th>Клиент</th><th>Телефон</th><th>Процедура</th><th>Желаемая дата</th><th>Статус</th><th></th>
+      <th>Дата</th><th>Клиент</th><th>Телефон</th><th>Email</th><th>Комментарий</th><th>Статус</th><th></th>
     </tr></thead><tbody>${bookings.map(b => `<tr>
       <td>${formatDate(b.createdAt)}</td>
-      <td>${b.name} ${b.surname || ''}</td>
-      <td><a href="tel:${b.phone}">${b.phone}</a></td>
-      <td>${b.procedureName}<br><small>${b.category || ''}</small></td>
-      <td>${b.preferredDate || '—'}</td>
+      <td>${escapeHtml(b.name)} ${escapeHtml(b.surname || '')}</td>
+      <td><a href="tel:${escapeHtml(b.phone)}">${escapeHtml(b.phone)}</a></td>
+      <td>${escapeHtml(b.email || '—')}</td>
+      <td>${escapeHtml(b.comment || '—')}</td>
       <td>${statusBadge(b.status)}</td>
-      <td>${b.status !== 'done' ? `<button type="button" class="admin-btn admin-btn--ghost" data-done-booking="${b.id}">Готово</button>` : ''}</td>
+      <td>${b.status !== 'done' ? `<button type="button" class="admin-btn admin-btn--ghost" data-done-booking="${escapeHtml(b.id)}">Готово</button>` : ''}</td>
     </tr>`).join('')}</tbody></table>`;
 
     wrap.querySelectorAll('[data-done-booking]').forEach(btn => {
@@ -191,10 +277,10 @@
     const list = document.getElementById('proceduresList');
     list.innerHTML = procedures.map((p, i) => `
       <div class="admin__proc-row" data-idx="${i}">
-        <input type="text" value="${p.category || ''}" data-f="category" placeholder="Категория">
-        <input type="text" value="${p.name || ''}" data-f="name" placeholder="Название">
-        <input type="text" value="${p.price || ''}" data-f="price" placeholder="Цена">
-        <input type="text" value="${p.duration || ''}" data-f="duration" placeholder="Время">
+        <input type="text" value="${escapeHtml(p.category || '')}" data-f="category" placeholder="Категория">
+        <input type="text" value="${escapeHtml(p.name || '')}" data-f="name" placeholder="Название">
+        <input type="text" value="${escapeHtml(p.price || '')}" data-f="price" placeholder="Цена">
+        <input type="text" value="${escapeHtml(p.duration || '')}" data-f="duration" placeholder="Время">
         <button type="button" class="admin__proc-del" data-del="${i}">×</button>
       </div>`).join('');
 
@@ -227,27 +313,57 @@
     }
   });
 
+  document.querySelectorAll('[data-auth-tab]').forEach(tab => {
+    tab.addEventListener('click', () => setAuthMode(tab.dataset.authTab));
+  });
+
   document.getElementById('loginForm')?.addEventListener('submit', async e => {
     e.preventDefault();
     const fd = new FormData(e.target);
     const err = document.getElementById('loginError');
+    hideAuthErrors();
     try {
       const { token: t } = await api('/api/auth/login', {
         method: 'POST',
-        body: { username: fd.get('username'), password: fd.get('password') }
+        body: {
+          username: String(fd.get('username') || '').trim(),
+          password: fd.get('password')
+        }
       });
       localStorage.setItem(TOKEN_KEY, t);
       showApp();
       refreshAll();
     } catch (ex) {
-      err.textContent = ex.message;
-      err.hidden = false;
+      showAuthError(err, ex.message);
+    }
+  });
+
+  document.getElementById('registerForm')?.addEventListener('submit', async e => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const err = document.getElementById('registerError');
+    hideAuthErrors();
+    try {
+      const { token: t } = await api('/api/auth/register', {
+        method: 'POST',
+        body: {
+          username: String(fd.get('username') || '').trim(),
+          password: fd.get('password'),
+          passwordConfirm: fd.get('passwordConfirm')
+        }
+      });
+      localStorage.setItem(TOKEN_KEY, t);
+      showApp();
+      refreshAll();
+    } catch (ex) {
+      showAuthError(err, ex.message);
     }
   });
 
   document.getElementById('logoutBtn')?.addEventListener('click', () => {
     localStorage.removeItem(TOKEN_KEY);
     showLogin();
+    loadAuthStatus();
   });
 
   document.querySelectorAll('.admin__nav-btn').forEach(btn => {
@@ -278,12 +394,26 @@
     e.preventDefault();
     const fd = new FormData(e.target);
     const msg = document.getElementById('passwordMsg');
+    const newUsername = String(fd.get('newUsername') || '').trim();
+    const newPassword = fd.get('newPassword');
+    if (!newUsername && !newPassword) {
+      msg.textContent = 'Укажите новый логин и/или новый пароль';
+      msg.className = 'admin__msg';
+      msg.hidden = false;
+      return;
+    }
     try {
-      await api('/api/auth/change-password', {
+      const result = await api('/api/auth/change-password', {
         method: 'POST',
-        body: { currentPassword: fd.get('currentPassword'), newPassword: fd.get('newPassword') }
+        body: {
+          currentPassword: fd.get('currentPassword'),
+          newUsername: newUsername || undefined,
+          newPassword: newPassword || undefined
+        }
       });
-      msg.textContent = 'Пароль обновлён';
+      msg.textContent = result.username
+        ? `Настройки входа сохранены. Логин: ${result.username}`
+        : 'Настройки входа сохранены';
       msg.className = 'admin__msg admin__msg--ok';
       msg.hidden = false;
       e.target.reset();
@@ -303,10 +433,17 @@
     await loadProcedures();
   }
 
+  initPasswordToggles();
+
   if (token()) {
     showApp();
-    refreshAll().catch(() => { localStorage.removeItem(TOKEN_KEY); showLogin(); });
+    refreshAll().catch(() => {
+      localStorage.removeItem(TOKEN_KEY);
+      showLogin();
+      loadAuthStatus();
+    });
   } else {
     showLogin();
+    loadAuthStatus();
   }
 })();
