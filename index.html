@@ -774,13 +774,20 @@
     const burger = document.querySelector('.burger');
     const nav = document.querySelector('.nav');
     const header = document.querySelector('.header');
+    const mobileMq = window.matchMedia('(max-width: 768px)');
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     let menuScrollY = 0;
+
+    function isMobile() {
+      return mobileMq.matches;
+    }
 
     function setMenuOpen(open) {
       if (!nav || !burger) return;
 
       nav.classList.toggle('nav--open', open);
       burger.setAttribute('aria-expanded', String(open));
+      document.documentElement.classList.toggle('menu-open', open);
 
       if (open) {
         menuScrollY = window.scrollY;
@@ -801,6 +808,12 @@
       link.addEventListener('click', () => setMenuOpen(false));
     });
 
+    document.addEventListener('click', (e) => {
+      if (!nav?.classList.contains('nav--open')) return;
+      if (nav.contains(e.target) || burger?.contains(e.target)) return;
+      setMenuOpen(false);
+    });
+
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && nav?.classList.contains('nav--open')) {
         setMenuOpen(false);
@@ -808,55 +821,61 @@
     });
 
     window.addEventListener('resize', () => {
-      if (window.innerWidth > 768 && nav?.classList.contains('nav--open')) {
+      if (!isMobile() && nav?.classList.contains('nav--open')) {
         setMenuOpen(false);
       }
     }, { passive: true });
 
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', e => {
         const href = anchor.getAttribute('href');
-        if (href === '#') return;
+        if (!href || href === '#') return;
         const target = document.querySelector(href);
-        if (target) {
-          e.preventDefault();
-          setMenuOpen(false);
-          target.scrollIntoView({
-            behavior: prefersReducedMotion.matches ? 'auto' : 'smooth',
-            block: 'start'
-          });
-        }
+        if (!target) return;
+        e.preventDefault();
+        setMenuOpen(false);
+        target.scrollIntoView({
+          behavior: (prefersReducedMotion.matches || isMobile()) ? 'auto' : 'smooth',
+          block: 'start'
+        });
       });
     });
 
+    let headerScrollTicking = false;
     window.addEventListener('scroll', () => {
-      header?.classList.toggle('header--scrolled', window.scrollY > 20);
+      if (headerScrollTicking) return;
+      headerScrollTicking = true;
+      requestAnimationFrame(() => {
+        header?.classList.toggle('header--scrolled', window.scrollY > 20);
+        headerScrollTicking = false;
+      });
     }, { passive: true });
 
     const staggerSelectors = '.checklist li, .free-card, .approach-item, .service-card, .benefit-card, .faq-item, .format-card, .review-card, .master__credentials img, .price-item, .rituals';
     const revealEls = document.querySelectorAll('.reveal');
-    const revealRootMargin = window.matchMedia('(max-width: 768px)').matches
-      ? '0px 0px -4% 0px'
-      : '0px 0px -32px 0px';
+    const staggerStep = isMobile() ? 0.03 : 0.07;
+    const staggerMax = isMobile() ? 0.18 : 0.45;
 
-    const revealObs = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-visible');
-          revealObs.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.08, rootMargin: revealRootMargin });
+    if (isMobile() || prefersReducedMotion.matches) {
+      revealEls.forEach(el => el.classList.add('is-visible'));
+    } else {
+      const revealObs = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            revealObs.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.08, rootMargin: '0px 0px -32px 0px' });
 
-    revealEls.forEach(el => {
-      el.querySelectorAll(staggerSelectors).forEach((item, i) => {
-        item.classList.add('reveal-item');
-        item.style.setProperty('--reveal-delay', `${Math.min(i * 0.07, 0.45)}s`);
+      revealEls.forEach(el => {
+        el.querySelectorAll(staggerSelectors).forEach((item, i) => {
+          item.classList.add('reveal-item');
+          item.style.setProperty('--reveal-delay', `${Math.min(i * staggerStep, staggerMax)}s`);
+        });
+        revealObs.observe(el);
       });
-      revealObs.observe(el);
-    });
+    }
 
     const track = document.getElementById('reviewsTrack');
     const cards = track ? [...track.querySelectorAll('.review-card')] : [];
@@ -876,12 +895,14 @@
       const dots = [...dotsWrap.querySelectorAll('.reviews-slider__dot')];
       const progressBar = document.getElementById('reviewsProgress');
       const slider = track.closest('.reviews-slider');
-      const isMobileSlider = window.matchMedia('(max-width: 768px)').matches;
       let autoplayId = null;
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let touchLocked = false;
 
       function goToReview(i) {
         reviewIndex = (i + cards.length) % cards.length;
-        track.style.transform = `translateX(-${reviewIndex * 100}%)`;
+        track.style.transform = `translate3d(-${reviewIndex * 100}%, 0, 0)`;
         dots.forEach((d, idx) => d.classList.toggle('is-active', idx === reviewIndex));
         if (progressBar) {
           progressBar.style.width = `${((reviewIndex + 1) / cards.length) * 100}%`;
@@ -896,7 +917,7 @@
       }
 
       function startAutoplay() {
-        if (prefersReducedMotion.matches || isMobileSlider) return;
+        if (prefersReducedMotion.matches || isMobile()) return;
         stopAutoplay();
         autoplayId = setInterval(() => goToReview(reviewIndex + 1), 6000);
       }
@@ -916,23 +937,32 @@
       slider?.addEventListener('mouseenter', stopAutoplay);
       slider?.addEventListener('mouseleave', startAutoplay);
 
-      let touchStartX = 0;
-      let touchStartY = 0;
-
-      slider?.addEventListener('touchstart', e => {
+      track?.addEventListener('touchstart', e => {
         if (!e.touches.length) return;
-        touchStartX = e.touches[0].screenX;
-        touchStartY = e.touches[0].screenY;
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        touchLocked = false;
         stopAutoplay();
       }, { passive: true });
 
-      slider?.addEventListener('touchend', e => {
+      track?.addEventListener('touchmove', e => {
+        if (!e.touches.length || touchLocked) return;
+        const diffX = Math.abs(e.touches[0].clientX - touchStartX);
+        const diffY = Math.abs(e.touches[0].clientY - touchStartY);
+        if (diffX > diffY && diffX > 10) {
+          touchLocked = true;
+        }
+      }, { passive: true });
+
+      track?.addEventListener('touchend', e => {
         if (!e.changedTouches.length) return;
-        const diffX = touchStartX - e.changedTouches[0].screenX;
-        const diffY = touchStartY - e.changedTouches[0].screenY;
-        if (Math.abs(diffX) > 50 && Math.abs(diffX) > Math.abs(diffY)) {
+        const diffX = touchStartX - e.changedTouches[0].clientX;
+        const diffY = touchStartY - e.changedTouches[0].clientY;
+        const threshold = isMobile() ? 40 : 50;
+        if (Math.abs(diffX) > threshold && Math.abs(diffX) > Math.abs(diffY)) {
           goToReview(reviewIndex + (diffX > 0 ? 1 : -1));
         }
+        touchLocked = false;
       }, { passive: true });
 
       document.addEventListener('visibilitychange', () => {

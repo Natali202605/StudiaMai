@@ -41,6 +41,7 @@
   }
 
   async function loadCms() {
+    if (!API) return;
     const data = await fetchJson('/api/content');
     if (!data) return;
     applyContent(data.content);
@@ -48,7 +49,7 @@
   }
 
   async function loadProcedures(select) {
-    if (!select) return;
+    if (!select || !API) return;
     const data = await fetchJson('/api/procedures');
     if (!data?.procedures?.length) return;
 
@@ -99,7 +100,10 @@
 
   async function submitLead(form, msgEl) {
     const url = apiUrl('/api/leads');
-    if (!url) return;
+    if (!url) {
+      showFormMessage(msgEl, 'Сохранение данных доступно при запущенном сервере студии', false);
+      return;
+    }
     const data = getFormData(form);
     if (!data.name || !data.phone) {
       showFormMessage(msgEl, 'Заполните имя и телефон', false);

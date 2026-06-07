@@ -112,12 +112,19 @@ body {
   -webkit-tap-highlight-color: rgba(16, 185, 129, 0.15);
 }
 
+html.menu-open {
+  overflow: hidden;
+  height: 100%;
+}
+
 body.menu-open {
   overflow: hidden;
   position: fixed;
   width: 100%;
   left: 0;
   right: 0;
+  touch-action: none;
+  overscroll-behavior: none;
 }
 
 ::selection {
@@ -2604,6 +2611,7 @@ ul {
 @media (max-width: 768px) {
   html {
     scroll-padding-top: 72px;
+    scroll-behavior: auto;
   }
 
   [id] {
@@ -2614,6 +2622,48 @@ ul {
     font-size: 16px;
     line-height: 1.75;
     background-attachment: scroll;
+  }
+
+  .section::before,
+  .section--accent::before,
+  .section--cta::before {
+    animation: none !important;
+    will-change: auto;
+    opacity: 0.35;
+  }
+
+  .hero__accent {
+    animation: none !important;
+    will-change: auto;
+    filter: blur(28px);
+    opacity: 0.2;
+  }
+
+  .reveal,
+  .reveal--delay {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .reveal-item {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .reviews-slider__track {
+    transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+    touch-action: pan-y;
+  }
+
+  .reviews-slider {
+    touch-action: manipulation;
+  }
+
+  .reviews-slider__btn {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 
   .header {
@@ -2643,7 +2693,7 @@ ul {
     left: 0;
     right: 0;
     z-index: 99;
-    max-height: calc(100dvh - 72px);
+    max-height: calc(100dvh - 72px - env(safe-area-inset-bottom, 0px));
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
@@ -2651,7 +2701,7 @@ ul {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     flex-direction: column;
-    padding: 24px 28px 32px;
+    padding: 24px 28px calc(32px + env(safe-area-inset-bottom, 0px));
     gap: 8px;
     border-bottom: 1px solid rgba(168, 196, 184, 0.3);
     box-shadow: var(--shadow-glow-mint);
@@ -2680,11 +2730,6 @@ ul {
 
   .hero {
     padding-top: 96px;
-  }
-
-  .hero__accent {
-    filter: blur(36px);
-    opacity: 0.28;
   }
 
   .hero__top,
@@ -2729,10 +2774,6 @@ ul {
     justify-content: center;
   }
 
-  .reviews-slider {
-    touch-action: pan-y pinch-zoom;
-  }
-
   .approach-grid {
     justify-content: center;
   }
@@ -2770,6 +2811,23 @@ ul {
   .reviews-slider__dot {
     min-height: 44px;
     touch-action: manipulation;
+  }
+
+  .price-item__details summary,
+  .service-details summary {
+    min-height: 44px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  .service-card__body,
+  .service-card__header,
+  .price-item__row {
+    min-width: 0;
+  }
+
+  .price-item__name {
+    overflow-wrap: anywhere;
   }
 
   .faq-grid {
@@ -3072,27 +3130,33 @@ ul {
   box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
 }
 
-/* Полупрозрачные карточки и ярче фон блоков */
-.checklist li,
-.audience-list,
-.master__info,
-.approach-principles,
-.approach-item,
-.service-card,
-.benefits-list li,
-.benefit-card,
-.faq-item,
-.format-card,
-.review-card,
-.rituals,
-.price-list--inline .price-item,
-.hero__top,
-.hero__body,
-.hero__stats,
-.master__info,
-.booking-form {
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
+/* Полупрозрачные карточки — blur только на десктопе (на мобильных тормозит) */
+@media (min-width: 769px) {
+  .checklist li,
+  .audience-list,
+  .master__info,
+  .approach-principles,
+  .approach-item,
+  .service-card,
+  .benefits-list li,
+  .benefit-card,
+  .faq-item,
+  .format-card,
+  .review-card,
+  .rituals,
+  .price-list--inline .price-item,
+  .hero__top,
+  .hero__body,
+  .hero__stats,
+  .booking-form,
+  .consultation-block__steps,
+  .free-card,
+  .footer__card,
+  .footer__logo-wrap,
+  .reviews-slider__btn {
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+  }
 }
 
 .checklist li,
@@ -3225,5 +3289,24 @@ ul {
 
   * {
     transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .btn--ghost,
+  .btn--ghost-light,
+  .hero__top,
+  .hero__body,
+  .hero__stats {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .booking-form input[type="text"],
+  .booking-form input[type="tel"],
+  .booking-form input[type="email"],
+  .booking-form input[type="date"],
+  .booking-form__select {
+    font-size: 16px;
   }
 }
