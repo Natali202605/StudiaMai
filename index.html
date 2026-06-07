@@ -15,7 +15,7 @@
   <title>Студия красоты «Май» — Красота, в которой комфортно оставаться собой</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -46,8 +46,9 @@
 
   <!-- Первый экран -->
   <section class="hero" id="hero">
+    <div class="hero__bg" aria-hidden="true"></div>
     <div class="container hero__inner">
-      <div class="hero__content">
+      <div class="hero__content reveal">
         <div class="hero__brand">
           <img src="images/logo.png" alt="Логотип студии красоты Май" class="hero__logo">
           <p class="hero__site-name">Студия красоты <span class="accent accent--brand">«Май»</span></p>
@@ -71,19 +72,24 @@
             <span class="hero__stat-label">отзывов клиентов</span>
           </div>
         </div>
-        <a href="https://vk.com/id838426893" target="_blank" rel="noopener" class="btn btn--primary">Записаться на консультацию</a>
+        <div class="hero__actions">
+          <a href="https://vk.com/id838426893" target="_blank" rel="noopener" class="btn btn--primary btn--hero">Записаться на консультацию</a>
+          <a href="#services" class="btn btn--ghost">Смотреть услуги</a>
+        </div>
       </div>
-      <div class="hero__visual">
+      <div class="hero__visual reveal reveal--delay">
         <div class="hero__photo">
           <img src="images/galina-portret.png" alt="Галина Болотова — броволог, мастер студии красоты Май">
         </div>
+        <div class="hero__photo-glow" aria-hidden="true"></div>
       </div>
     </div>
   </section>
 
   <!-- Что можно решить -->
   <section class="section section--alt" id="about">
-    <div class="container">
+    <div class="container reveal">
+      <p class="section__eyebrow">О студии</p>
       <h2 class="section__title">Что можно <span class="accent">решить</span> в «Май»</h2>
       <ul class="checklist">
         <li>Восстановить форму перещипанных бровей</li>
@@ -98,7 +104,8 @@
 
   <!-- Для кого -->
   <section class="section">
-    <div class="container">
+    <div class="container reveal">
+      <p class="section__eyebrow">Аудитория</p>
       <h2 class="section__title">Для кого <span class="accent">наша студия</span></h2>
       <p class="section__lead">Для тех, кто:</p>
       <ul class="audience-list">
@@ -113,7 +120,8 @@
 
   <!-- Первая встреча -->
   <section class="section section--accent" id="consultation">
-    <div class="container">
+    <div class="container reveal">
+      <p class="section__eyebrow section__eyebrow--light">Консультация</p>
       <h2 class="section__title section__title--light">Как проходит <span class="accent accent--light">первая встреча</span></h2>
       <div class="consultation-block">
         <p class="consultation-block__quote">
@@ -148,13 +156,14 @@
 
   <!-- О мастере -->
   <section class="section">
-    <div class="container master">
+    <div class="container master reveal">
       <div class="master__photo">
         <img src="images/galina-portret.png" alt="Галина Болотова — броволог, мастер восстановления бровей" class="master__portrait">
         <img src="images/galina-bolotova.png" alt="Галина Болотова — визитная карточка BROVOLOG">
         <img src="images/sertifikaty.png" alt="Профессиональные сертификаты Галины Болотовой" class="master__certificates">
       </div>
       <div class="master__info">
+        <p class="section__eyebrow section__eyebrow--left">Мастер</p>
         <h2 class="section__title section__title--left">Галина <span class="accent">Болотова</span></h2>
         <p class="master__role">Броволог, Brow-мастер, ламинирование ресниц, депиляция</p>
         <p>Работа Галины строится на внимательности и уважении к индивидуальности каждого клиента.</p>
@@ -166,7 +175,8 @@
 
   <!-- Наш подход -->
   <section class="section section--alt">
-    <div class="container">
+    <div class="container reveal">
+      <p class="section__eyebrow">Философия</p>
       <h2 class="section__title"><span class="accent">Наш</span> подход</h2>
       <p class="section__subtitle">Никаких <span class="accent">универсальных</span> решений</p>
       <p class="section__lead">Каждый человек приходит со своей историей. Поэтому вместо стандартных схем мы учитываем:</p>
@@ -190,7 +200,8 @@
 
   <!-- Услуги — 4 карточки -->
   <section class="section" id="services">
-    <div class="container">
+    <div class="container reveal">
+      <p class="section__eyebrow">Направления</p>
       <h2 class="section__title"><span class="accent">Услуги</span></h2>
       <p class="section__lead">Выберите направление — подробности внутри каждой карточки</p>
 
@@ -200,7 +211,7 @@
         <div class="service-card">
           <img src="images/browi-resnitsy.png" alt="Рабочее место мастера — брови и ресницы" class="service-card__image">
           <div class="service-card__header">
-            <span class="service-card__icon">🟢</span>
+            <span class="service-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3c-4 2-7 6-7 10a7 7 0 0 0 14 0c0-4-3-8-7-10z"/><circle cx="12" cy="13" r="2.5"/></svg></span>
             <h3 class="service-card__title">Брови и <span class="accent">ресницы</span></h3>
           </div>
           <details class="service-details">
@@ -225,7 +236,7 @@
         <div class="service-card">
           <img src="images/kosmetologiya.png" alt="Косметологический уход за лицом" class="service-card__image">
           <div class="service-card__header">
-            <span class="service-card__icon">🌿</span>
+            <span class="service-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22V12M12 12C12 7 7 4 4 4c0 4 3 8 8 8M12 12c0-5 5-8 8-8 0 4-3 8-8 8"/></svg></span>
             <h3 class="service-card__title"><span class="accent">Косметологический</span> уход</h3>
           </div>
           <details class="service-details">
@@ -251,7 +262,7 @@
         <div class="service-card">
           <img src="images/massazh.png" alt="Профессиональный массаж лица" class="service-card__image">
           <div class="service-card__header">
-            <span class="service-card__icon">✨</span>
+            <span class="service-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3z"/></svg></span>
             <h3 class="service-card__title">Массажи <span class="accent">лица</span></h3>
           </div>
           <details class="service-details">
@@ -269,7 +280,7 @@
         <!-- Депиляция -->
         <div class="service-card">
           <div class="service-card__header">
-            <span class="service-card__icon">🤍</span>
+            <span class="service-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 21s-7-4.5-9-9a5.5 5.5 0 0 1 9-4 5.5 5.5 0 0 1 9 4c-2 4.5-9 9-9 9z"/></svg></span>
             <h3 class="service-card__title"><span class="accent">Депиляция</span></h3>
           </div>
           <p class="service-card__desc">Комфортное удаление нежелательных волос с учётом чувствительности кожи.</p>
@@ -309,23 +320,25 @@
   </section>
 
   <!-- Что вы получите -->
-  <section class="section section--alt">
-    <div class="container">
+  <section class="section section--alt" id="benefits">
+    <div class="container reveal">
+      <p class="section__eyebrow">Результат</p>
       <h2 class="section__title">Что вы <span class="accent">получите</span></h2>
       <p class="section__lead">После процедур клиенты чаще всего отмечают:</p>
       <ul class="benefits-list">
-        <li>более ухоженный внешний вид</li>
-        <li>ощущение свежести и легкости</li>
-        <li>понятную систему домашнего ухода</li>
-        <li>уверенность в своём отражении</li>
-        <li>спокойствие от того, что рядом есть специалист, которому можно доверять</li>
+        <li><span class="benefit-card__num">01</span><span class="benefit-card__text">более ухоженный внешний вид</span></li>
+        <li><span class="benefit-card__num">02</span><span class="benefit-card__text">ощущение свежести и легкости</span></li>
+        <li><span class="benefit-card__num">03</span><span class="benefit-card__text">понятную систему домашнего ухода</span></li>
+        <li><span class="benefit-card__num">04</span><span class="benefit-card__text">уверенность в своём отражении</span></li>
+        <li><span class="benefit-card__num">05</span><span class="benefit-card__text">спокойствие от того, что рядом есть специалист, которому можно доверять</span></li>
       </ul>
     </div>
   </section>
 
   <!-- Частые сомнения -->
   <section class="section" id="faq">
-    <div class="container">
+    <div class="container reveal">
+      <p class="section__eyebrow">Вопросы</p>
       <h2 class="section__title"><span class="accent">Частые</span> сомнения</h2>
       <div class="faq-grid">
         <div class="faq-item">
@@ -350,10 +363,12 @@
 
   <!-- Отзывы -->
   <section class="section section--alt" id="reviews">
-    <div class="container">
+    <div class="container reveal">
+      <p class="section__eyebrow">Доверие</p>
       <h2 class="section__title"><span class="accent">Отзывы</span></h2>
       <p class="section__lead">Реальные отзывы и результаты наших клиентов</p>
-      <div class="reviews-grid">
+      <div class="reviews-slider">
+        <div class="reviews-slider__track" id="reviewsTrack">
         <div class="review-card">
           <div class="review-card__stars">★★★★★</div>
           <p class="review-card__text">«Галина — мастер своего дела. Результат всегда на высоте всех ожиданий. Даже расстояние не преграда для встреч. Я довольна своим выбором профессионала.»</p>
@@ -394,13 +409,24 @@
           <p class="review-card__text">«Болотова Галина — настоящий профессионал своего дела. Консультация и работа на отлично! Студия «Май» — подарок для всех жителей Закамска.»</p>
           <span class="review-card__author">— Смирнова Надежда, 03.02.2026</span>
         </div>
+        </div>
+        <div class="reviews-slider__controls">
+          <button type="button" class="reviews-slider__btn" id="reviewsPrev" aria-label="Предыдущий отзыв">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <div class="reviews-slider__dots" id="reviewsDots"></div>
+          <button type="button" class="reviews-slider__btn" id="reviewsNext" aria-label="Следующий отзыв">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- Стоимость и формат -->
   <section class="section">
-    <div class="container">
+    <div class="container reveal">
+      <p class="section__eyebrow">Формат</p>
       <h2 class="section__title"><span class="accent">Стоимость</span> и формат</h2>
       <div class="format-cards">
         <div class="format-card">
@@ -421,7 +447,7 @@
 
   <!-- Запись -->
   <section class="section section--cta" id="booking">
-    <div class="container cta-block">
+    <div class="container cta-block reveal">
       <h2 class="section__title section__title--light">Готовы <span class="accent accent--light">познакомиться?</span></h2>
       <p>Если вы давно ищете специалиста, который внимательно выслушает и поможет подобрать подходящий уход — начните с консультации.</p>
       <ul class="cta-principles">
@@ -430,25 +456,33 @@
         <li>С уважением к вашим пожеланиям</li>
       </ul>
       <div class="booking-form">
-        <div class="booking-form__fields">
-          <a href="https://mst.link/bolotova_galina" target="_blank" rel="noopener" class="btn btn--primary btn--wide">Записаться онлайн</a>
+        <form class="contact-form" id="contactForm">
+          <div class="contact-form__grid">
+            <input type="text" name="name" placeholder="Ваше имя" required autocomplete="name">
+            <input type="tel" name="phone" placeholder="Телефон" required autocomplete="tel">
+          </div>
+          <button type="submit" class="btn btn--primary btn--wide">Отправить заявку</button>
+        </form>
+        <div class="booking-form__alt">
+          <a href="https://mst.link/bolotova_galina" target="_blank" rel="noopener" class="btn btn--ghost-light btn--wide">Записаться онлайн</a>
+          <p class="booking-form__consent">Нажимая кнопку, вы переходите на страницу онлайн-записи</p>
+          <p class="booking-form__phone">или позвоните: <a href="tel:+79024737800">+7 902 473-78-00</a></p>
         </div>
-        <p class="booking-form__phone">или позвоните: <a href="tel:+79024737800">+7 902 473-78-00</a></p>
-        <p class="booking-form__consent">Нажимая кнопку, вы переходите на страницу онлайн-записи</p>
       </div>
     </div>
   </section>
 
   <!-- Подвал -->
   <footer class="footer" id="contacts">
-    <div class="container footer__inner">
+    <div class="container footer__inner reveal">
       <div class="footer__brand">
         <img src="images/logo.png" alt="Май" class="footer__logo">
         <p class="footer__name">Студия красоты «Май»</p>
         <p class="footer__master">Галина Болотова</p>
         <p class="footer__spec">Депиляция · Brow-мастер · Ламинирование ресниц · Бровология</p>
       </div>
-      <div class="footer__contacts">
+      <div class="footer__contacts footer__card">
+        <h3 class="footer__contacts-title">Контакты</h3>
         <p>г. Пермь, ул. Ласьвинская, 32</p>
         <p>Вход с крыльца РЕНО, 2-й этаж</p>
         <p><a href="tel:+79024737800">Телефон: +7 902 473-78-00</a></p>
@@ -499,6 +533,67 @@
     window.addEventListener('scroll', () => {
       header.classList.toggle('header--scrolled', window.scrollY > 20);
     }, { passive: true });
+
+    // Анимация появления
+    const revealEls = document.querySelectorAll('.reveal');
+    const revealObs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          revealObs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    revealEls.forEach(el => revealObs.observe(el));
+
+    // Слайдер отзывов
+    const track = document.getElementById('reviewsTrack');
+    const cards = track ? [...track.querySelectorAll('.review-card')] : [];
+    const dotsWrap = document.getElementById('reviewsDots');
+    let reviewIndex = 0;
+
+    if (cards.length && dotsWrap) {
+      cards.forEach((_, i) => {
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.className = 'reviews-slider__dot' + (i === 0 ? ' is-active' : '');
+        dot.setAttribute('aria-label', `Отзыв ${i + 1}`);
+        dot.addEventListener('click', () => goToReview(i));
+        dotsWrap.appendChild(dot);
+      });
+
+      const dots = [...dotsWrap.querySelectorAll('.reviews-slider__dot')];
+
+      function goToReview(i) {
+        reviewIndex = (i + cards.length) % cards.length;
+        track.style.transform = `translateX(-${reviewIndex * 100}%)`;
+        dots.forEach((d, idx) => d.classList.toggle('is-active', idx === reviewIndex));
+      }
+
+      document.getElementById('reviewsPrev')?.addEventListener('click', () => goToReview(reviewIndex - 1));
+      document.getElementById('reviewsNext')?.addEventListener('click', () => goToReview(reviewIndex + 1));
+
+      let autoplay = setInterval(() => goToReview(reviewIndex + 1), 6000);
+      const slider = track.closest('.reviews-slider');
+      slider?.addEventListener('mouseenter', () => clearInterval(autoplay));
+
+      let touchStartX = 0;
+      slider?.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+      slider?.addEventListener('touchend', e => {
+        const diff = touchStartX - e.changedTouches[0].screenX;
+        if (Math.abs(diff) > 50) goToReview(reviewIndex + (diff > 0 ? 1 : -1));
+      }, { passive: true });
+    }
+
+    // Форма записи
+    document.getElementById('contactForm')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const name = fd.get('name');
+      const phone = fd.get('phone');
+      const text = encodeURIComponent(`Здравствуйте! Меня зовут ${name}. Хочу записаться на консультацию. Мой телефон: ${phone}`);
+      window.open(`https://wa.me/79024737800?text=${text}`, '_blank');
+    });
   </script>
 
 </body>
