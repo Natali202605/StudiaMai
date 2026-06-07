@@ -51,17 +51,17 @@
 
   --pattern-vector: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cg fill='none' stroke='%23A8C4B8' stroke-width='0.4' opacity='0.14'%3E%3Cpath d='M10 70c25-35 45-35 60 0s35 35 60 0'/%3E%3C/g%3E%3C/svg%3E");
   --bg-light-image: url('images/bg-light.png');
-  --bg-light-overlay: linear-gradient(150deg, rgba(255, 255, 255, 0.78) 0%, rgba(255, 248, 240, 0.72) 50%, rgba(209, 250, 229, 0.68) 100%);
-  --bg-light-overlay-soft: linear-gradient(165deg, rgba(255, 255, 255, 0.75) 0%, rgba(255, 245, 235, 0.68) 100%);
-  --bg-light-overlay-section: linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 248, 242, 0.62) 50%, rgba(167, 243, 208, 0.55) 100%);
+  --bg-light-overlay: linear-gradient(150deg, rgba(255, 255, 255, 0.52) 0%, rgba(255, 248, 240, 0.48) 50%, rgba(209, 250, 229, 0.44) 100%);
+  --bg-light-overlay-soft: linear-gradient(165deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 245, 235, 0.46) 100%);
+  --bg-light-overlay-section: linear-gradient(180deg, rgba(255, 255, 255, 0.48) 0%, rgba(255, 248, 242, 0.42) 50%, rgba(167, 243, 208, 0.38) 100%);
   --glass-blur: blur(12px);
 
-  --card-gradient: linear-gradient(152deg, #FFFFFF 0%, #FFF0E0 28%, #A7F3D0 62%, #F5E0D0 100%);
-  --card-gradient-soft: linear-gradient(148deg, #FFFFFF 0%, #FFF5EB 34%, #6EE7B7 72%, #F0DCC8 100%);
-  --card-gradient-mint: linear-gradient(145deg, #D1FAE5 0%, #6EE7B7 40%, #FFF0E0 100%);
-  --card-gradient-beige: linear-gradient(150deg, #FFF0E0 0%, #F5DCC8 46%, #A7F3D0 100%);
-  --card-gradient-warm: linear-gradient(155deg, #FFFFFF 0%, #FFE8D6 30%, #6EE7B7 65%, #E8C4A8 100%);
-  --card-gradient-hero: linear-gradient(158deg, #FFFFFF 0%, #FFF0E0 22%, #A7F3D0 55%, #F5E0D0 100%);
+  --card-gradient: linear-gradient(152deg, rgba(255, 255, 255, 0.72) 0%, rgba(255, 240, 224, 0.68) 28%, rgba(167, 243, 208, 0.65) 62%, rgba(245, 224, 208, 0.68) 100%);
+  --card-gradient-soft: linear-gradient(148deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 245, 235, 0.66) 34%, rgba(110, 231, 183, 0.62) 72%, rgba(240, 220, 200, 0.66) 100%);
+  --card-gradient-mint: linear-gradient(145deg, rgba(209, 250, 229, 0.68) 0%, rgba(110, 231, 183, 0.64) 40%, rgba(255, 240, 224, 0.66) 100%);
+  --card-gradient-beige: linear-gradient(150deg, rgba(255, 240, 224, 0.68) 0%, rgba(245, 220, 200, 0.64) 46%, rgba(167, 243, 208, 0.62) 100%);
+  --card-gradient-warm: linear-gradient(155deg, rgba(255, 255, 255, 0.72) 0%, rgba(255, 232, 214, 0.66) 30%, rgba(110, 231, 183, 0.62) 65%, rgba(232, 196, 168, 0.64) 100%);
+  --card-gradient-hero: linear-gradient(158deg, rgba(255, 255, 255, 0.74) 0%, rgba(255, 240, 224, 0.68) 22%, rgba(167, 243, 208, 0.65) 55%, rgba(245, 224, 208, 0.68) 100%);
 }
 
 /* Reset */
@@ -90,9 +90,9 @@ body {
   background-color: var(--color-bg);
   background-image:
     var(--pattern-vector),
-    radial-gradient(ellipse at 12% 8%, rgba(167, 243, 208, 0.5) 0%, transparent 48%),
-    radial-gradient(ellipse at 88% 92%, rgba(255, 228, 210, 0.5) 0%, transparent 48%),
-    linear-gradient(165deg, #FFF8F2 0%, #D1FAE5 42%, #FFF0E0 100%);
+    radial-gradient(ellipse at 12% 8%, rgba(167, 243, 208, 0.62) 0%, transparent 52%),
+    radial-gradient(ellipse at 88% 92%, rgba(255, 228, 210, 0.62) 0%, transparent 52%),
+    linear-gradient(165deg, #FFFDF9 0%, #D1FAE5 42%, #FFF5EB 100%);
   background-size: 140px 140px, 100% 100%, 100% 100%, 100% 100%;
   background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
@@ -562,10 +562,12 @@ ul {
   gap: clamp(24px, 4vw, 36px);
   margin-bottom: clamp(32px, 4vw, 44px);
   padding: clamp(24px, 4vw, 32px) clamp(28px, 4vw, 36px);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(167, 243, 208, 0.72) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.78) 0%, rgba(167, 243, 208, 0.58) 100%);
   border-radius: var(--radius-lg);
   border: var(--border-mint);
   box-shadow: var(--neon-emerald-sm), var(--shadow-inner);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
 }
 
 .hero__stat {
@@ -1900,6 +1902,7 @@ ul {
   backdrop-filter: blur(16px);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 20px 56px rgba(0, 0, 0, 0.14);
   position: relative;
+  color: #000000;
 }
 
 .booking-form__head {
@@ -1933,9 +1936,7 @@ ul {
 }
 
 .contact-form input[type="text"],
-.contact-form input[type="tel"],
-.booking-form input[type="text"],
-.booking-form input[type="tel"] {
+.contact-form input[type="tel"] {
   width: 100%;
   padding: 20px 28px;
   border: 1px solid rgba(255, 255, 255, 0.38);
@@ -1949,16 +1950,59 @@ ul {
   min-height: 56px;
 }
 
-.contact-form input::placeholder,
-.booking-form input::placeholder {
+.booking-form input[type="text"],
+.booking-form input[type="tel"] {
+  width: 100%;
+  padding: 20px 28px;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.62);
+  color: #000000;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  outline: none;
+  transition: border-color var(--transition), background var(--transition), box-shadow var(--transition);
+  min-height: 56px;
+}
+
+.contact-form input::placeholder {
   color: rgba(255, 255, 255, 0.55);
 }
 
-.contact-form input:focus,
-.booking-form input:focus {
+.booking-form input::placeholder {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.contact-form input:focus {
   border-color: rgba(255, 255, 255, 0.65);
   background: rgba(255, 255, 255, 0.22);
   box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+}
+
+.booking-form input:focus {
+  border-color: rgba(16, 185, 129, 0.5);
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+
+.booking-form__agree {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #000000;
+  cursor: pointer;
+}
+
+.booking-form__agree input[type="checkbox"] {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: var(--color-accent);
+  cursor: pointer;
 }
 
 .booking-form__alt {
@@ -1972,25 +2016,40 @@ ul {
 
 .booking-form__phone {
   font-size: 16px;
-  opacity: 0.92;
+  color: #000000;
 }
 
 .booking-form__phone a {
-  color: var(--color-white);
+  color: #000000;
   font-weight: 500;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
 .booking-form__phone a:hover {
-  color: var(--color-mint-light);
+  color: var(--color-accent-dark);
 }
 
 .booking-form__consent {
   font-size: 12px;
-  opacity: 0.7;
+  color: rgba(0, 0, 0, 0.72);
   text-align: center;
   line-height: 1.5;
+}
+
+.booking-form .btn--primary {
+  color: #000000;
+}
+
+.booking-form .btn--ghost-light {
+  color: #000000;
+  border-color: rgba(0, 0, 0, 0.28);
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.booking-form .btn--ghost-light:hover {
+  color: #000000;
+  background: rgba(255, 255, 255, 0.55);
 }
 
 .cta-block .btn--primary {
@@ -2026,12 +2085,25 @@ ul {
   padding-bottom: 48px;
 }
 
-.footer__logo {
+.footer__logo-wrap {
   width: clamp(96px, 12vw, 112px);
   height: clamp(96px, 12vw, 112px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: var(--radius);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.footer__logo {
+  width: 100%;
+  height: 100%;
   object-fit: contain;
-  filter: brightness(0) invert(1);
-  opacity: 0.9;
+  filter: none;
+  opacity: 1;
 }
 
 .footer__name {
@@ -2055,8 +2127,8 @@ ul {
 }
 
 .footer__card {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: var(--radius-xl);
   padding: clamp(32px, 4vw, 44px);
   backdrop-filter: blur(12px);
@@ -2584,7 +2656,28 @@ ul {
   box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
 }
 
-/* Изумрудная неоновая подсветка карточек */
+/* Полупрозрачные карточки и ярче фон блоков */
+.checklist li,
+.audience-list,
+.master__info,
+.approach-principles,
+.approach-item,
+.service-card,
+.benefits-list li,
+.benefit-card,
+.faq-item,
+.format-card,
+.review-card,
+.rituals,
+.price-list--inline .price-item,
+.hero__top,
+.hero__body,
+.master__info,
+.booking-form {
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
 .checklist li,
 .audience-list,
 .master__info,
