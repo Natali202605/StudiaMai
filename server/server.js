@@ -194,17 +194,17 @@ app.patch('/api/leads/:id', authMiddleware, (req, res) => {
 
 app.post('/api/bookings', (req, res) => {
   const { name, surname, phone, email, procedureId, procedureName, preferredDate, consent, comment } = req.body || {};
-  if (!name || !phone || !procedureId) {
-    return res.status(400).json({ error: 'Укажите имя, телефон и процедуру' });
+  if (!name || !phone) {
+    return res.status(400).json({ error: 'Укажите имя и телефон' });
   }
-  const procedure = db.procedures.find(p => p.id === procedureId);
+  const procedure = procedureId ? db.procedures.find(p => p.id === procedureId) : null;
   const booking = {
     id: `b${Date.now()}`,
     name: String(name).trim(),
     surname: String(surname || '').trim(),
     phone: String(phone).trim(),
     email: String(email || '').trim(),
-    procedureId,
+    procedureId: procedureId || '',
     procedureName: procedureName || procedure?.name || '',
     category: procedure?.category || '',
     preferredDate: preferredDate || '',
