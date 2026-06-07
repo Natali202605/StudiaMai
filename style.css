@@ -39,6 +39,11 @@
   --neon-emerald: 0 0 16px rgba(52, 211, 153, 0.42), 0 0 32px rgba(16, 185, 129, 0.18), 0 6px 24px rgba(5, 150, 105, 0.14);
   --neon-emerald-strong: 0 0 22px rgba(52, 211, 153, 0.55), 0 0 44px rgba(16, 185, 129, 0.28), 0 10px 32px rgba(5, 150, 105, 0.2);
   --shadow-inner: inset 0 1px 0 rgba(255, 255, 255, 0.88);
+  --shadow-float-card: 0 2px 4px rgba(5, 150, 105, 0.05), 0 10px 26px rgba(141, 155, 132, 0.11), 0 22px 48px rgba(141, 155, 132, 0.09);
+  --shadow-float-card-hover: 0 4px 8px rgba(5, 150, 105, 0.08), 0 16px 36px rgba(141, 155, 132, 0.15), 0 30px 60px rgba(141, 155, 132, 0.11);
+  --shadow-float-btn: 0 2px 4px rgba(5, 150, 105, 0.14), 0 6px 16px rgba(5, 150, 105, 0.16), 0 14px 28px rgba(5, 150, 105, 0.12);
+  --shadow-float-btn-hover: 0 4px 8px rgba(5, 150, 105, 0.18), 0 10px 24px rgba(5, 150, 105, 0.22), 0 20px 40px rgba(5, 150, 105, 0.16);
+  --shadow-float-card-dark: 0 4px 12px rgba(0, 0, 0, 0.14), 0 14px 32px rgba(0, 0, 0, 0.18), 0 28px 56px rgba(0, 0, 0, 0.12);
   --border-soft: 1px solid rgba(52, 211, 153, 0.22);
   --border-mint: 1px solid rgba(16, 185, 129, 0.32);
   --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
@@ -199,7 +204,7 @@ ul {
   background: linear-gradient(135deg, #34D399 0%, #10B981 50%, #059669 100%);
   color: var(--color-white);
   border: 1px solid rgba(167, 243, 208, 0.45);
-  box-shadow: var(--neon-emerald), var(--shadow-inner);
+  box-shadow: var(--shadow-float-btn), var(--neon-emerald-sm), var(--shadow-inner);
   letter-spacing: 0.06em;
   text-shadow: 0 1px 2px rgba(4, 120, 87, 0.3);
 }
@@ -208,14 +213,14 @@ ul {
   background: linear-gradient(135deg, #10B981 0%, #059669 50%, #047857 100%);
   color: var(--color-white);
   transform: translateY(-2px);
-  box-shadow: var(--neon-emerald-strong), var(--shadow-inner);
+  box-shadow: var(--shadow-float-btn-hover), var(--neon-emerald-strong), var(--shadow-inner);
 }
 
 .btn--light {
   background: linear-gradient(135deg, #FFFFFF 0%, #D1FAE5 100%);
   color: var(--color-emerald-dark);
   border: 1px solid rgba(16, 185, 129, 0.4);
-  box-shadow: var(--neon-emerald-sm);
+  box-shadow: var(--shadow-float-btn), var(--neon-emerald-sm);
   font-weight: 600;
 }
 
@@ -223,7 +228,7 @@ ul {
   background: linear-gradient(135deg, #FFFFFF 0%, var(--color-mint-light) 100%);
   color: var(--color-emerald-dark);
   transform: translateY(-3px);
-  box-shadow: var(--neon-emerald);
+  box-shadow: var(--shadow-float-btn-hover), var(--neon-emerald);
 }
 
 .btn--ghost {
@@ -231,7 +236,7 @@ ul {
   color: var(--color-emerald-dark);
   border: 1px solid rgba(16, 185, 129, 0.42);
   backdrop-filter: blur(8px);
-  box-shadow: var(--neon-emerald-sm);
+  box-shadow: var(--shadow-float-btn), var(--neon-emerald-sm);
   font-weight: 600;
 }
 
@@ -240,7 +245,7 @@ ul {
   border-color: var(--color-emerald-bright);
   color: var(--color-emerald-deep);
   transform: translateY(-3px);
-  box-shadow: var(--neon-emerald);
+  box-shadow: var(--shadow-float-btn-hover), var(--neon-emerald);
 }
 
 .btn--ghost-light {
@@ -248,13 +253,14 @@ ul {
   color: var(--color-white);
   border: 1px solid rgba(255, 255, 255, 0.35);
   backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-float-btn);
 }
 
 .btn--ghost-light:hover {
   background: rgba(255, 255, 255, 0.28);
   color: var(--color-white);
   transform: translateY(-3px);
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-float-btn-hover), 0 8px 28px rgba(0, 0, 0, 0.12);
 }
 
 .btn__icon {
@@ -290,7 +296,7 @@ ul {
 .btn--small {
   padding: 12px 26px;
   font-size: 11px;
-  box-shadow: var(--shadow-glow-sage);
+  box-shadow: var(--shadow-float-btn), var(--shadow-glow-sage);
 }
 
 .btn--wide {
@@ -623,12 +629,15 @@ ul {
 }
 
 .master__portrait-wrap {
-  flex-shrink: 0;
+  height: 100%;
+  min-height: 0;
 }
 
 .master__portrait {
-  width: clamp(220px, 28vw, 300px);
-  aspect-ratio: 3 / 4;
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
   object-fit: cover;
   object-position: center top;
   border-radius: var(--radius-xl);
@@ -884,7 +893,7 @@ ul {
 
 .checklist li:hover {
   border-color: var(--color-emerald-bright);
-  box-shadow: var(--neon-emerald);
+  box-shadow: var(--shadow-float-card-hover), var(--neon-emerald);
   transform: translateY(-3px);
 }
 
@@ -1034,27 +1043,40 @@ ul {
 }
 
 .master__row {
-  display: flex;
-  align-items: flex-start;
-  gap: clamp(28px, 5vw, 56px);
+  display: grid;
+  grid-template-columns: minmax(260px, 300px) 1fr;
+  align-items: stretch;
+  gap: clamp(28px, 4vw, 44px);
 }
 
 .master__credentials {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  grid-template-columns: repeat(2, 1fr);
+  align-items: stretch;
+  gap: clamp(20px, 3vw, 28px);
 }
 
 .master__credentials img {
+  display: block;
   width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  object-position: center;
   border-radius: var(--radius-xl);
   border: 2px solid rgba(255, 255, 255, 0.9);
   box-shadow: var(--shadow-glow-beige);
 }
 
+.master__credentials .master__certificates {
+  object-position: center top;
+}
+
 .master__info {
-  flex: 1;
   min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   background: var(--card-gradient-mint);
   border: var(--border-mint);
   border-radius: var(--radius-xl);
@@ -1119,7 +1141,7 @@ ul {
 .approach-item:hover {
   background: linear-gradient(135deg, var(--color-mint-light) 0%, var(--color-powder-light) 100%);
   border-color: var(--color-mint);
-  box-shadow: var(--shadow-glow-mint);
+  box-shadow: var(--shadow-float-card-hover), var(--shadow-glow-mint);
   transform: translateY(-2px);
 }
 
@@ -1251,7 +1273,7 @@ ul {
 }
 
 .service-card:hover {
-  box-shadow: var(--neon-emerald-strong), var(--shadow-hover);
+  box-shadow: var(--shadow-float-card-hover), var(--neon-emerald-strong), var(--shadow-hover);
   border-color: var(--color-emerald-bright);
   transform: translateY(-4px);
 }
@@ -1566,7 +1588,7 @@ ul {
 .benefits-list li:hover,
 .benefit-card:hover {
   transform: translateY(-4px);
-  box-shadow: var(--neon-emerald-strong), var(--shadow-hover);
+  box-shadow: var(--shadow-float-card-hover), var(--neon-emerald-strong), var(--shadow-hover);
   border-color: var(--color-emerald-bright);
 }
 
@@ -1620,7 +1642,7 @@ ul {
 
 .faq-item:hover {
   border-color: var(--color-emerald-bright);
-  box-shadow: var(--neon-emerald), var(--shadow);
+  box-shadow: var(--shadow-float-card-hover), var(--neon-emerald), var(--shadow);
   transform: translateY(-3px);
 }
 
@@ -1773,7 +1795,7 @@ ul {
   cursor: pointer;
   flex-shrink: 0;
   transition: transform var(--transition), box-shadow var(--transition), background var(--transition), border-color var(--transition);
-  box-shadow: var(--neon-emerald), var(--shadow-inner);
+  box-shadow: var(--shadow-float-btn), var(--neon-emerald), var(--shadow-inner);
 }
 
 .reviews-slider__btn svg {
@@ -1787,7 +1809,7 @@ ul {
   border-color: rgba(167, 243, 208, 0.75);
   color: var(--color-white);
   transform: scale(1.08);
-  box-shadow: var(--neon-emerald-strong), var(--shadow-inner);
+  box-shadow: var(--shadow-float-btn-hover), var(--neon-emerald-strong), var(--shadow-inner);
 }
 
 .reviews-slider__btn:active {
@@ -1849,7 +1871,7 @@ ul {
 
 .format-card:hover {
   border-color: var(--color-emerald-bright);
-  box-shadow: var(--neon-emerald-strong), var(--shadow-hover);
+  box-shadow: var(--shadow-float-card-hover), var(--neon-emerald-strong), var(--shadow-hover);
   transform: translateY(-4px);
 }
 
@@ -1926,7 +1948,7 @@ ul {
   border-radius: var(--radius-xl);
   padding: clamp(32px, 5vw, 44px);
   backdrop-filter: blur(16px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 20px 56px rgba(0, 0, 0, 0.14);
+  box-shadow: var(--shadow-float-card), inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 20px 56px rgba(0, 0, 0, 0.1);
   position: relative;
   color: #000000;
 }
@@ -2092,30 +2114,33 @@ ul {
 
 .booking-form .btn--primary {
   color: #000000;
+  box-shadow: var(--shadow-float-btn), var(--neon-emerald-sm), var(--shadow-inner);
 }
 
 .booking-form .btn--ghost-light {
   color: #000000;
   border-color: rgba(0, 0, 0, 0.28);
   background: rgba(255, 255, 255, 0.35);
+  box-shadow: var(--shadow-float-btn), var(--shadow-inner);
 }
 
 .booking-form .btn--ghost-light:hover {
   color: #000000;
   background: rgba(255, 255, 255, 0.55);
+  box-shadow: var(--shadow-float-btn-hover), var(--shadow-inner);
 }
 
 .cta-block .btn--primary {
   background: linear-gradient(135deg, #FFFFFF 0%, var(--color-mint-light) 100%);
   color: var(--color-accent-dark);
   border: 1px solid rgba(255, 255, 255, 0.55);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  box-shadow: var(--shadow-float-btn), 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.95);
 }
 
 .cta-block .btn--primary:hover {
   background: linear-gradient(135deg, #FFFFFF 0%, #E8F2EC 100%);
   color: var(--color-accent-dark);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+  box-shadow: var(--shadow-float-btn-hover), 0 12px 40px rgba(0, 0, 0, 0.14);
 }
 
 /* ============================================
@@ -2185,7 +2210,7 @@ ul {
   border-radius: var(--radius-xl);
   padding: clamp(32px, 4vw, 44px);
   backdrop-filter: blur(12px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 16px 48px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-float-card-dark), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .footer__contact-list {
@@ -2361,17 +2386,27 @@ ul {
   }
 
   .master__row {
-    flex-direction: column;
-    align-items: center;
+    grid-template-columns: 1fr;
+    justify-items: stretch;
   }
 
   .master__portrait-wrap {
     width: 100%;
-    max-width: 280px;
+    max-width: 300px;
+    height: auto;
+    justify-self: center;
   }
 
   .master__portrait {
     width: 100%;
+    height: auto;
+    min-height: unset;
+    aspect-ratio: 3 / 4;
+  }
+
+  .master__info {
+    width: 100%;
+    height: auto;
   }
 
   .consultation-block__grid {
@@ -2851,7 +2886,7 @@ ul {
 
 .booking-form {
   border-color: rgba(167, 243, 208, 0.38);
-  box-shadow: var(--neon-emerald), var(--shadow-inner), 0 16px 48px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-float-card), var(--neon-emerald-sm), var(--shadow-inner);
 }
 
 .price-item__details summary {
@@ -2905,15 +2940,33 @@ ul {
 .rituals,
 .price-list--inline .price-item,
 .hero__top,
-.hero__body {
-  box-shadow: var(--neon-emerald-sm), var(--shadow-inner);
+.hero__body,
+.hero__stats {
+  box-shadow: var(--shadow-float-card), var(--neon-emerald-sm), var(--shadow-inner);
+}
+
+.master__info,
+.audience-list,
+.approach-principles,
+.rituals,
+.free-card,
+.booking-form {
+  box-shadow: var(--shadow-float-card), var(--neon-emerald-sm), var(--shadow-inner);
+}
+
+.master__credentials img {
+  box-shadow: var(--shadow-float-card), var(--shadow-glow-beige);
+}
+
+.approach-item {
+  box-shadow: var(--shadow-float-card), var(--shadow-sm);
 }
 
 .benefit-card__num {
   color: var(--color-emerald-deep);
   background: linear-gradient(145deg, #D1FAE5, #A7F3D0);
   border-color: rgba(16, 185, 129, 0.35);
-  box-shadow: var(--neon-emerald-sm);
+  box-shadow: var(--shadow-float-btn), var(--neon-emerald-sm);
 }
 
 .benefit-card__text,
@@ -2945,7 +2998,7 @@ ul {
 }
 
 .reviews-slider__btn:hover {
-  box-shadow: var(--neon-emerald-strong), var(--shadow-inner);
+  box-shadow: var(--shadow-float-btn-hover), var(--neon-emerald-strong), var(--shadow-inner);
   border-color: rgba(167, 243, 208, 0.75);
 }
 
