@@ -68,9 +68,10 @@ function normalizeDb(raw) {
 
 function loadDb() {
   if (!fs.existsSync(DB_PATH)) {
+    const hash = bcrypt.hashSync(ADMIN_PASSWORD, 10);
     const db = normalizeDb({
-      user: null,
-      setupComplete: false,
+      user: { username: ADMIN_USERNAME, passwordHash: hash },
+      setupComplete: true,
       content: {},
       images: { ...DEFAULT_IMAGES },
       procedures: [...DEFAULT_PROCEDURES],
@@ -137,6 +138,10 @@ app.get('/api/auth/status', (_req, res) => {
     setupComplete: Boolean(db.setupComplete),
     hasUser: Boolean(db.user?.username)
   });
+});
+
+app.get('/api/auth/session', authMiddleware, (req, res) => {
+  res.json({ ok: true, username: req.user.username });
 });
 
 app.post('/api/auth/register', (req, res) => {

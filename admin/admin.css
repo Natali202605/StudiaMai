@@ -21,6 +21,10 @@ body {
   min-height: 100vh;
 }
 
+#adminApp[hidden] {
+  display: none !important;
+}
+
 .login {
   min-height: 100vh;
   display: flex;

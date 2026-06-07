@@ -68,6 +68,11 @@
 
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
+      if (res.status === 401 && token() && path !== '/api/auth/login') {
+        localStorage.removeItem(TOKEN_KEY);
+        showLogin();
+        throw new Error(data.error || 'Сессия истекла, войдите снова');
+      }
       if (data.error) throw new Error(data.error);
       if (res.status === 401) throw new Error('Неверный логин или пароль');
       if (res.status === 403) throw new Error('Доступ запрещён');
@@ -381,17 +386,32 @@
     await loadProcedures();
   }
 
-  initPasswordToggles();
-
-  if (token()) {
-    showApp();
-    refreshAll().catch(() => {
-      localStorage.removeItem(TOKEN_KEY);
-      showLogin();
-      loadAuthStatus();
-    });
-  } else {
+  function clearSession() {
+    localStorage.removeItem(TOKEN_KEY);
     showLogin();
-    loadAuthStatus();
   }
+
+  async function tryRestoreSession() {
+    showLogin();
+    if (API === null) {
+      clearSession();
+      loadAuthStatus();
+      return;
+    }
+    if (!token()) {
+      loadAuthStatus();
+      return;
+    }
+    try {
+      await api('/api/auth/session');
+      showApp();
+      await refreshAll();
+    } catch {
+      clearSession();
+      loadAuthStatus();
+    }
+  }
+
+  initPasswordToggles();
+  tryRestoreSession();
 })();
