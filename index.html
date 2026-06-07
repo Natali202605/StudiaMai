@@ -47,41 +47,45 @@
   <!-- Первый экран -->
   <section class="hero" id="hero">
     <div class="hero__bg" aria-hidden="true"></div>
-    <div class="container hero__inner">
-      <div class="hero__content reveal">
-        <div class="hero__brand">
-          <img src="images/logo.png" alt="Логотип студии красоты Май" class="hero__logo">
+    <div class="container">
+      <div class="hero__brand-bar reveal">
+        <img src="images/logo.png" alt="Логотип студии красоты Май" class="hero__brand-logo">
+        <div class="hero__brand-text">
           <p class="hero__site-name">Студия красоты <span class="accent accent--brand">«Май»</span></p>
-        </div>
-        <div class="hero__badge">Консультация бесплатно</div>
-        <h1 class="hero__title">Красота, в которой <span class="accent">комфортно</span> оставаться <span class="accent">собой</span></h1>
-        <p class="hero__text">
-          Брови, ресницы, уход за лицом, депиляция и эстетические процедуры, которые помогают чувствовать себя ухоженно каждый день.
-        </p>
-        <p class="hero__subtext">
-          Мы не стремимся менять вас до неузнаваемости. Наша задача — подчеркнуть естественную красоту, сохранить гармонию и подобрать уход, который действительно подходит именно вам.
-        </p>
-        <div class="hero__stats">
-          <div class="hero__stat">
-            <span class="hero__stat-value">4.9</span>
-            <span class="hero__stat-label">рейтинг клиентов</span>
-          </div>
-          <div class="hero__stat-divider"></div>
-          <div class="hero__stat">
-            <span class="hero__stat-value">30+</span>
-            <span class="hero__stat-label">отзывов клиентов</span>
-          </div>
-        </div>
-        <div class="hero__actions">
-          <a href="https://vk.com/id838426893" target="_blank" rel="noopener" class="btn btn--primary btn--hero">Записаться на консультацию</a>
-          <a href="#services" class="btn btn--ghost">Смотреть услуги</a>
+          <span class="hero__badge">Консультация бесплатно</span>
         </div>
       </div>
-      <div class="hero__visual reveal reveal--delay">
-        <div class="hero__photo">
-          <img src="images/galina-portret.png" alt="Галина Болотова — броволог, мастер студии красоты Май">
+      <div class="hero__inner">
+        <div class="hero__content reveal">
+          <h1 class="hero__title">Красота, в которой <span class="accent">комфортно</span> оставаться <span class="accent">собой</span></h1>
+          <p class="hero__text">
+            Брови, ресницы, уход за лицом, депиляция и эстетические процедуры, которые помогают чувствовать себя ухоженно каждый день.
+          </p>
+          <p class="hero__subtext">
+            Мы не стремимся менять вас до неузнаваемости. Наша задача — подчеркнуть естественную красоту, сохранить гармонию и подобрать уход, который действительно подходит именно вам.
+          </p>
+          <div class="hero__stats">
+            <div class="hero__stat">
+              <span class="hero__stat-value">4.9</span>
+              <span class="hero__stat-label">рейтинг клиентов</span>
+            </div>
+            <div class="hero__stat-divider"></div>
+            <div class="hero__stat">
+              <span class="hero__stat-value">30+</span>
+              <span class="hero__stat-label">отзывов клиентов</span>
+            </div>
+          </div>
+          <div class="hero__actions">
+            <a href="https://vk.com/id838426893" target="_blank" rel="noopener" class="btn btn--primary btn--hero">Записаться на консультацию</a>
+            <a href="#services" class="btn btn--ghost">Смотреть услуги</a>
+          </div>
         </div>
-        <div class="hero__photo-glow" aria-hidden="true"></div>
+        <div class="hero__visual reveal reveal--delay">
+          <div class="hero__logo-frame">
+            <img src="images/logo.png" alt="Логотип студии красоты Май">
+          </div>
+          <div class="hero__photo-glow" aria-hidden="true"></div>
+        </div>
       </div>
     </div>
   </section>
@@ -89,8 +93,12 @@
   <!-- Что можно решить -->
   <section class="section section--alt" id="about">
     <div class="container reveal">
-      <p class="section__eyebrow">О студии</p>
-      <h2 class="section__title">Что можно <span class="accent">решить</span> в «Май»</h2>
+      <div class="section-row">
+        <div class="section-row__head">
+          <p class="section__eyebrow section__eyebrow--left">О студии</p>
+          <h2 class="section__title section__title--left">Что можно <span class="accent">решить</span> в «Май»</h2>
+        </div>
+        <div class="section-row__body">
       <ul class="checklist">
         <li>Восстановить форму перещипанных бровей</li>
         <li>Сделать взгляд более открытым и выразительным</li>
@@ -99,15 +107,21 @@
         <li>Избавиться от нежелательных волос комфортным способом</li>
         <li>Получить понятный план ухода без лишних назначений</li>
       </ul>
+        </div>
+      </div>
     </div>
   </section>
 
   <!-- Для кого -->
   <section class="section">
     <div class="container reveal">
-      <p class="section__eyebrow">Аудитория</p>
-      <h2 class="section__title">Для кого <span class="accent">наша студия</span></h2>
-      <p class="section__lead">Для тех, кто:</p>
+      <div class="section-row">
+        <div class="section-row__head">
+          <p class="section__eyebrow section__eyebrow--left">Аудитория</p>
+          <h2 class="section__title section__title--left">Для кого <span class="accent">наша студия</span></h2>
+          <p class="section__lead section__lead--left">Для тех, кто:</p>
+        </div>
+        <div class="section-row__body">
       <ul class="audience-list">
         <li>хочет выглядеть ухоженно естественно</li>
         <li>ценит аккуратную работу и внимание к деталям</li>
@@ -115,6 +129,8 @@
         <li>ищет мастера, которому можно доверить свою внешность</li>
         <li>предпочитает спокойный и профессиональный подход без давления</li>
       </ul>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -158,7 +174,7 @@
   <section class="section">
     <div class="container master reveal">
       <div class="master__photo">
-        <img src="images/galina-portret.png" alt="Галина Болотова — броволог, мастер восстановления бровей" class="master__portrait">
+        <img src="images/logo.png" alt="Студия красоты Май — логотип" class="master__logo">
         <img src="images/galina-bolotova.png" alt="Галина Болотова — визитная карточка BROVOLOG">
         <img src="images/sertifikaty.png" alt="Профессиональные сертификаты Галины Болотовой" class="master__certificates">
       </div>
@@ -176,10 +192,14 @@
   <!-- Наш подход -->
   <section class="section section--alt">
     <div class="container reveal">
-      <p class="section__eyebrow">Философия</p>
-      <h2 class="section__title"><span class="accent">Наш</span> подход</h2>
-      <p class="section__subtitle">Никаких <span class="accent">универсальных</span> решений</p>
-      <p class="section__lead">Каждый человек приходит со своей историей. Поэтому вместо стандартных схем мы учитываем:</p>
+      <div class="section-row">
+        <div class="section-row__head">
+          <p class="section__eyebrow section__eyebrow--left">Философия</p>
+          <h2 class="section__title section__title--left"><span class="accent">Наш</span> подход</h2>
+          <p class="section__subtitle section__subtitle--left">Никаких <span class="accent">универсальных</span> решений</p>
+          <p class="section__lead section__lead--left">Каждый человек приходит со своей историей. Поэтому вместо стандартных схем мы учитываем:</p>
+        </div>
+        <div class="section-row__body">
       <div class="approach-grid">
         <div class="approach-item">особенности лица</div>
         <div class="approach-item">состояние кожи</div>
@@ -195,21 +215,28 @@
           <li>Без спешки</li>
         </ul>
       </div>
+        </div>
+      </div>
     </div>
   </section>
 
   <!-- Услуги — 4 карточки -->
   <section class="section" id="services">
     <div class="container reveal">
-      <p class="section__eyebrow">Направления</p>
-      <h2 class="section__title"><span class="accent">Услуги</span></h2>
-      <p class="section__lead">Выберите направление — подробности внутри каждой карточки</p>
+      <div class="section-header">
+        <p class="section__eyebrow">Направления</p>
+        <h2 class="section__title"><span class="accent">Услуги</span></h2>
+        <p class="section__lead">Выберите направление — подробности внутри каждой карточки</p>
+      </div>
 
       <div class="services-grid">
 
         <!-- Брови и ресницы -->
         <div class="service-card">
-          <img src="images/browi-resnitsy.png" alt="Рабочее место мастера — брови и ресницы" class="service-card__image">
+          <div class="service-card__media">
+            <img src="images/browi-resnitsy.png" alt="Рабочее место мастера — брови и ресницы" class="service-card__image">
+          </div>
+          <div class="service-card__body">
           <div class="service-card__header">
             <span class="service-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3c-4 2-7 6-7 10a7 7 0 0 0 14 0c0-4-3-8-7-10z"/><circle cx="12" cy="13" r="2.5"/></svg></span>
             <h3 class="service-card__title">Брови и <span class="accent">ресницы</span></h3>
@@ -230,11 +257,15 @@
               <li><span>Комбо «Брови + Ресницы»</span><span>от 3 200 ₽</span></li>
             </ul>
           </details>
+          </div>
         </div>
 
         <!-- Косметологический уход -->
         <div class="service-card">
-          <img src="images/kosmetologiya.png" alt="Косметологический уход за лицом" class="service-card__image">
+          <div class="service-card__media">
+            <img src="images/kosmetologiya.png" alt="Косметологический уход за лицом" class="service-card__image">
+          </div>
+          <div class="service-card__body">
           <div class="service-card__header">
             <span class="service-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22V12M12 12C12 7 7 4 4 4c0 4 3 8 8 8M12 12c0-5 5-8 8-8 0 4-3 8-8 8"/></svg></span>
             <h3 class="service-card__title"><span class="accent">Косметологический</span> уход</h3>
@@ -256,11 +287,15 @@
               <li><span>Фракционная мезотерапия волосистой части головы</span><span>от 2 000 ₽</span></li>
             </ul>
           </details>
+          </div>
         </div>
 
         <!-- Массажи лица -->
         <div class="service-card">
-          <img src="images/massazh.png" alt="Профессиональный массаж лица" class="service-card__image">
+          <div class="service-card__media">
+            <img src="images/massazh.png" alt="Профессиональный массаж лица" class="service-card__image">
+          </div>
+          <div class="service-card__body">
           <div class="service-card__header">
             <span class="service-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3z"/></svg></span>
             <h3 class="service-card__title">Массажи <span class="accent">лица</span></h3>
@@ -275,10 +310,12 @@
               <li><span>Миофасциальный лифтинг лица, шеи и декольте</span><span>от 2 500 ₽</span></li>
             </ul>
           </details>
+          </div>
         </div>
 
         <!-- Депиляция -->
-        <div class="service-card">
+        <div class="service-card service-card--no-image">
+          <div class="service-card__body">
           <div class="service-card__header">
             <span class="service-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 21s-7-4.5-9-9a5.5 5.5 0 0 1 9-4 5.5 5.5 0 0 1 9 4c-2 4.5-9 9-9 9z"/></svg></span>
             <h3 class="service-card__title"><span class="accent">Депиляция</span></h3>
@@ -303,6 +340,7 @@
               <li><span>Комплекс MAXI</span><span>от 2 700 ₽</span></li>
             </ul>
           </details>
+          </div>
         </div>
 
       </div>
@@ -322,9 +360,13 @@
   <!-- Что вы получите -->
   <section class="section section--alt" id="benefits">
     <div class="container reveal">
-      <p class="section__eyebrow">Результат</p>
-      <h2 class="section__title">Что вы <span class="accent">получите</span></h2>
-      <p class="section__lead">После процедур клиенты чаще всего отмечают:</p>
+      <div class="section-row section-row--benefits">
+        <div class="section-row__head">
+          <p class="section__eyebrow section__eyebrow--left">Результат</p>
+          <h2 class="section__title section__title--left">Что вы <span class="accent">получите</span></h2>
+          <p class="section__lead section__lead--left">После процедур клиенты чаще всего отмечают:</p>
+        </div>
+        <div class="section-row__body">
       <ul class="benefits-list">
         <li><span class="benefit-card__num">01</span><span class="benefit-card__text">более ухоженный внешний вид</span></li>
         <li><span class="benefit-card__num">02</span><span class="benefit-card__text">ощущение свежести и легкости</span></li>
@@ -332,14 +374,20 @@
         <li><span class="benefit-card__num">04</span><span class="benefit-card__text">уверенность в своём отражении</span></li>
         <li><span class="benefit-card__num">05</span><span class="benefit-card__text">спокойствие от того, что рядом есть специалист, которому можно доверять</span></li>
       </ul>
+        </div>
+      </div>
     </div>
   </section>
 
   <!-- Частые сомнения -->
   <section class="section" id="faq">
     <div class="container reveal">
-      <p class="section__eyebrow">Вопросы</p>
-      <h2 class="section__title"><span class="accent">Частые</span> сомнения</h2>
+      <div class="section-row">
+        <div class="section-row__head">
+          <p class="section__eyebrow section__eyebrow--left">Вопросы</p>
+          <h2 class="section__title section__title--left"><span class="accent">Частые</span> сомнения</h2>
+        </div>
+        <div class="section-row__body">
       <div class="faq-grid">
         <div class="faq-item">
           <h3>Боюсь, что мне начнут навязывать процедуры</h3>
@@ -358,15 +406,21 @@
           <p>Именно поэтому мы подробно обсуждаем ожидания до начала работы.</p>
         </div>
       </div>
+        </div>
+      </div>
     </div>
   </section>
 
   <!-- Отзывы -->
   <section class="section section--alt" id="reviews">
     <div class="container reveal">
-      <p class="section__eyebrow">Доверие</p>
-      <h2 class="section__title"><span class="accent">Отзывы</span></h2>
-      <p class="section__lead">Реальные отзывы и результаты наших клиентов</p>
+      <div class="section-row section-row--reviews">
+        <div class="section-row__head">
+          <p class="section__eyebrow section__eyebrow--left">Доверие</p>
+          <h2 class="section__title section__title--left"><span class="accent">Отзывы</span></h2>
+          <p class="section__lead section__lead--left">Реальные отзывы и результаты наших клиентов</p>
+        </div>
+        <div class="section-row__body">
       <div class="reviews-slider">
         <div class="reviews-slider__track" id="reviewsTrack">
         <div class="review-card">
@@ -420,14 +474,20 @@
           </button>
         </div>
       </div>
+        </div>
+      </div>
     </div>
   </section>
 
   <!-- Стоимость и формат -->
   <section class="section">
     <div class="container reveal">
-      <p class="section__eyebrow">Формат</p>
-      <h2 class="section__title"><span class="accent">Стоимость</span> и формат</h2>
+      <div class="section-row">
+        <div class="section-row__head">
+          <p class="section__eyebrow section__eyebrow--left">Формат</p>
+          <h2 class="section__title section__title--left"><span class="accent">Стоимость</span> и формат</h2>
+        </div>
+        <div class="section-row__body">
       <div class="format-cards">
         <div class="format-card">
           <span class="format-card__price">Бесплатно</span>
@@ -442,19 +502,24 @@
           <p>пн 11–20 · вт 10–20 · ср 12–20 · чт выходной · пт 12–20 · сб 15–20 · вс выходной</p>
         </div>
       </div>
+        </div>
+      </div>
     </div>
   </section>
 
   <!-- Запись -->
   <section class="section section--cta" id="booking">
-    <div class="container cta-block reveal">
-      <h2 class="section__title section__title--light">Готовы <span class="accent accent--light">познакомиться?</span></h2>
-      <p>Если вы давно ищете специалиста, который внимательно выслушает и поможет подобрать подходящий уход — начните с консультации.</p>
-      <ul class="cta-principles">
-        <li>Без обязательств</li>
-        <li>Без давления</li>
-        <li>С уважением к вашим пожеланиям</li>
-      </ul>
+    <div class="container reveal">
+      <div class="cta-row">
+        <div class="cta-row__info">
+          <h2 class="section__title section__title--light section__title--left">Готовы <span class="accent accent--light">познакомиться?</span></h2>
+          <p>Если вы давно ищете специалиста, который внимательно выслушает и поможет подобрать подходящий уход — начните с консультации.</p>
+          <ul class="cta-principles">
+            <li>Без обязательств</li>
+            <li>Без давления</li>
+            <li>С уважением к вашим пожеланиям</li>
+          </ul>
+        </div>
       <div class="booking-form">
         <form class="contact-form" id="contactForm">
           <div class="contact-form__grid">
@@ -468,6 +533,7 @@
           <p class="booking-form__consent">Нажимая кнопку, вы переходите на страницу онлайн-записи</p>
           <p class="booking-form__phone">или позвоните: <a href="tel:+79024737800">+7 902 473-78-00</a></p>
         </div>
+      </div>
       </div>
     </div>
   </section>
