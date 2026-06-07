@@ -13,11 +13,7 @@
   <div id="loginScreen" class="login">
     <div class="login__card">
       <h1 class="login__title">Студия «Май»</h1>
-      <p class="login__sub" id="loginSubtitle">Вход для сотрудников</p>
-      <div class="login__tabs" id="loginTabs" hidden>
-        <button type="button" class="login__tab is-active" data-auth-tab="login">Вход</button>
-        <button type="button" class="login__tab" data-auth-tab="register">Регистрация</button>
-      </div>
+      <p class="login__sub">Вход для сотрудников</p>
       <form id="loginForm">
         <label class="login__field">
           <span>Логин</span>
@@ -32,28 +28,6 @@
         </label>
         <p class="login__error" id="loginError" hidden></p>
         <button type="submit" class="admin-btn admin-btn--primary admin-btn--block">Войти</button>
-      </form>
-      <form id="registerForm" hidden>
-        <label class="login__field">
-          <span>Логин</span>
-          <input type="text" name="username" autocomplete="username" required>
-        </label>
-        <label class="login__field">
-          <span>Пароль</span>
-          <span class="login__password-wrap">
-            <input type="password" name="password" autocomplete="new-password" minlength="6" required>
-            <button type="button" class="login__password-toggle" data-password-toggle aria-label="Показать пароль">Показать</button>
-          </span>
-        </label>
-        <label class="login__field">
-          <span>Повторите пароль</span>
-          <span class="login__password-wrap">
-            <input type="password" name="passwordConfirm" autocomplete="new-password" minlength="6" required>
-            <button type="button" class="login__password-toggle" data-password-toggle aria-label="Показать пароль">Показать</button>
-          </span>
-        </label>
-        <p class="login__error" id="registerError" hidden></p>
-        <button type="submit" class="admin-btn admin-btn--primary admin-btn--block">Зарегистрировать</button>
       </form>
       <p class="login__hint" id="loginHint">Для работы панели запустите сервер: <code>cd server && npm install && npm start</code></p>
       <a href="../" class="login__back">← Вернуться на сайт</a>

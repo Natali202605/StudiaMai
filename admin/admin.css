@@ -74,32 +74,6 @@ body {
   background: #fff;
 }
 
-.login__tabs {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 20px;
-}
-
-.login__tab {
-  flex: 1;
-  padding: 10px 14px;
-  border: 1px solid var(--adm-border);
-  border-radius: 100px;
-  background: #fff;
-  color: var(--adm-muted);
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.login__tab.is-active {
-  background: rgba(16, 185, 129, 0.12);
-  color: var(--adm-accent-dark);
-  border-color: rgba(16, 185, 129, 0.35);
-}
-
 .login__password-wrap {
   position: relative;
   display: block;

@@ -1330,11 +1330,12 @@ ul {
   box-shadow: var(--shadow-glow-beige);
 }
 
-.approach-principles p {
+.approach-principles__title {
   font-family: var(--font-serif);
   font-size: 22px;
   margin-bottom: 20px;
   line-height: 1.4;
+  color: #000000;
 }
 
 .approach-principles ul {
@@ -1344,8 +1345,29 @@ ul {
 }
 
 .approach-principles li {
+  position: relative;
+  padding-left: 30px;
   font-size: 16px;
   color: var(--color-text-light);
+}
+
+.approach-principles li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-emerald-dark);
+  background: rgba(209, 250, 229, 0.7);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  border-radius: 50%;
 }
 
 /* ============================================

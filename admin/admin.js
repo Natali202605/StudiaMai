@@ -100,44 +100,18 @@
   }
 
   function hideAuthErrors() {
-    ['loginError', 'registerError'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.hidden = true;
-    });
-  }
-
-  function setAuthMode(mode) {
-    const isRegister = mode === 'register';
-    document.getElementById('loginForm').hidden = isRegister;
-    document.getElementById('registerForm').hidden = !isRegister;
-    document.querySelectorAll('[data-auth-tab]').forEach(tab => {
-      tab.classList.toggle('is-active', tab.dataset.authTab === mode);
-    });
-    document.getElementById('loginSubtitle').textContent = isRegister
-      ? 'Первичная регистрация администратора'
-      : 'Вход для сотрудников';
-    hideAuthErrors();
+    const el = document.getElementById('loginError');
+    if (el) el.hidden = true;
   }
 
   async function loadAuthStatus() {
-    const tabs = document.getElementById('loginTabs');
     const hint = document.getElementById('loginHint');
     if (API === null) {
       if (hint) hint.textContent = SERVER_REQUIRED_MSG;
       return;
     }
     try {
-      const status = await api('/api/auth/status');
-      if (!status.setupComplete) {
-        tabs.hidden = false;
-        setAuthMode('register');
-        if (hint) {
-          hint.textContent = 'Создайте логин и пароль для первого входа в админ-панель.';
-        }
-      } else {
-        tabs.hidden = true;
-        setAuthMode('login');
-      }
+      await api('/api/auth/status');
     } catch (ex) {
       if (hint) hint.textContent = ex.message;
     }
@@ -313,10 +287,6 @@
     }
   });
 
-  document.querySelectorAll('[data-auth-tab]').forEach(tab => {
-    tab.addEventListener('click', () => setAuthMode(tab.dataset.authTab));
-  });
-
   document.getElementById('loginForm')?.addEventListener('submit', async e => {
     e.preventDefault();
     const fd = new FormData(e.target);
@@ -328,28 +298,6 @@
         body: {
           username: String(fd.get('username') || '').trim(),
           password: fd.get('password')
-        }
-      });
-      localStorage.setItem(TOKEN_KEY, t);
-      showApp();
-      refreshAll();
-    } catch (ex) {
-      showAuthError(err, ex.message);
-    }
-  });
-
-  document.getElementById('registerForm')?.addEventListener('submit', async e => {
-    e.preventDefault();
-    const fd = new FormData(e.target);
-    const err = document.getElementById('registerError');
-    hideAuthErrors();
-    try {
-      const { token: t } = await api('/api/auth/register', {
-        method: 'POST',
-        body: {
-          username: String(fd.get('username') || '').trim(),
-          password: fd.get('password'),
-          passwordConfirm: fd.get('passwordConfirm')
         }
       });
       localStorage.setItem(TOKEN_KEY, t);
