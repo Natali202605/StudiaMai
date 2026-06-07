@@ -48,6 +48,13 @@
   --bg-light-overlay-soft: linear-gradient(165deg, rgba(255, 255, 255, 0.82) 0%, rgba(250, 246, 240, 0.76) 100%);
   --bg-light-overlay-section: linear-gradient(180deg, rgba(255, 255, 255, 0.84) 0%, rgba(250, 246, 240, 0.78) 50%, rgba(238, 245, 241, 0.8) 100%);
   --glass-blur: blur(12px);
+
+  --card-gradient: linear-gradient(152deg, #FFFCF8 0%, #F5EDE4 30%, #E8F2EC 65%, #EDE4DE 100%);
+  --card-gradient-soft: linear-gradient(148deg, #FAF6F0 0%, #F5EDE4 38%, #D4E8DE 78%, #EDE4DE 100%);
+  --card-gradient-mint: linear-gradient(145deg, #E8F2EC 0%, #D4E8DE 42%, #F5EDE4 100%);
+  --card-gradient-beige: linear-gradient(150deg, #F5EDE4 0%, #EDE4DE 48%, #E8F2EC 100%);
+  --card-gradient-warm: linear-gradient(155deg, #FFFDF9 0%, #F5EDE4 32%, #D4E8DE 68%, #DCCBC3 100%);
+  --card-gradient-hero: linear-gradient(158deg, #FFFCF8 0%, #F5EDE4 25%, #E8F2EC 60%, #EDE4DE 100%);
 }
 
 /* Reset */
@@ -59,11 +66,11 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 88px;
+  scroll-padding-top: 92px;
 }
 
 [id] {
-  scroll-margin-top: 88px;
+  scroll-margin-top: 92px;
 }
 
 body {
@@ -298,20 +305,20 @@ ul {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 76px;
+  height: 88px;
 }
 
 .logo {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
   text-decoration: none;
   line-height: 1.2;
 }
 
 .logo__img {
-  width: 50px;
-  height: 50px;
+  width: clamp(60px, 7vw, 72px);
+  height: clamp(60px, 7vw, 72px);
   object-fit: contain;
   flex-shrink: 0;
 }
@@ -448,9 +455,7 @@ ul {
   gap: clamp(20px, 4vw, 40px);
   padding: clamp(32px, 5vw, 48px) clamp(32px, 5vw, 52px);
   margin-bottom: clamp(28px, 4vw, 36px);
-  background-image: var(--bg-light-overlay), var(--bg-light-image);
-  background-size: cover;
-  background-position: center;
+  background: var(--card-gradient-hero);
   border: var(--border-mint);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-glow-mint), var(--shadow-inner);
@@ -458,11 +463,11 @@ ul {
 }
 
 .hero__brand-logo {
-  width: clamp(88px, 12vw, 128px);
-  height: clamp(88px, 12vw, 128px);
+  width: clamp(120px, 18vw, 180px);
+  height: clamp(120px, 18vw, 180px);
   object-fit: contain;
   flex-shrink: 0;
-  padding: 10px;
+  padding: 12px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.65);
   border: 2px solid rgba(168, 196, 184, 0.4);
@@ -508,9 +513,7 @@ ul {
 }
 
 .hero__body {
-  background-image: var(--bg-light-overlay-soft), var(--bg-light-image);
-  background-size: cover;
-  background-position: center;
+  background: var(--card-gradient-soft);
   border: var(--border-mint);
   border-radius: var(--radius-xl);
   padding: clamp(36px, 5vw, 52px);
@@ -824,9 +827,7 @@ ul {
 .checklist li {
   position: relative;
   padding: 22px 26px 22px 54px;
-  background-image: var(--bg-light-overlay), var(--bg-light-image);
-  background-size: cover;
-  background-position: center;
+  background: var(--card-gradient);
   border-radius: var(--radius);
   border: var(--border-mint);
   font-size: 16px;
@@ -836,9 +837,7 @@ ul {
 }
 
 .section--alt .checklist li {
-  background-image: var(--bg-light-overlay), var(--bg-light-image);
-  background-size: cover;
-  background-position: center;
+  background: var(--card-gradient-beige);
 }
 
 .checklist li::before {
@@ -871,9 +870,7 @@ ul {
 
 .audience-list {
   margin: 0;
-  background-image: var(--bg-light-overlay-soft), var(--bg-light-image);
-  background-size: cover;
-  background-position: center;
+  background: var(--card-gradient-warm);
   border: var(--border-soft);
   border-radius: var(--radius-xl);
   padding: clamp(28px, 4vw, 40px) clamp(28px, 5vw, 44px);
@@ -1034,9 +1031,7 @@ ul {
 .master__info {
   flex: 1;
   min-width: 0;
-  background-image: var(--bg-light-overlay), var(--bg-light-image);
-  background-size: cover;
-  background-position: center;
+  background: var(--card-gradient-mint);
   border: var(--border-mint);
   border-radius: var(--radius-xl);
   padding: clamp(32px, 5vw, 48px);
@@ -1083,9 +1078,7 @@ ul {
 }
 
 .approach-item {
-  background-image: var(--bg-light-overlay), var(--bg-light-image);
-  background-size: cover;
-  background-position: center;
+  background: var(--card-gradient);
   border: var(--border-soft);
   border-radius: 100px;
   padding: 12px 28px;
@@ -1096,9 +1089,7 @@ ul {
 }
 
 .section--alt .approach-item {
-  background-image: var(--bg-light-overlay), var(--bg-light-image);
-  background-size: cover;
-  background-position: center;
+  background: var(--card-gradient-beige);
 }
 
 .approach-item:hover {
@@ -1111,9 +1102,7 @@ ul {
 .approach-principles {
   text-align: left;
   margin: 0;
-  background-image: var(--bg-light-overlay-soft), var(--bg-light-image);
-  background-size: cover;
-  background-position: center;
+  background: var(--card-gradient-warm);
   border: var(--border-soft);
   border-radius: var(--radius-xl);
   padding: 36px 40px;
@@ -1156,9 +1145,7 @@ ul {
   flex-direction: row;
   align-items: stretch;
   counter-increment: service-num;
-  background-image: var(--bg-light-overlay), var(--bg-light-image);
-  background-size: cover;
-  background-position: center;
+  background: var(--card-gradient);
   border: var(--border-soft);
   border-radius: var(--radius-xl);
   padding: 0;
@@ -1193,10 +1180,10 @@ ul {
   min-width: 0;
 }
 
-.service-card:nth-child(1) { border-color: rgba(168, 196, 184, 0.5); }
-.service-card:nth-child(2) { border-color: rgba(141, 155, 132, 0.45); }
-.service-card:nth-child(3) { border-color: rgba(220, 203, 195, 0.55); }
-.service-card:nth-child(4) { border-color: rgba(232, 223, 212, 0.6); }
+.service-card:nth-child(1) { border-color: rgba(168, 196, 184, 0.5); background: var(--card-gradient-mint); }
+.service-card:nth-child(2) { border-color: rgba(141, 155, 132, 0.45); background: var(--card-gradient-beige); }
+.service-card:nth-child(3) { border-color: rgba(220, 203, 195, 0.55); background: var(--card-gradient-warm); }
+.service-card:nth-child(4) { border-color: rgba(232, 223, 212, 0.6); background: var(--card-gradient-soft); }
 
 .service-card::before {
   content: '';
@@ -1444,9 +1431,7 @@ ul {
 }
 
 .rituals {
-  background-image: var(--bg-light-overlay), var(--bg-light-image);
-  background-size: cover;
-  background-position: center;
+  background: var(--card-gradient-warm);
   border: var(--border-mint);
   border-radius: var(--radius-xl);
   padding: clamp(32px, 5vw, 44px);
@@ -1484,9 +1469,7 @@ ul {
 
 .price-list--inline .price-item {
   padding: 20px;
-  background-image: var(--bg-light-overlay-soft), var(--bg-light-image);
-  background-size: cover;
-  background-position: center;
+  background: var(--card-gradient-soft);
   border-radius: var(--radius);
   border: var(--border-mint);
   border-bottom: var(--border-mint);
@@ -1518,9 +1501,7 @@ ul {
   gap: 20px;
   text-align: left;
   padding: clamp(26px, 4vw, 36px);
-  background-image: var(--bg-light-overlay), var(--bg-light-image);
-  background-size: cover;
-  background-position: center;
+  background: var(--card-gradient);
   border: var(--border-mint);
   border-radius: var(--radius-xl);
   font-size: 17px;
@@ -1543,15 +1524,13 @@ ul {
 }
 
 .benefit-card--featured {
-  background: linear-gradient(155deg, rgba(255, 255, 255, 0.95) 0%, rgba(232, 242, 236, 0.75) 100%);
+  background: var(--card-gradient-mint);
   border-color: rgba(141, 155, 132, 0.45);
   box-shadow: var(--shadow-glow-mint), var(--shadow);
 }
 
 .section--alt .benefits-list li {
-  background-image: var(--bg-light-overlay), var(--bg-light-image);
-  background-size: cover;
-  background-position: center;
+  background: var(--card-gradient-beige);
 }
 
 .benefits-list li:hover,
@@ -1601,9 +1580,7 @@ ul {
 }
 
 .faq-item {
-  background-image: var(--bg-light-overlay), var(--bg-light-image);
-  background-size: cover;
-  background-position: center;
+  background: var(--card-gradient-soft);
   border: var(--border-soft);
   border-radius: var(--radius-lg);
   padding: clamp(24px, 4vw, 36px);
@@ -1676,10 +1653,7 @@ ul {
 
 .review-card {
   flex: 0 0 100%;
-  background: linear-gradient(155deg, rgba(255, 255, 255, 0.95) 0%, rgba(238, 245, 241, 0.8) 100%);
-  background-image: var(--bg-light-overlay), var(--bg-light-image);
-  background-size: cover;
-  background-position: center;
+  background: var(--card-gradient-warm);
   border: var(--border-mint);
   border-radius: var(--radius-xl);
   padding: clamp(36px, 5vw, 52px);
@@ -1824,14 +1798,16 @@ ul {
 .format-card {
   text-align: center;
   padding: 40px 28px;
-  background-image: var(--bg-light-overlay), var(--bg-light-image);
-  background-size: cover;
-  background-position: center;
+  background: var(--card-gradient);
   border: var(--border-mint);
   border-radius: var(--radius-xl);
   transition: var(--transition);
   box-shadow: var(--shadow-sm);
 }
+
+.format-card:nth-child(1) { background: var(--card-gradient-mint); }
+.format-card:nth-child(2) { background: var(--card-gradient-beige); }
+.format-card:nth-child(3) { background: var(--card-gradient-warm); }
 
 .format-card:hover {
   border-color: var(--color-accent);
@@ -2041,8 +2017,8 @@ ul {
 }
 
 .footer__logo {
-  width: 80px;
-  height: 80px;
+  width: clamp(96px, 12vw, 112px);
+  height: clamp(96px, 12vw, 112px);
   object-fit: contain;
   filter: brightness(0) invert(1);
   opacity: 0.9;
@@ -2299,7 +2275,7 @@ ul {
   .nav {
     display: none;
     position: fixed;
-    top: 76px;
+    top: 88px;
     left: 0;
     right: 0;
     background: rgba(250, 246, 240, 0.98);
