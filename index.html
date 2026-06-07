@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="description" content="Студия красоты «Май» в Перми — бережный эстетический уход. Брови, ресницы, косметология, депиляция. Первая консультация бесплатно.">
   <meta property="og:title" content="Студия красоты «Май» — Пермь">
   <meta property="og:description" content="Брови, ресницы, косметология, депиляция. Галина Болотова. Первая консультация бесплатно.">
@@ -649,11 +649,11 @@
         <div class="reviews-slider__progress" aria-hidden="true"><span class="reviews-slider__progress-bar" id="reviewsProgress"></span></div>
         <div class="reviews-slider__controls">
           <button type="button" class="reviews-slider__btn" id="reviewsPrev" aria-label="Предыдущий отзыв">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
           </button>
           <div class="reviews-slider__dots" id="reviewsDots"></div>
           <button type="button" class="reviews-slider__btn" id="reviewsNext" aria-label="Следующий отзыв">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
           </button>
         </div>
       </div>
@@ -710,21 +710,19 @@
           </span>
         </div>
         <form class="contact-form" id="contactForm">
-          <div class="contact-form__grid">
-            <input type="text" name="name" placeholder="Ваше имя" required autocomplete="name">
-            <input type="tel" name="phone" placeholder="Телефон" required autocomplete="tel">
+          <div class="contact-form__fields">
+            <input type="text" name="name" placeholder="Имя" autocomplete="given-name">
+            <input type="text" name="surname" placeholder="Фамилия" autocomplete="family-name">
+            <input type="tel" name="phone" placeholder="Номер телефона" autocomplete="tel">
+            <input type="email" name="email" placeholder="Адрес электронной почты" autocomplete="email">
           </div>
+          <a href="https://mst.link/bolotova_galina" target="_blank" rel="noopener" class="btn btn--ghost-light btn--wide booking-form__online">Записаться онлайн</a>
+          <p class="booking-form__phone">или позвоните: <a href="tel:+79024737800" id="bookingPhone" class="booking-form__phone-link" data-phone="+7 902 473-78-00" title="Нажмите, чтобы скопировать номер">+7 902 473-78-00</a></p>
           <label class="booking-form__agree">
-            <input type="checkbox" name="pd_consent" required>
+            <input type="checkbox" name="pd_consent">
             <span>Даю согласие на обработку персональных данных</span>
           </label>
-          <button type="submit" class="btn btn--primary btn--wide">Отправить заявку</button>
         </form>
-        <div class="booking-form__alt">
-          <a href="https://mst.link/bolotova_galina" target="_blank" rel="noopener" class="btn btn--ghost-light btn--wide">Записаться онлайн</a>
-          <p class="booking-form__consent">Нажимая кнопку, вы переходите на страницу онлайн-записи</p>
-          <p class="booking-form__phone">или позвоните: <a href="tel:+79024737800">+7 902 473-78-00</a></p>
-        </div>
       </div>
       </div>
     </div>
@@ -763,21 +761,50 @@
   </footer>
 
   <script>
-    // Мобильное меню
     const burger = document.querySelector('.burger');
     const nav = document.querySelector('.nav');
-    burger.addEventListener('click', () => {
-      const open = nav.classList.toggle('nav--open');
-      burger.setAttribute('aria-expanded', open);
-    });
-    nav.querySelectorAll('.nav__link').forEach(link => {
-      link.addEventListener('click', () => {
-        nav.classList.remove('nav--open');
-        burger.setAttribute('aria-expanded', 'false');
-      });
+    const header = document.querySelector('.header');
+    let menuScrollY = 0;
+
+    function setMenuOpen(open) {
+      if (!nav || !burger) return;
+
+      nav.classList.toggle('nav--open', open);
+      burger.setAttribute('aria-expanded', String(open));
+
+      if (open) {
+        menuScrollY = window.scrollY;
+        document.body.classList.add('menu-open');
+        document.body.style.top = `-${menuScrollY}px`;
+      } else {
+        document.body.classList.remove('menu-open');
+        document.body.style.top = '';
+        window.scrollTo(0, menuScrollY);
+      }
+    }
+
+    burger?.addEventListener('click', () => {
+      setMenuOpen(!nav.classList.contains('nav--open'));
     });
 
-    // Плавная прокрутка
+    nav?.querySelectorAll('.nav__link').forEach(link => {
+      link.addEventListener('click', () => setMenuOpen(false));
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && nav?.classList.contains('nav--open')) {
+        setMenuOpen(false);
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 768 && nav?.classList.contains('nav--open')) {
+        setMenuOpen(false);
+      }
+    }, { passive: true });
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', e => {
         const href = anchor.getAttribute('href');
@@ -785,20 +812,25 @@
         const target = document.querySelector(href);
         if (target) {
           e.preventDefault();
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          setMenuOpen(false);
+          target.scrollIntoView({
+            behavior: prefersReducedMotion.matches ? 'auto' : 'smooth',
+            block: 'start'
+          });
         }
       });
     });
 
-    // Тень шапки при прокрутке
-    const header = document.querySelector('.header');
     window.addEventListener('scroll', () => {
-      header.classList.toggle('header--scrolled', window.scrollY > 20);
+      header?.classList.toggle('header--scrolled', window.scrollY > 20);
     }, { passive: true });
 
-    // Анимация появления + каскад карточек
     const staggerSelectors = '.checklist li, .free-card, .approach-item, .service-card, .benefit-card, .faq-item, .format-card, .review-card, .master__credentials img, .price-item, .rituals';
     const revealEls = document.querySelectorAll('.reveal');
+    const revealRootMargin = window.matchMedia('(max-width: 768px)').matches
+      ? '0px 0px -4% 0px'
+      : '0px 0px -32px 0px';
+
     const revealObs = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -806,7 +838,8 @@
           revealObs.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.1, rootMargin: '0px 0px -32px 0px' });
+    }, { threshold: 0.08, rootMargin: revealRootMargin });
+
     revealEls.forEach(el => {
       el.querySelectorAll(staggerSelectors).forEach((item, i) => {
         item.classList.add('reveal-item');
@@ -815,7 +848,6 @@
       revealObs.observe(el);
     });
 
-    // Слайдер отзывов
     const track = document.getElementById('reviewsTrack');
     const cards = track ? [...track.querySelectorAll('.review-card')] : [];
     const dotsWrap = document.getElementById('reviewsDots');
@@ -833,6 +865,9 @@
 
       const dots = [...dotsWrap.querySelectorAll('.reviews-slider__dot')];
       const progressBar = document.getElementById('reviewsProgress');
+      const slider = track.closest('.reviews-slider');
+      const isMobileSlider = window.matchMedia('(max-width: 768px)').matches;
+      let autoplayId = null;
 
       function goToReview(i) {
         reviewIndex = (i + cards.length) % cards.length;
@@ -843,31 +878,78 @@
         }
       }
 
+      function stopAutoplay() {
+        if (autoplayId !== null) {
+          clearInterval(autoplayId);
+          autoplayId = null;
+        }
+      }
+
+      function startAutoplay() {
+        if (prefersReducedMotion.matches || isMobileSlider) return;
+        stopAutoplay();
+        autoplayId = setInterval(() => goToReview(reviewIndex + 1), 6000);
+      }
+
       goToReview(0);
+      startAutoplay();
 
-      document.getElementById('reviewsPrev')?.addEventListener('click', () => goToReview(reviewIndex - 1));
-      document.getElementById('reviewsNext')?.addEventListener('click', () => goToReview(reviewIndex + 1));
+      document.getElementById('reviewsPrev')?.addEventListener('click', () => {
+        stopAutoplay();
+        goToReview(reviewIndex - 1);
+      });
+      document.getElementById('reviewsNext')?.addEventListener('click', () => {
+        stopAutoplay();
+        goToReview(reviewIndex + 1);
+      });
 
-      let autoplay = setInterval(() => goToReview(reviewIndex + 1), 6000);
-      const slider = track.closest('.reviews-slider');
-      slider?.addEventListener('mouseenter', () => clearInterval(autoplay));
+      slider?.addEventListener('mouseenter', stopAutoplay);
+      slider?.addEventListener('mouseleave', startAutoplay);
 
       let touchStartX = 0;
-      slider?.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
-      slider?.addEventListener('touchend', e => {
-        const diff = touchStartX - e.changedTouches[0].screenX;
-        if (Math.abs(diff) > 50) goToReview(reviewIndex + (diff > 0 ? 1 : -1));
+      let touchStartY = 0;
+
+      slider?.addEventListener('touchstart', e => {
+        if (!e.touches.length) return;
+        touchStartX = e.touches[0].screenX;
+        touchStartY = e.touches[0].screenY;
+        stopAutoplay();
       }, { passive: true });
+
+      slider?.addEventListener('touchend', e => {
+        if (!e.changedTouches.length) return;
+        const diffX = touchStartX - e.changedTouches[0].screenX;
+        const diffY = touchStartY - e.changedTouches[0].screenY;
+        if (Math.abs(diffX) > 50 && Math.abs(diffX) > Math.abs(diffY)) {
+          goToReview(reviewIndex + (diffX > 0 ? 1 : -1));
+        }
+      }, { passive: true });
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) stopAutoplay();
+        else startAutoplay();
+      });
     }
 
-    // Форма записи
-    document.getElementById('contactForm')?.addEventListener('submit', (e) => {
+    document.getElementById('contactForm')?.addEventListener('submit', (e) => e.preventDefault());
+
+    // Телефон в форме: звонок на мобильных, копирование на компьютере
+    const bookingPhone = document.getElementById('bookingPhone');
+    const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
+
+    bookingPhone?.addEventListener('click', async (e) => {
+      if (!finePointer.matches) return;
+
       e.preventDefault();
-      const fd = new FormData(e.target);
-      const name = fd.get('name');
-      const phone = fd.get('phone');
-      const text = encodeURIComponent(`Здравствуйте! Меня зовут ${name}. Хочу записаться на консультацию. Мой телефон: ${phone}`);
-      window.open(`https://wa.me/79024737800?text=${text}`, '_blank');
+      const phoneNumber = bookingPhone.dataset.phone || '+7 902 473-78-00';
+
+      try {
+        await navigator.clipboard.writeText(phoneNumber);
+        bookingPhone.classList.add('is-copied');
+        setTimeout(() => bookingPhone.classList.remove('is-copied'), 2000);
+      } catch {
+        window.prompt('Скопируйте номер:', phoneNumber);
+      }
     });
   </script>
 
