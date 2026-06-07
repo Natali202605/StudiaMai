@@ -60,6 +60,7 @@ function normalizeDb(raw) {
   if (!db.user) db.user = null;
   if (!Array.isArray(db.leads)) db.leads = [];
   if (!Array.isArray(db.bookings)) db.bookings = [];
+  if (!Array.isArray(db.userReviews)) db.userReviews = [];
   if (!db.content) db.content = {};
   if (!db.images) db.images = { ...DEFAULT_IMAGES };
   if (!db.procedures) db.procedures = [...DEFAULT_PROCEDURES];
@@ -314,6 +315,39 @@ app.patch('/api/bookings/:id', authMiddleware, (req, res) => {
   if (req.body.status) booking.status = req.body.status;
   saveDb(db);
   res.json({ booking });
+});
+
+function formatReviewDate(date = new Date()) {
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  return `${day}.${month}.${date.getFullYear()}`;
+}
+
+app.get('/api/reviews', (_req, res) => {
+  res.json({ reviews: db.userReviews || [] });
+});
+
+app.post('/api/reviews', (req, res) => {
+  const { author, text } = req.body || {};
+  const cleanAuthor = String(author || '').trim();
+  const cleanText = String(text || '').trim();
+  if (!cleanAuthor || !cleanText) {
+    return res.status(400).json({ error: 'Укажите имя и текст отзыва' });
+  }
+  if (cleanText.length > 2000) {
+    return res.status(400).json({ error: 'Отзыв слишком длинный' });
+  }
+  const review = {
+    id: `r${Date.now()}`,
+    author: cleanAuthor,
+    text: cleanText,
+    date: formatReviewDate(),
+    createdAt: new Date().toISOString()
+  };
+  if (!db.userReviews) db.userReviews = [];
+  db.userReviews.unshift(review);
+  saveDb(db);
+  res.json({ ok: true, review });
 });
 
 app.get('/api/stats', authMiddleware, (_req, res) => {
