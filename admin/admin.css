@@ -73,6 +73,33 @@ body {
   background: #fff;
 }
 
+.login__hint {
+  margin-top: 16px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--adm-muted);
+  text-align: center;
+}
+
+.login__hint code {
+  font-size: 11px;
+  background: rgba(16, 185, 129, 0.1);
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+.login__back {
+  display: block;
+  margin-top: 14px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--adm-accent-dark);
+}
+
+.login__back:hover {
+  color: var(--adm-accent);
+}
+
 .login__error, .admin__msg {
   font-size: 13px;
   color: #c0392b;

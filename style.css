@@ -29,23 +29,27 @@
   --radius: 16px;
   --radius-lg: 24px;
   --radius-xl: 32px;
-  --shadow-sm: 0 2px 14px rgba(141, 155, 132, 0.06);
-  --shadow: 0 8px 32px rgba(141, 155, 132, 0.08);
-  --shadow-hover: 0 14px 44px rgba(141, 155, 132, 0.12);
-  --shadow-glow-mint: 0 0 14px rgba(16, 185, 129, 0.28), 0 8px 32px rgba(16, 185, 129, 0.14);
-  --shadow-glow-beige: 0 8px 32px rgba(220, 203, 195, 0.18);
-  --shadow-glow-sage: 0 0 16px rgba(52, 211, 153, 0.32), 0 8px 36px rgba(5, 150, 105, 0.18);
-  --neon-emerald-sm: 0 0 10px rgba(16, 185, 129, 0.3), 0 4px 18px rgba(5, 150, 105, 0.1);
-  --neon-emerald: 0 0 16px rgba(52, 211, 153, 0.42), 0 0 32px rgba(16, 185, 129, 0.18), 0 6px 24px rgba(5, 150, 105, 0.14);
-  --neon-emerald-strong: 0 0 22px rgba(52, 211, 153, 0.55), 0 0 44px rgba(16, 185, 129, 0.28), 0 10px 32px rgba(5, 150, 105, 0.2);
   --shadow-inner: inset 0 1px 0 rgba(255, 255, 255, 0.88);
-  --shadow-float-card: 0 2px 4px rgba(5, 150, 105, 0.05), 0 10px 26px rgba(141, 155, 132, 0.11), 0 22px 48px rgba(141, 155, 132, 0.09);
-  --shadow-float-card-hover: 0 4px 8px rgba(5, 150, 105, 0.08), 0 16px 36px rgba(141, 155, 132, 0.15), 0 30px 60px rgba(141, 155, 132, 0.11);
-  --shadow-float-btn: 0 2px 4px rgba(5, 150, 105, 0.14), 0 6px 16px rgba(5, 150, 105, 0.16), 0 14px 28px rgba(5, 150, 105, 0.12);
-  --shadow-float-btn-hover: 0 4px 8px rgba(5, 150, 105, 0.18), 0 10px 24px rgba(5, 150, 105, 0.22), 0 20px 40px rgba(5, 150, 105, 0.16);
-  --shadow-float-card-dark: 0 4px 12px rgba(0, 0, 0, 0.14), 0 14px 32px rgba(0, 0, 0, 0.18), 0 28px 56px rgba(0, 0, 0, 0.12);
-  --shadow-float-card-accent: 0 2px 6px rgba(0, 0, 0, 0.1), 0 10px 24px rgba(0, 0, 0, 0.16), 0 22px 48px rgba(4, 120, 87, 0.28), 0 36px 72px rgba(0, 0, 0, 0.14);
-  --shadow-float-card-accent-hover: 0 4px 10px rgba(0, 0, 0, 0.12), 0 16px 36px rgba(0, 0, 0, 0.2), 0 30px 60px rgba(4, 120, 87, 0.34), 0 44px 88px rgba(0, 0, 0, 0.16);
+  --shadow-float: 0 4px 8px rgba(5, 150, 105, 0.15), 0 14px 34px rgba(141, 155, 132, 0.26), 0 28px 58px rgba(141, 155, 132, 0.20);
+  --shadow-float-hover: 0 6px 14px rgba(5, 150, 105, 0.20), 0 20px 46px rgba(141, 155, 132, 0.32), 0 38px 76px rgba(141, 155, 132, 0.24);
+  --shadow-float-glow: 0 0 14px rgba(52, 211, 153, 0.50), 0 0 28px rgba(16, 185, 129, 0.26), 0 8px 26px rgba(5, 150, 105, 0.18);
+  --shadow-float-glow-hover: 0 0 20px rgba(52, 211, 153, 0.62), 0 0 40px rgba(16, 185, 129, 0.34), 0 12px 34px rgba(5, 150, 105, 0.24);
+  --shadow-float-card: var(--shadow-float);
+  --shadow-float-card-hover: var(--shadow-float-hover);
+  --shadow-float-btn: var(--shadow-float);
+  --shadow-float-btn-hover: var(--shadow-float-hover);
+  --shadow-sm: 0 2px 14px rgba(141, 155, 132, 0.14), 0 6px 20px rgba(141, 155, 132, 0.10);
+  --shadow: var(--shadow-float);
+  --shadow-hover: var(--shadow-float-hover);
+  --shadow-glow-mint: var(--shadow-float-glow);
+  --shadow-glow-beige: var(--shadow-float);
+  --shadow-glow-sage: var(--shadow-float-glow);
+  --neon-emerald-sm: var(--shadow-float-glow);
+  --neon-emerald: var(--shadow-float-glow);
+  --neon-emerald-strong: var(--shadow-float-glow-hover);
+  --shadow-float-card-dark: 0 4px 12px rgba(0, 0, 0, 0.20), 0 14px 36px rgba(0, 0, 0, 0.26), 0 28px 60px rgba(0, 0, 0, 0.18), 0 0 20px rgba(52, 211, 153, 0.22);
+  --shadow-float-card-accent: 0 4px 10px rgba(0, 0, 0, 0.16), 0 14px 34px rgba(0, 0, 0, 0.24), 0 28px 58px rgba(4, 120, 87, 0.42), 0 40px 80px rgba(0, 0, 0, 0.20), 0 0 16px rgba(52, 211, 153, 0.18);
+  --shadow-float-card-accent-hover: 0 6px 14px rgba(0, 0, 0, 0.18), 0 20px 46px rgba(0, 0, 0, 0.28), 0 38px 76px rgba(4, 120, 87, 0.48), 0 50px 96px rgba(0, 0, 0, 0.22), 0 0 22px rgba(52, 211, 153, 0.26);
   --border-soft: 1px solid rgba(52, 211, 153, 0.22);
   --border-mint: 1px solid rgba(16, 185, 129, 0.32);
   --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
@@ -265,14 +269,14 @@ ul {
   color: var(--color-white);
   border: 1px solid rgba(255, 255, 255, 0.35);
   backdrop-filter: blur(8px);
-  box-shadow: var(--shadow-float-btn);
+  box-shadow: var(--shadow-float-btn), var(--neon-emerald-sm), var(--shadow-inner);
 }
 
 .btn--ghost-light:hover {
   background: rgba(255, 255, 255, 0.28);
   color: var(--color-white);
   transform: translateY(-3px);
-  box-shadow: var(--shadow-float-btn-hover), 0 8px 28px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-float-btn-hover), var(--neon-emerald-strong), var(--shadow-inner);
 }
 
 .btn__icon {
@@ -308,7 +312,7 @@ ul {
 .btn--small {
   padding: 12px 26px;
   font-size: 11px;
-  box-shadow: var(--shadow-float-btn), var(--shadow-glow-sage);
+  box-shadow: var(--shadow-float-btn), var(--neon-emerald-sm), var(--shadow-inner);
 }
 
 .btn--wide {
@@ -316,7 +320,7 @@ ul {
 }
 
 .header__cta.btn--primary:hover {
-  box-shadow: 0 8px 28px rgba(110, 125, 102, 0.42);
+  box-shadow: var(--shadow-float-btn-hover), var(--neon-emerald-strong), var(--shadow-inner);
 }
 
 /* ============================================
@@ -346,6 +350,19 @@ ul {
   align-items: center;
   justify-content: space-between;
   height: 88px;
+  gap: 16px;
+}
+
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.header__admin {
+  padding: 12px 20px;
+  font-size: 11px;
 }
 
 .logo {
@@ -649,7 +666,7 @@ ul {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.56) 0%, rgba(167, 243, 208, 0.42) 100%);
   border-radius: var(--radius-lg);
   border: var(--border-mint);
-  box-shadow: var(--neon-emerald-sm), var(--shadow-inner);
+  box-shadow: var(--shadow-float-card), var(--neon-emerald-sm), var(--shadow-inner);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
 }
@@ -702,7 +719,7 @@ ul {
   object-position: center top;
   border-radius: var(--radius-xl);
   border: 2px solid rgba(168, 196, 184, 0.45);
-  box-shadow: var(--shadow-glow-mint), var(--shadow);
+  box-shadow: var(--shadow-float-card), var(--neon-emerald-sm), var(--shadow-inner);
 }
 
 /* ============================================
@@ -1950,7 +1967,7 @@ ul {
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   transition: transform var(--transition), box-shadow var(--transition), background var(--transition), border-color var(--transition), color var(--transition);
-  box-shadow: 0 2px 8px rgba(141, 155, 132, 0.12), 0 6px 18px rgba(5, 150, 105, 0.1);
+  box-shadow: var(--shadow-float-btn), var(--neon-emerald-sm), var(--shadow-inner);
 }
 
 .reviews-slider__btn svg {
@@ -1964,7 +1981,7 @@ ul {
   border-color: rgba(16, 185, 129, 0.5);
   color: var(--color-emerald-deep);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-float-btn), var(--neon-emerald-sm);
+  box-shadow: var(--shadow-float-btn-hover), var(--neon-emerald-strong), var(--shadow-inner);
 }
 
 .reviews-slider__btn:active {
@@ -2325,13 +2342,13 @@ ul {
   background: linear-gradient(135deg, #FFFFFF 0%, var(--color-mint-light) 100%);
   color: var(--color-accent-dark);
   border: 1px solid rgba(255, 255, 255, 0.55);
-  box-shadow: var(--shadow-float-btn), 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  box-shadow: var(--shadow-float-btn), var(--neon-emerald-sm), var(--shadow-inner);
 }
 
 .cta-block .btn--primary:hover {
   background: linear-gradient(135deg, #FFFFFF 0%, #E8F2EC 100%);
   color: var(--color-accent-dark);
-  box-shadow: var(--shadow-float-btn-hover), 0 12px 40px rgba(0, 0, 0, 0.14);
+  box-shadow: var(--shadow-float-btn-hover), var(--neon-emerald-strong), var(--shadow-inner);
 }
 
 /* ============================================
@@ -2463,19 +2480,22 @@ ul {
   color: rgba(255, 255, 255, 0.88);
 }
 
-.footer__cta {
+.footer__cta.btn--light {
   width: 100%;
   margin-bottom: 20px;
   justify-content: center;
   color: #10B981;
+  -webkit-text-fill-color: #10B981;
   font-weight: 700;
-  box-shadow: var(--shadow-float-btn), var(--neon-emerald-strong), 0 14px 36px rgba(0, 0, 0, 0.2);
+  text-shadow: none;
+  box-shadow: var(--shadow-float-btn), var(--neon-emerald-sm), var(--shadow-inner);
 }
 
-.footer__cta:hover {
+.footer__cta.btn--light:hover {
   color: #34D399;
+  -webkit-text-fill-color: #34D399;
   transform: translateY(-4px);
-  box-shadow: var(--shadow-float-btn-hover), var(--neon-emerald-strong), 0 20px 48px rgba(0, 0, 0, 0.24);
+  box-shadow: var(--shadow-float-btn-hover), var(--neon-emerald-strong), var(--shadow-inner);
 }
 
 .footer__contacts-title {
@@ -2788,7 +2808,7 @@ ul {
     display: flex;
   }
 
-  .header__cta {
+  .header__actions {
     display: none;
   }
 
@@ -3170,7 +3190,7 @@ ul {
 
 .master__portrait {
   border-color: rgba(16, 185, 129, 0.45);
-  box-shadow: var(--neon-emerald);
+  box-shadow: var(--shadow-float-card), var(--neon-emerald-sm), var(--shadow-inner);
 }
 
 .section-header {
@@ -3231,6 +3251,7 @@ ul {
 .audience-list,
 .master__info,
 .approach-principles,
+.approach-item,
 .service-card,
 .benefits-list li,
 .benefit-card,
@@ -3241,14 +3262,13 @@ ul {
 .price-list--inline .price-item,
 .hero__top,
 .hero__body,
-.hero__stats {
-  box-shadow: var(--shadow-float-card), var(--neon-emerald-sm), var(--shadow-inner);
-}
-
-.master__info,
-.audience-list,
-.approach-principles,
-.rituals {
+.hero__stats,
+.hero__body-photo,
+.hero__brand-logo,
+.master__portrait,
+.master__credentials img,
+.btn,
+.reviews-slider__btn {
   box-shadow: var(--shadow-float-card), var(--neon-emerald-sm), var(--shadow-inner);
 }
 
@@ -3258,19 +3278,11 @@ ul {
   box-shadow: var(--shadow-float-card-accent), inset 0 1px 0 rgba(255, 255, 255, 0.22);
 }
 
-.master__credentials img {
-  box-shadow: var(--shadow-float-card), var(--shadow-glow-beige);
-}
-
-.approach-item {
-  box-shadow: var(--shadow-float-card), var(--shadow-sm);
-}
-
 .benefit-card__num {
   color: var(--color-emerald-deep);
   background: linear-gradient(145deg, #D1FAE5, #A7F3D0);
   border-color: rgba(16, 185, 129, 0.35);
-  box-shadow: var(--shadow-float-btn), var(--neon-emerald-sm);
+  box-shadow: var(--shadow-float-btn), var(--neon-emerald-sm), var(--shadow-inner);
 }
 
 .benefit-card__text,
@@ -3302,7 +3314,7 @@ ul {
 }
 
 .reviews-slider__btn:hover {
-  box-shadow: var(--shadow-float-btn), var(--neon-emerald-sm);
+  box-shadow: var(--shadow-float-btn-hover), var(--neon-emerald-strong), var(--shadow-inner);
   border-color: rgba(16, 185, 129, 0.5);
 }
 

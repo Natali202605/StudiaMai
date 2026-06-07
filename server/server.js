@@ -36,6 +36,7 @@ const DEFAULT_PROCEDURES = [
 const DEFAULT_IMAGES = {
   logo: 'images/logo.png',
   hero_logo: 'images/logo.png',
+  hero_studio: 'images/hero-studio.png',
   service_brows: 'images/browi-resnitsy.png',
   service_cosmetology: 'images/kosmetologiya.png',
   service_massage: 'images/massazh.png',

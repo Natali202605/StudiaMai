@@ -1,10 +1,17 @@
 (function () {
-  const API = window.STUDIA_MAI_API || (location.port === '3000' ? '' : 'http://localhost:3000');
+  const API = (() => {
+    if (typeof window.STUDIA_MAI_API === 'string') return window.STUDIA_MAI_API;
+    if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+      return location.port === '3000' ? '' : `http://${location.hostname}:3000`;
+    }
+    return '';
+  })();
   const TOKEN_KEY = 'studia_mai_admin_token';
 
   const PHOTO_LABELS = {
     logo: 'Логотип (шапка и подвал)',
     hero_logo: 'Логотип в hero',
+    hero_studio: 'Фото студии в hero',
     service_brows: 'Услуга: брови',
     service_cosmetology: 'Услуга: косметология',
     service_massage: 'Услуга: массаж',
@@ -33,10 +40,20 @@
       headers['Content-Type'] = 'application/json';
       options.body = JSON.stringify(options.body);
     }
-    const base = API || '';
-    const res = await fetch(`${base}${path}`, { ...options, headers });
+    const base = API;
+    let res;
+    try {
+      res = await fetch(`${base}${path}`, { ...options, headers });
+    } catch {
+      throw new Error('Не удалось подключиться к серверу. Запустите: cd server && npm install && npm start');
+    }
     const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(data.error || 'Ошибка запроса');
+    if (!res.ok) {
+      if (res.status === 404 && !base) {
+        throw new Error('Админ-панель работает при запущенном сервере (npm start в папке server).');
+      }
+      throw new Error(data.error || 'Ошибка запроса');
+    }
     return data;
   }
 
