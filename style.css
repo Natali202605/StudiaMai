@@ -3,9 +3,9 @@
    ============================================ */
 
 :root {
-  --color-bg: #F8F5F0;
-  --color-bg-warm: #FAF6F0;
-  --color-bg-mint: #EEF5F1;
+  --color-bg: #FFFBF7;
+  --color-bg-warm: #FFF8F2;
+  --color-bg-mint: #E8FBF3;
   --color-accent: #10B981;
   --color-accent-dark: #059669;
   --color-mint: #34D399;
@@ -38,7 +38,6 @@
   --neon-emerald-sm: 0 0 10px rgba(16, 185, 129, 0.3), 0 4px 18px rgba(5, 150, 105, 0.1);
   --neon-emerald: 0 0 16px rgba(52, 211, 153, 0.42), 0 0 32px rgba(16, 185, 129, 0.18), 0 6px 24px rgba(5, 150, 105, 0.14);
   --neon-emerald-strong: 0 0 22px rgba(52, 211, 153, 0.55), 0 0 44px rgba(16, 185, 129, 0.28), 0 10px 32px rgba(5, 150, 105, 0.2);
-  --neon-emerald-text: 0 0 14px rgba(16, 185, 129, 0.45), 0 0 28px rgba(52, 211, 153, 0.2);
   --shadow-inner: inset 0 1px 0 rgba(255, 255, 255, 0.88);
   --border-soft: 1px solid rgba(52, 211, 153, 0.22);
   --border-mint: 1px solid rgba(16, 185, 129, 0.32);
@@ -52,17 +51,17 @@
 
   --pattern-vector: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cg fill='none' stroke='%23A8C4B8' stroke-width='0.4' opacity='0.14'%3E%3Cpath d='M10 70c25-35 45-35 60 0s35 35 60 0'/%3E%3C/g%3E%3C/svg%3E");
   --bg-light-image: url('images/bg-light.png');
-  --bg-light-overlay: linear-gradient(150deg, rgba(255, 255, 255, 0.9) 0%, rgba(250, 246, 240, 0.86) 50%, rgba(238, 245, 241, 0.84) 100%);
-  --bg-light-overlay-soft: linear-gradient(165deg, rgba(255, 255, 255, 0.82) 0%, rgba(250, 246, 240, 0.76) 100%);
-  --bg-light-overlay-section: linear-gradient(180deg, rgba(255, 255, 255, 0.84) 0%, rgba(250, 246, 240, 0.78) 50%, rgba(238, 245, 241, 0.8) 100%);
+  --bg-light-overlay: linear-gradient(150deg, rgba(255, 255, 255, 0.78) 0%, rgba(255, 248, 240, 0.72) 50%, rgba(209, 250, 229, 0.68) 100%);
+  --bg-light-overlay-soft: linear-gradient(165deg, rgba(255, 255, 255, 0.75) 0%, rgba(255, 245, 235, 0.68) 100%);
+  --bg-light-overlay-section: linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 248, 242, 0.62) 50%, rgba(167, 243, 208, 0.55) 100%);
   --glass-blur: blur(12px);
 
-  --card-gradient: linear-gradient(152deg, #FFFCF8 0%, #F5EDE4 30%, #E8F2EC 65%, #EDE4DE 100%);
-  --card-gradient-soft: linear-gradient(148deg, #FAF6F0 0%, #F5EDE4 38%, #D4E8DE 78%, #EDE4DE 100%);
-  --card-gradient-mint: linear-gradient(145deg, #E8F2EC 0%, #D4E8DE 42%, #F5EDE4 100%);
-  --card-gradient-beige: linear-gradient(150deg, #F5EDE4 0%, #EDE4DE 48%, #E8F2EC 100%);
-  --card-gradient-warm: linear-gradient(155deg, #FFFDF9 0%, #F5EDE4 32%, #D4E8DE 68%, #DCCBC3 100%);
-  --card-gradient-hero: linear-gradient(158deg, #FFFCF8 0%, #F5EDE4 25%, #E8F2EC 60%, #EDE4DE 100%);
+  --card-gradient: linear-gradient(152deg, #FFFFFF 0%, #FFF0E0 28%, #A7F3D0 62%, #F5E0D0 100%);
+  --card-gradient-soft: linear-gradient(148deg, #FFFFFF 0%, #FFF5EB 34%, #6EE7B7 72%, #F0DCC8 100%);
+  --card-gradient-mint: linear-gradient(145deg, #D1FAE5 0%, #6EE7B7 40%, #FFF0E0 100%);
+  --card-gradient-beige: linear-gradient(150deg, #FFF0E0 0%, #F5DCC8 46%, #A7F3D0 100%);
+  --card-gradient-warm: linear-gradient(155deg, #FFFFFF 0%, #FFE8D6 30%, #6EE7B7 65%, #E8C4A8 100%);
+  --card-gradient-hero: linear-gradient(158deg, #FFFFFF 0%, #FFF0E0 22%, #A7F3D0 55%, #F5E0D0 100%);
 }
 
 /* Reset */
@@ -91,9 +90,9 @@ body {
   background-color: var(--color-bg);
   background-image:
     var(--pattern-vector),
-    radial-gradient(ellipse at 12% 8%, rgba(212, 232, 222, 0.4) 0%, transparent 48%),
-    radial-gradient(ellipse at 88% 92%, rgba(237, 228, 222, 0.45) 0%, transparent 48%),
-    linear-gradient(165deg, #FAF6F0 0%, #EEF5F1 42%, #F5EDE4 100%);
+    radial-gradient(ellipse at 12% 8%, rgba(167, 243, 208, 0.5) 0%, transparent 48%),
+    radial-gradient(ellipse at 88% 92%, rgba(255, 228, 210, 0.5) 0%, transparent 48%),
+    linear-gradient(165deg, #FFF8F2 0%, #D1FAE5 42%, #FFF0E0 100%);
   background-size: 140px 140px, 100% 100%, 100% 100%, 100% 100%;
   background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
@@ -563,7 +562,7 @@ ul {
   gap: clamp(24px, 4vw, 36px);
   margin-bottom: clamp(32px, 4vw, 44px);
   padding: clamp(24px, 4vw, 32px) clamp(28px, 4vw, 36px);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.72) 0%, rgba(232, 242, 236, 0.55) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(167, 243, 208, 0.72) 100%);
   border-radius: var(--radius-lg);
   border: var(--border-mint);
   box-shadow: var(--neon-emerald-sm), var(--shadow-inner);
@@ -646,15 +645,15 @@ ul {
 
 .section--accent {
   background:
-    radial-gradient(ellipse at 15% 0%, rgba(255, 255, 255, 0.12) 0%, transparent 50%),
-    linear-gradient(155deg, #059669 0%, #10B981 40%, #34D399 100%);
+    radial-gradient(ellipse at 15% 0%, rgba(255, 255, 255, 0.18) 0%, transparent 50%),
+    linear-gradient(155deg, #059669 0%, #10B981 38%, #34D399 72%, #6EE7B7 100%);
   color: var(--color-white);
 }
 
 .section--cta {
   background:
-    radial-gradient(ellipse at 100% 50%, rgba(167, 243, 208, 0.2) 0%, transparent 50%),
-    linear-gradient(160deg, #047857 0%, #059669 35%, #10B981 65%, #34D399 100%);
+    radial-gradient(ellipse at 100% 50%, rgba(167, 243, 208, 0.28) 0%, transparent 50%),
+    linear-gradient(160deg, #047857 0%, #059669 32%, #10B981 60%, #34D399 85%, #6EE7B7 100%);
   color: var(--color-white);
 }
 
@@ -720,22 +719,24 @@ ul {
 }
 
 .accent {
-  color: var(--color-emerald-bright);
+  color: #047857;
   font-weight: 600;
-  text-shadow: var(--neon-emerald-text);
+  text-shadow: none;
+  -webkit-text-fill-color: #047857;
 }
 
 .accent--brand {
-  color: var(--color-emerald-deep);
-  font-weight: 600;
-  text-shadow: var(--neon-emerald-text);
+  color: #065F46;
+  font-weight: 700;
+  text-shadow: none;
+  -webkit-text-fill-color: #065F46;
 }
 
 .accent--light {
-  color: #A7F3D0;
+  color: #ECFDF5;
   font-weight: 600;
-  -webkit-text-fill-color: #A7F3D0;
-  text-shadow: 0 0 16px rgba(167, 243, 208, 0.55), 0 0 32px rgba(52, 211, 153, 0.3);
+  -webkit-text-fill-color: #ECFDF5;
+  text-shadow: none;
 }
 
 .section--accent .accent,
@@ -1291,9 +1292,15 @@ ul {
   padding: 0 32px;
 }
 
-.service-details {
+.service-details,
+.service-card__prices {
   margin-top: 8px;
   padding: 0 32px 32px;
+}
+
+.service-card__prices .price-list {
+  padding-top: 8px;
+  border-top: 1px solid rgba(16, 185, 129, 0.15);
 }
 
 .service-details summary {
@@ -2410,12 +2417,14 @@ ul {
   }
 
   .service-card__desc,
-  .service-details {
+  .service-details,
+  .service-card__prices {
     padding-left: 24px;
     padding-right: 24px;
   }
 
-  .service-details {
+  .service-details,
+  .service-card__prices {
     padding-bottom: 24px;
   }
 

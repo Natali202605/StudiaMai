@@ -231,12 +231,12 @@
       <div class="section-header">
         <p class="section__eyebrow">Направления</p>
         <h2 class="section__title"><span class="accent">Услуги</span></h2>
-        <p class="section__lead">Выберите направление — подробности внутри каждой карточки</p>
+        <p class="section__lead">Выберите направление — нажмите «Подробнее» у услуги для полного описания</p>
       </div>
 
       <div class="services-grid">
 
-        <!-- Брови и ресницы -->
+        <!-- Брови / услуги броволога -->
         <div class="service-card">
           <div class="service-card__media">
             <img src="images/browi-resnitsy.png" alt="Рабочее место мастера — брови и ресницы" class="service-card__image">
@@ -244,10 +244,9 @@
           <div class="service-card__body">
           <div class="service-card__header">
             <span class="service-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3c-4 2-7 6-7 10a7 7 0 0 0 14 0c0-4-3-8-7-10z"/><circle cx="12" cy="13" r="2.5"/></svg></span>
-            <h3 class="service-card__title">Брови и <span class="accent">ресницы</span></h3>
+            <h3 class="service-card__title">Брови / <span class="accent">услуги броволога</span></h3>
           </div>
-          <details class="service-details">
-            <summary>Смотреть процедуры и цены</summary>
+          <div class="service-card__prices">
             <ul class="price-list">
               <li class="price-item">
                 <div class="price-item__row"><span class="price-item__name">SMART-коррекция бровей</span><span class="price-item__price">от 1 500 ₽</span></div>
@@ -255,7 +254,7 @@
                 <details class="price-item__details"><summary>Подробнее</summary><p>Включает в себя работу внутри полотна брови, смену направления роста волосков, прореживание, восстановление, отращивание перещипанных бровей. Коррекция: пинцет / воск.</p></details>
               </li>
               <li class="price-item">
-                <div class="price-item__row"><span class="price-item__name">Мужская SMART-коррекция</span><span class="price-item__price">от 1 500 ₽</span></div>
+                <div class="price-item__row"><span class="price-item__name">Мужская коррекция бровей</span><span class="price-item__price">от 1 500 ₽</span></div>
                 <span class="price-item__time">1 час</span>
                 <details class="price-item__details"><summary>Подробнее</summary><p>Коррекция формы бровей для мужчин с учётом естественной густоты и линии роста волосков.</p></details>
               </li>
@@ -265,17 +264,17 @@
                 <details class="price-item__details"><summary>Подробнее</summary><p>Бережная коррекция бровей для подростков с подбором естественной формы.</p></details>
               </li>
               <li class="price-item">
+                <div class="price-item__row"><span class="price-item__name">Окрашивание бровей краской</span><span class="price-item__price">от 500 ₽</span></div>
+                <span class="price-item__time">30 мин</span>
+              </li>
+              <li class="price-item">
+                <div class="price-item__row"><span class="price-item__name">Окрашивание ресниц краской</span><span class="price-item__price">от 500 ₽</span></div>
+                <span class="price-item__time">30 мин</span>
+              </li>
+              <li class="price-item">
                 <div class="price-item__row"><span class="price-item__name">Моделирование и восстановление бровей</span><span class="price-item__price">от 2 000 ₽</span></div>
                 <span class="price-item__time">1 час 30 мин</span>
                 <details class="price-item__details"><summary>Подробнее</summary><p>Моделирование формы и восстановление структуры бровей после длительного выщипывания.</p></details>
-              </li>
-              <li class="price-item">
-                <div class="price-item__row"><span class="price-item__name">Окрашивание бровей</span><span class="price-item__price">от 500 ₽</span></div>
-                <span class="price-item__time">30 мин</span>
-              </li>
-              <li class="price-item">
-                <div class="price-item__row"><span class="price-item__name">Окрашивание ресниц</span><span class="price-item__price">от 500 ₽</span></div>
-                <span class="price-item__time">30 мин</span>
               </li>
               <li class="price-item">
                 <div class="price-item__row"><span class="price-item__name">Ламинирование ресниц</span><span class="price-item__price">от 1 700 ₽</span></div>
@@ -287,7 +286,7 @@
                 <span class="price-item__time">30 мин</span>
               </li>
               <li class="price-item">
-                <div class="price-item__row"><span class="price-item__name">Консультация по восстановлению бровей</span><span class="price-item__price price-free">Бесплатно</span></div>
+                <div class="price-item__row"><span class="price-item__name">Консультация по восстановлению бровей</span><span class="price-item__price price-free">от 0 ₽</span></div>
                 <span class="price-item__time">30 мин</span>
                 <details class="price-item__details"><summary>Подробнее</summary><p>Оценка состояния бровей, обсуждение запроса и рекомендации по восстановлению.</p></details>
               </li>
@@ -297,16 +296,16 @@
                 <details class="price-item__details"><summary>Подробнее</summary><p>Поддерживающая коррекция между основными процедурами.</p></details>
               </li>
               <li class="price-item">
-                <div class="price-item__row"><span class="price-item__name">Комбо «Брови + Ресницы»</span><span class="price-item__price">от 3 200 ₽</span></div>
+                <div class="price-item__row"><span class="price-item__name">КОМБО «Брови + Ресницы»</span><span class="price-item__price">от 3 200 ₽</span></div>
                 <span class="price-item__time">2 часа 30 мин</span>
                 <details class="price-item__details"><summary>Подробнее</summary><p>Комплексная процедура для бровей и ресниц в одном визите.</p></details>
               </li>
             </ul>
-          </details>
+          </div>
           </div>
         </div>
 
-        <!-- Косметологический уход -->
+        <!-- Косметологические процедуры -->
         <div class="service-card">
           <div class="service-card__media">
             <img src="images/kosmetologiya.png" alt="Косметологический уход за лицом" class="service-card__image">
@@ -314,13 +313,12 @@
           <div class="service-card__body">
           <div class="service-card__header">
             <span class="service-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22V12M12 12C12 7 7 4 4 4c0 4 3 8 8 8M12 12c0-5 5-8 8-8 0 4-3 8-8 8"/></svg></span>
-            <h3 class="service-card__title"><span class="accent">Косметологический</span> уход</h3>
+            <h3 class="service-card__title"><span class="accent">Косметологические</span> процедуры</h3>
           </div>
-          <details class="service-details">
-            <summary>Смотреть процедуры и цены</summary>
+          <div class="service-card__prices">
             <ul class="price-list">
               <li class="price-item">
-                <div class="price-item__row"><span class="price-item__name">Консультация косметолога</span><span class="price-item__price price-free">Бесплатно</span></div>
+                <div class="price-item__row"><span class="price-item__name">Консультация косметолога</span><span class="price-item__price price-free">от 0 ₽</span></div>
                 <span class="price-item__time">30 мин</span>
                 <details class="price-item__details"><summary>Подробнее</summary><p>Оценка состояния кожи, обсуждение запроса и рекомендации по уходу.</p></details>
               </li>
@@ -330,7 +328,7 @@
                 <details class="price-item__details"><summary>Подробнее</summary><p>Бережное очищение пор с помощью ультразвука.</p></details>
               </li>
               <li class="price-item">
-                <div class="price-item__row"><span class="price-item__name">Комбинированная чистка лица</span><span class="price-item__price">от 2 000 ₽</span></div>
+                <div class="price-item__row"><span class="price-item__name">Комбинированная / механическая чистка лица</span><span class="price-item__price">от 2 000 ₽</span></div>
                 <span class="price-item__time">1 час 30 мин</span>
                 <details class="price-item__details"><summary>Подробнее</summary><p>Комбинированная / механическая чистка для глубокого очищения кожи.</p></details>
               </li>
@@ -345,19 +343,29 @@
                 <details class="price-item__details"><summary>Подробнее</summary><p>Интенсивное обновление кожи ретиноловым пилингом.</p></details>
               </li>
               <li class="price-item">
+                <div class="price-item__row"><span class="price-item__name">Фракционная мезотерапия лица</span><span class="price-item__price">от 2 500 ₽</span></div>
+                <span class="price-item__time">1 час 30 мин</span>
+                <details class="price-item__details"><summary>Подробнее</summary><p>Стимуляция обновления кожи фракционной мезотерапией.</p></details>
+              </li>
+              <li class="price-item">
+                <div class="price-item__row"><span class="price-item__name">Фракционная мезотерапия волосистой части головы</span><span class="price-item__price">от 2 000 ₽</span></div>
+                <span class="price-item__time">1 час 30 мин</span>
+                <details class="price-item__details"><summary>Подробнее</summary><p>Уход за кожей головы и стимуляция роста волос.</p></details>
+              </li>
+              <li class="price-item">
                 <div class="price-item__row"><span class="price-item__name">Уходовые процедуры для лица</span><span class="price-item__price">от 1 000 ₽</span></div>
                 <span class="price-item__time">1 час</span>
                 <details class="price-item__details"><summary>Подробнее</summary><p>Индивидуальный уход с учётом типа и состояния кожи.</p></details>
               </li>
               <li class="price-item">
-                <div class="price-item__row"><span class="price-item__name">Карбокситерапия кожи лица</span><span class="price-item__price">от 1 500 ₽</span></div>
-                <span class="price-item__time">1 час</span>
-                <details class="price-item__details"><summary>Подробнее</summary><p>Насыщение кожи кислородом для свежести и сияния.</p></details>
-              </li>
-              <li class="price-item">
                 <div class="price-item__row"><span class="price-item__name">Уходовая процедура 3D COLLAGENE</span><span class="price-item__price">от 2 000 ₽</span></div>
                 <span class="price-item__time">1 час</span>
                 <details class="price-item__details"><summary>Подробнее</summary><p>Укрепление и увлажнение кожи коллагеновым уходом.</p></details>
+              </li>
+              <li class="price-item">
+                <div class="price-item__row"><span class="price-item__name">Карбокситерапия кожи лица</span><span class="price-item__price">от 1 500 ₽</span></div>
+                <span class="price-item__time">1 час</span>
+                <details class="price-item__details"><summary>Подробнее</summary><p>Насыщение кожи кислородом для свежести и сияния.</p></details>
               </li>
               <li class="price-item">
                 <div class="price-item__row"><span class="price-item__name">Гипсовая маска для лица</span><span class="price-item__price">от 2 000 ₽</span></div>
@@ -368,18 +376,8 @@
                 <span class="price-item__time">1 час</span>
                 <details class="price-item__details"><summary>Подробнее</summary><p>Лифтинг-эффект и глубокое увлажнение с гипсово-альгинатной маской.</p></details>
               </li>
-              <li class="price-item">
-                <div class="price-item__row"><span class="price-item__name">Фракционная мезотерапия лица</span><span class="price-item__price">от 2 500 ₽</span></div>
-                <span class="price-item__time">1 час 30 мин</span>
-                <details class="price-item__details"><summary>Подробнее</summary><p>Стимуляция обновления кожи фракционной мезотерапией.</p></details>
-              </li>
-              <li class="price-item">
-                <div class="price-item__row"><span class="price-item__name">Фракционная мезотерапия волосистой части головы</span><span class="price-item__price">от 2 000 ₽</span></div>
-                <span class="price-item__time">1 час 30 мин</span>
-                <details class="price-item__details"><summary>Подробнее</summary><p>Уход за кожей головы и стимуляция роста волос.</p></details>
-              </li>
             </ul>
-          </details>
+          </div>
           </div>
         </div>
 
@@ -393,49 +391,47 @@
             <span class="service-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3z"/></svg></span>
             <h3 class="service-card__title">Массажи <span class="accent">лица</span></h3>
           </div>
-          <details class="service-details">
-            <summary>Смотреть процедуры и цены</summary>
+          <div class="service-card__prices">
             <ul class="price-list">
               <li class="price-item">
-                <div class="price-item__row"><span class="price-item__name">Классический массаж</span><span class="price-item__price">от 1 000 ₽</span></div>
+                <div class="price-item__row"><span class="price-item__name">Классический массаж лица</span><span class="price-item__price">от 1 000 ₽</span></div>
                 <span class="price-item__time">1 час</span>
                 <details class="price-item__details"><summary>Подробнее</summary><p>Классический массаж лица для расслабления и улучшения тонуса кожи.</p></details>
               </li>
               <li class="price-item">
-                <div class="price-item__row"><span class="price-item__name">Скульптурный массаж</span><span class="price-item__price">от 1 500 ₽</span></div>
+                <div class="price-item__row"><span class="price-item__name">Скульптурный массаж лица</span><span class="price-item__price">от 1 500 ₽</span></div>
                 <span class="price-item__time">1 час 30 мин</span>
                 <details class="price-item__details"><summary>Подробнее</summary><p>Моделирование овала лица скульптурными техниками.</p></details>
               </li>
               <li class="price-item">
-                <div class="price-item__row"><span class="price-item__name">Пластический массаж</span><span class="price-item__price">от 1 500 ₽</span></div>
+                <div class="price-item__row"><span class="price-item__name">Пластический массаж лица</span><span class="price-item__price">от 1 500 ₽</span></div>
                 <span class="price-item__time">1 час 30 мин</span>
                 <details class="price-item__details"><summary>Подробнее</summary><p>Интенсивный массаж для подтяжки и тонуса кожи.</p></details>
               </li>
               <li class="price-item">
-                <div class="price-item__row"><span class="price-item__name">Скульптурно-буккальный массаж</span><span class="price-item__price">от 1 800 ₽</span></div>
+                <div class="price-item__row"><span class="price-item__name">Скульптурно-буккальный массаж лица</span><span class="price-item__price">от 1 800 ₽</span></div>
                 <span class="price-item__time">2 часа</span>
                 <details class="price-item__details"><summary>Подробнее</summary><p>Комплексный скульптурно-буккальный массаж лица.</p></details>
               </li>
               <li class="price-item">
-                <div class="price-item__row"><span class="price-item__name">Миофасциальный лифтинг лица, шеи и декольте</span><span class="price-item__price">от 2 500 ₽</span></div>
+                <div class="price-item__row"><span class="price-item__name">Миофасциальный лифтинг-массаж лица, шеи, декольте</span><span class="price-item__price">от 2 500 ₽</span></div>
                 <span class="price-item__time">2 часа</span>
                 <details class="price-item__details"><summary>Подробнее</summary><p>Миофасциальный лифтинг-массаж лица, шеи и зоны декольте.</p></details>
               </li>
             </ul>
-          </details>
+          </div>
           </div>
         </div>
 
-        <!-- Депиляция -->
+        <!-- Женская депиляция -->
         <div class="service-card service-card--no-image">
           <div class="service-card__body">
           <div class="service-card__header">
             <span class="service-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 21s-7-4.5-9-9a5.5 5.5 0 0 1 9-4 5.5 5.5 0 0 1 9 4c-2 4.5-9 9-9 9z"/></svg></span>
-            <h3 class="service-card__title"><span class="accent">Депиляция</span></h3>
+            <h3 class="service-card__title"><span class="accent">Женская</span> депиляция</h3>
           </div>
           <p class="service-card__desc">Комфортное удаление нежелательных волос с учётом чувствительности кожи.</p>
-          <details class="service-details">
-            <summary>Смотреть процедуры и цены</summary>
+          <div class="service-card__prices">
             <ul class="price-list">
               <li class="price-item">
                 <div class="price-item__row"><span class="price-item__name">Область над верхней губой</span><span class="price-item__price">от 300 ₽</span></div>
@@ -505,18 +501,18 @@
                 <details class="price-item__details"><summary>Подробнее</summary><p>Максимальный комплекс депиляции.</p></details>
               </li>
             </ul>
-          </details>
+          </div>
           </div>
         </div>
 
       </div>
 
-      <!-- Ритуалы ухода -->
+      <!-- Ритуалы ухода и обертывание -->
       <div class="rituals">
-        <h3 class="rituals__title">Ритуалы <span class="accent">ухода</span></h3>
+        <h3 class="rituals__title">Ритуалы <span class="accent">ухода</span> и обертывание</h3>
         <ul class="price-list price-list--inline">
           <li class="price-item">
-            <div class="price-item__row"><span class="price-item__name">Парафиновая ванночка для рук «Бархатные ручки»</span><span class="price-item__price">от 1 000 ₽</span></div>
+            <div class="price-item__row"><span class="price-item__name">Парафиновая ванночка кистей рук «Бархатные ручки»</span><span class="price-item__price">от 1 000 ₽</span></div>
             <span class="price-item__time">1 час</span>
             <details class="price-item__details"><summary>Подробнее</summary><p>Парафиновая ванночка для кистей рук «Бархатные ручки».</p></details>
           </li>
