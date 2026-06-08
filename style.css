@@ -70,7 +70,7 @@
   --bg-light-overlay-soft: linear-gradient(165deg, rgba(255, 255, 255, 0.72) 0%, rgba(180, 245, 225, 0.66) 100%);
   --bg-light-overlay-hero: linear-gradient(180deg, rgba(255, 255, 255, 0.68) 0%, rgba(255, 250, 244, 0.58) 55%, rgba(255, 252, 248, 0.50) 100%);
   --bg-section-image: url('images/bg-section.png');
-  --bg-section-filter: brightness(1.14) contrast(0.84) saturate(0.72);
+  --bg-section-filter: brightness(1.26) contrast(0.74) saturate(0.50) opacity(0.46);
   --bg-section-bright: #FFFFFF;
   --glass-blur: blur(12px);
 
