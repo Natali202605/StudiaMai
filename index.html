@@ -9,7 +9,7 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://natali202605.github.io/StudiaMai/">
   <meta property="og:image" content="https://natali202605.github.io/StudiaMai/images/logo.png">
-  <meta name="theme-color" content="#10B981">
+  <meta name="theme-color" content="#00D4A8">
   <link rel="canonical" href="https://natali202605.github.io/StudiaMai/">
   <link rel="icon" href="images/logo.png" type="image/png">
   <title>Студия красоты «Май» — Красота, в которой комфортно оставаться собой</title>
@@ -187,7 +187,7 @@
     <div class="container master reveal">
       <div class="master__row">
         <div class="master__portrait-wrap">
-          <img src="images/galina-portret.png" alt="Галина Болотова — броволог, мастер восстановления бровей" class="master__portrait" data-cms-img="master_portrait">
+          <img src="images/galina-portret.png" alt="Галина Болотова — броволог, мастер восстановления бровей" class="master__portrait" data-cms-img="master_portrait" loading="lazy" decoding="async">
         </div>
         <div class="master__info">
           <p class="section__eyebrow section__eyebrow--left">Мастер</p>
@@ -199,8 +199,8 @@
         </div>
       </div>
       <div class="master__credentials">
-        <img src="images/galina-bolotova.png" alt="Галина Болотова — визитная карточка BROVOLOG" data-cms-img="master_card">
-        <img src="images/sertifikaty.png" alt="Профессиональные сертификаты Галины Болотовой" class="master__certificates" data-cms-img="master_certificates">
+        <img src="images/galina-bolotova.png" alt="Галина Болотова — визитная карточка BROVOLOG" data-cms-img="master_card" loading="lazy" decoding="async">
+        <img src="images/sertifikaty.png" alt="Профессиональные сертификаты Галины Болотовой" class="master__certificates" data-cms-img="master_certificates" loading="lazy" decoding="async">
       </div>
     </div>
   </section>
@@ -229,10 +229,10 @@
           <div class="approach-principles">
             <p class="approach-principles__title">Мы всегда <span class="accent">объясняем</span>, что <span class="accent">делаем</span> и <span class="accent">зачем</span>.</p>
             <ul>
-          <li>Без сложных терминов</li>
-          <li>Без навязанных процедур</li>
-          <li>Без спешки</li>
-        </ul>
+              <li>Без <span class="accent">сложных терминов</span></li>
+              <li>Без <span class="accent">навязанных процедур</span></li>
+              <li>Без <span class="accent">спешки</span></li>
+            </ul>
       </div>
         </div>
       </div>
@@ -253,7 +253,7 @@
         <!-- Брови / услуги броволога -->
         <div class="service-card">
           <div class="service-card__media">
-            <img src="images/browi-resnitsy.png" alt="Ухоженные брови и ресницы — результат работы мастера" class="service-card__image" data-cms-img="service_brows">
+            <img src="images/browi-resnitsy.png" alt="Ухоженные брови и ресницы — результат работы мастера" class="service-card__image" data-cms-img="service_brows" loading="lazy" decoding="async">
           </div>
           <div class="service-card__body">
           <div class="service-card__header">
@@ -322,7 +322,7 @@
         <!-- Косметологические процедуры -->
         <div class="service-card">
           <div class="service-card__media">
-            <img src="images/kosmetologiya.png" alt="Рабочее место косметолога — студия красоты Май" class="service-card__image" data-cms-img="service_cosmetology">
+            <img src="images/kosmetologiya.png" alt="Рабочее место косметолога — студия красоты Май" class="service-card__image" data-cms-img="service_cosmetology" loading="lazy" decoding="async">
           </div>
           <div class="service-card__body">
           <div class="service-card__header">
@@ -398,7 +398,7 @@
         <!-- Массажи лица -->
         <div class="service-card">
           <div class="service-card__media">
-            <img src="images/massazh.png" alt="Профессиональный массаж лица" class="service-card__image" data-cms-img="service_massage">
+            <img src="images/massazh.png" alt="Профессиональный массаж лица" class="service-card__image" data-cms-img="service_massage" loading="lazy" decoding="async">
           </div>
           <div class="service-card__body">
           <div class="service-card__header">
@@ -610,6 +610,7 @@
         </div>
         <div class="section-row__body">
       <div class="reviews-slider">
+        <div class="reviews-slider__viewport" id="reviewsViewport">
         <div class="reviews-slider__track" id="reviewsTrack">
           <div class="review-card">
             <span class="review-card__quote" aria-hidden="true">"</span>
@@ -786,6 +787,7 @@
             <span class="review-card__author">— Болотова Ольга, 12.02.2024</span>
           </div>
         </div>
+        </div>
         <div class="reviews-slider__progress" aria-hidden="true"><span class="reviews-slider__progress-bar" id="reviewsProgress"></span></div>
         <div class="reviews-slider__controls">
           <button type="button" class="reviews-slider__btn" id="reviewsPrev" aria-label="Предыдущий отзыв">
@@ -882,7 +884,7 @@
     <div class="container footer__inner reveal">
       <div class="footer__brand">
         <div class="footer__logo-wrap">
-          <img src="images/logo.png" alt="Логотип студии красоты Май" class="footer__logo" data-cms-img="logo">
+          <img src="images/logo.png" alt="Логотип студии красоты Май" class="footer__logo" data-cms-img="logo" loading="lazy" decoding="async">
         </div>
         <p class="footer__name">Студия красоты «Май»</p>
         <p class="footer__master">Галина Болотова</p>
@@ -935,6 +937,7 @@
     const header = document.querySelector('.header');
     const mobileMq = window.matchMedia('(max-width: 768px)');
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
     let menuScrollY = 0;
 
     function isMobile() {
@@ -979,17 +982,22 @@
       }
     });
 
+    let viewportChangeTimer = null;
+
     function handleViewportChange() {
-      if (!isMobile() && nav?.classList.contains('nav--open')) {
-        setMenuOpen(false);
-      }
-      if (isMobile()) {
-        revealEls.forEach(el => el.classList.add('is-visible'));
-      }
-      if (reviewSliderApi?.syncReviewSlider) {
-        reviewSlideWidth = 0;
-        reviewSliderApi.syncReviewSlider();
-      }
+      clearTimeout(viewportChangeTimer);
+      viewportChangeTimer = setTimeout(() => {
+        if (!isMobile() && nav?.classList.contains('nav--open')) {
+          setMenuOpen(false);
+        }
+        if (isMobile() || prefersReducedMotion.matches) {
+          revealEls.forEach(el => el.classList.add('is-visible'));
+        }
+        if (reviewSliderApi?.syncReviewSlider) {
+          reviewSlideWidth = 0;
+          reviewSliderApi.syncReviewSlider();
+        }
+      }, 120);
     }
 
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -1032,7 +1040,7 @@
             revealObs.unobserve(entry.target);
           }
         });
-      }, { threshold: 0.08, rootMargin: '0px 0px -32px 0px' });
+      }, { threshold: 0.05, rootMargin: '0px 0px -8px 0px' });
 
       revealEls.forEach(el => {
         el.querySelectorAll(staggerSelectors).forEach((item, i) => {
@@ -1041,7 +1049,15 @@
         });
         revealObs.observe(el);
       });
+
+      setTimeout(() => {
+        revealEls.forEach(el => el.classList.add('is-visible'));
+      }, 2800);
     }
+
+    prefersReducedMotion.addEventListener('change', () => {
+      revealEls.forEach(el => el.classList.add('is-visible'));
+    });
 
     const REVIEWS_STORAGE_KEY = 'studia_mai_user_reviews';
     const REVIEW_DRAFT_KEY = 'studia_mai_review_draft';
@@ -1128,6 +1144,7 @@
 
     if (track) {
       const progressBar = document.getElementById('reviewsProgress');
+      const viewport = document.getElementById('reviewsViewport');
       const slider = track.closest('.reviews-slider');
       let autoplayId = null;
       let touchStartX = 0;
@@ -1140,9 +1157,9 @@
       }
 
       function sanitizeReviewCards() {
-        track.querySelectorAll('.review-card').forEach(card => {
+        track.querySelectorAll('.review-card[data-review-id]').forEach(card => {
           const textEl = card.querySelector('.review-card__text');
-          const text = textEl?.textContent?.replace(/[«»"“”\s]/g, '') || '';
+          const text = textEl?.textContent?.replace(/[«»"' \s]/g, '') || '';
           if (!text) card.remove();
         });
         refreshReviewCards();
@@ -1155,9 +1172,16 @@
       }
 
       function getReviewSlideWidth() {
-        const sliderEl = track.closest('.reviews-slider');
-        const width = (sliderEl || track).getBoundingClientRect().width || track.offsetWidth;
-        if (width) reviewSlideWidth = width;
+        const measureEl = viewport || track.parentElement || track;
+        const width = measureEl.getBoundingClientRect().width || measureEl.offsetWidth;
+        if (width) {
+          reviewSlideWidth = Math.round(width);
+          reviewCards.forEach(card => {
+            card.style.flexBasis = `${reviewSlideWidth}px`;
+            card.style.width = `${reviewSlideWidth}px`;
+            card.style.minWidth = `${reviewSlideWidth}px`;
+          });
+        }
         return reviewSlideWidth;
       }
 
@@ -1259,23 +1283,31 @@
         progressBar.style.width = `${((reviewIndex + 1) / reviewCards.length) * 100}%`;
       }
 
+      let reviewSliderReady = false;
+
       function initReviewSlider() {
         reviewSlideWidth = 0;
         syncReviewSlider();
+        if (getReviewSlideWidth()) reviewSliderReady = true;
         startAutoplay();
       }
 
       requestAnimationFrame(initReviewSlider);
-      window.addEventListener('load', initReviewSlider, { once: true });
+      window.addEventListener('load', () => {
+        if (!reviewSliderReady) initReviewSlider();
+      }, { once: true });
 
       const reviewsReveal = track.closest('.reveal');
-      if (reviewsReveal && typeof ResizeObserver !== 'undefined') {
+      if (viewport && typeof ResizeObserver !== 'undefined') {
         let resizeTimer = null;
         const reviewResizeObs = new ResizeObserver(() => {
           clearTimeout(resizeTimer);
-          resizeTimer = setTimeout(syncReviewSlider, 80);
+          resizeTimer = setTimeout(() => {
+            reviewSlideWidth = 0;
+            syncReviewSlider();
+          }, 120);
         });
-        reviewResizeObs.observe(track);
+        reviewResizeObs.observe(viewport);
       }
 
       if (reviewsReveal && !reviewsReveal.classList.contains('is-visible')) {
@@ -1287,17 +1319,6 @@
         }, { threshold: 0.05 });
         reviewRevealObs.observe(reviewsReveal);
       }
-
-      let reviewResizeTicking = false;
-      window.addEventListener('resize', () => {
-        if (reviewResizeTicking) return;
-        reviewResizeTicking = true;
-        requestAnimationFrame(() => {
-          reviewSlideWidth = 0;
-          syncReviewSlider();
-          reviewResizeTicking = false;
-        });
-      }, { passive: true });
 
       document.getElementById('reviewsPrev')?.addEventListener('click', () => {
         stopAutoplay();
@@ -1311,7 +1332,8 @@
       slider?.addEventListener('mouseenter', stopAutoplay);
       slider?.addEventListener('mouseleave', startAutoplay);
 
-      track?.addEventListener('touchstart', e => {
+      const swipeTarget = viewport || track;
+      swipeTarget?.addEventListener('touchstart', e => {
         if (!e.touches.length) return;
         touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
@@ -1319,17 +1341,17 @@
         stopAutoplay();
       }, { passive: true });
 
-      track?.addEventListener('touchmove', e => {
+      swipeTarget?.addEventListener('touchmove', e => {
         if (!e.touches.length || touchLocked) return;
         const diffX = Math.abs(e.touches[0].clientX - touchStartX);
         const diffY = Math.abs(e.touches[0].clientY - touchStartY);
-        if (diffX > diffY && diffX > 8) {
+        if (diffX > diffY * 1.25 && diffX > 12) {
           touchLocked = true;
           if (isMobile() && e.cancelable) e.preventDefault();
         }
       }, { passive: false });
 
-      track?.addEventListener('touchend', e => {
+      swipeTarget?.addEventListener('touchend', e => {
         if (!e.changedTouches.length) return;
         const diffX = touchStartX - e.changedTouches[0].clientX;
         const diffY = touchStartY - e.changedTouches[0].clientY;
@@ -1407,7 +1429,9 @@
           if (reviewDraftStatus) reviewDraftStatus.hidden = true;
         }
         if (reviewFormMessage) reviewFormMessage.hidden = true;
-        reviewAuthorInput?.focus();
+        if (!isMobile() && finePointer.matches) {
+          requestAnimationFrame(() => reviewAuthorInput?.focus({ preventScroll: true }));
+        }
       }
     }
 
@@ -1521,7 +1545,6 @@
 
     // Телефон в форме: звонок на мобильных, копирование на компьютере
     const bookingPhone = document.getElementById('bookingPhone');
-    const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
 
     bookingPhone?.addEventListener('click', async (e) => {
       if (!finePointer.matches) return;
