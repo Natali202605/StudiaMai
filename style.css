@@ -2187,6 +2187,22 @@ ul {
   min-width: 200px;
 }
 
+.reviews-write-btn--continue:not(:disabled):not(.is-disabled) {
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(0, 212, 168, 0.58);
+  color: var(--color-emerald-deep);
+  font-weight: 600;
+  box-shadow: var(--shadow-float-btn), var(--neon-emerald-sm);
+}
+
+.reviews-write-btn--continue:not(:disabled):not(.is-disabled):hover {
+  background: #FFFFFF;
+  border-color: var(--color-emerald-bright);
+  color: var(--color-emerald-dark);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-float-btn-hover), var(--neon-emerald);
+}
+
 .reviews-write-btn.is-disabled,
 .reviews-write-btn:disabled {
   opacity: 0.45;

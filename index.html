@@ -801,7 +801,7 @@
         <div class="reviews-slider__actions">
           <div class="reviews-slider__actions-row">
             <button type="button" class="btn btn--ghost reviews-write-btn" id="openReviewModalAdd">Добавить отзыв</button>
-            <button type="button" class="btn btn--ghost reviews-write-btn" id="openReviewModalContinue">Дополнить отзыв</button>
+            <button type="button" class="btn btn--ghost reviews-write-btn reviews-write-btn--continue" id="openReviewModalContinue" disabled>Дополнить отзыв</button>
           </div>
           <p class="reviews-write-notice" id="reviewSuccessNotice" hidden>Спасибо! Ваш отзыв опубликован.</p>
         </div>
@@ -1377,12 +1377,15 @@
     const continueReviewBtn = document.getElementById('openReviewModalContinue');
     let draftSaveTimer = null;
 
+    function hasUserPublishedReview() {
+      return loadStoredReviews().length > 0;
+    }
+
     function updateContinueButton() {
       if (!continueReviewBtn) return;
-      const draft = loadReviewDraft();
-      const hasDraft = Boolean(draft && (draft.author || draft.text));
-      continueReviewBtn.disabled = !hasDraft;
-      continueReviewBtn.classList.toggle('is-disabled', !hasDraft);
+      const canContinue = hasUserPublishedReview();
+      continueReviewBtn.disabled = !canContinue;
+      continueReviewBtn.classList.toggle('is-disabled', !canContinue);
     }
 
     function showDraftStatus(draft) {
@@ -1401,18 +1404,15 @@
 
     function setReviewModalOpen(open, mode = 'add') {
       if (!reviewModal) return;
-      if (open && mode === 'continue') {
-        const draft = loadReviewDraft();
-        if (!draft || (!draft.author && !draft.text)) {
-          const notice = document.getElementById('reviewSuccessNotice');
-          if (notice) {
-            notice.textContent = 'Нет сохранённого черновика';
-            notice.hidden = false;
-            clearTimeout(notice._hideTimer);
-            notice._hideTimer = setTimeout(() => { notice.hidden = true; }, 3200);
-          }
-          return;
+      if (open && mode === 'continue' && !hasUserPublishedReview()) {
+        const notice = document.getElementById('reviewSuccessNotice');
+        if (notice) {
+          notice.textContent = 'Дополнить отзыв могут только клиенты, которые уже оставили отзыв';
+          notice.hidden = false;
+          clearTimeout(notice._hideTimer);
+          notice._hideTimer = setTimeout(() => { notice.hidden = true; }, 3200);
         }
+        return;
       }
       reviewModal.hidden = !open;
       document.documentElement.classList.toggle('review-modal-open', open);
@@ -1420,8 +1420,9 @@
       if (open) {
         if (mode === 'continue') {
           const draft = loadReviewDraft();
+          const lastReview = loadStoredReviews()[0];
           if (title) title.textContent = 'Дополнить отзыв';
-          fillReviewForm(draft.author, draft.text);
+          fillReviewForm(draft?.author || lastReview?.author || '', draft?.text || lastReview?.text || '');
           showDraftStatus(draft);
         } else {
           if (title) title.textContent = 'Добавить отзыв';
