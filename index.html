@@ -791,14 +791,17 @@
           <button type="button" class="reviews-slider__btn" id="reviewsPrev" aria-label="Предыдущий отзыв">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
           </button>
-          <div class="reviews-slider__dots" id="reviewsDots"></div>
+          <span class="reviews-slider__counter" id="reviewsCounter" aria-live="polite">1 / 29</span>
           <button type="button" class="reviews-slider__btn" id="reviewsNext" aria-label="Следующий отзыв">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
           </button>
         </div>
         <div class="reviews-slider__actions">
-          <button type="button" class="btn btn--ghost reviews-write-btn" id="openReviewModal">Написать отзыв</button>
-          <p class="reviews-write-notice" id="reviewSuccessNotice" hidden>Спасибо! Ваш отзыв добавлен в слайдер.</p>
+          <div class="reviews-slider__actions-row">
+            <button type="button" class="btn btn--ghost reviews-write-btn" id="openReviewModalAdd">Добавить отзыв</button>
+            <button type="button" class="btn btn--ghost reviews-write-btn" id="openReviewModalContinue">Дополнить отзыв</button>
+          </div>
+          <p class="reviews-write-notice" id="reviewSuccessNotice" hidden>Спасибо! Ваш отзыв опубликован.</p>
         </div>
       </div>
         </div>
@@ -912,13 +915,14 @@
       <button type="button" class="review-modal__close" id="closeReviewModal" aria-label="Закрыть">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </button>
-      <h3 class="review-modal__title" id="reviewModalTitle">Написать отзыв</h3>
+      <h3 class="review-modal__title" id="reviewModalTitle">Добавить отзыв</h3>
       <p class="review-modal__lead">Поделитесь впечатлениями о визите в студию «Май»</p>
       <form class="review-form" id="reviewForm">
         <input type="text" name="author" id="reviewAuthor" placeholder="Ваше имя и фамилия" autocomplete="name" required>
         <textarea name="text" id="reviewText" placeholder="Ваш отзыв" rows="5" required></textarea>
+        <p class="review-form__autosave" id="reviewDraftStatus" hidden></p>
         <p class="review-form__message" id="reviewFormMessage" hidden></p>
-        <button type="submit" class="btn btn--primary btn--wide">Отправить отзыв</button>
+        <button type="button" class="btn btn--primary btn--wide" id="publishReview">Опубликовать</button>
       </form>
     </div>
   </div>
@@ -1033,6 +1037,7 @@
     }
 
     const REVIEWS_STORAGE_KEY = 'studia_mai_user_reviews';
+    const REVIEW_DRAFT_KEY = 'studia_mai_review_draft';
 
     function escapeReviewHtml(str) {
       return String(str)
@@ -1076,50 +1081,76 @@
       localStorage.setItem(REVIEWS_STORAGE_KEY, JSON.stringify(stored.slice(0, 50)));
     }
 
+    function loadReviewDraft() {
+      try {
+        return JSON.parse(localStorage.getItem(REVIEW_DRAFT_KEY) || 'null');
+      } catch {
+        return null;
+      }
+    }
+
+    function saveReviewDraft(author, text) {
+      const draft = {
+        author: String(author || '').trim(),
+        text: String(text || '').trim(),
+        savedAt: new Date().toISOString()
+      };
+      localStorage.setItem(REVIEW_DRAFT_KEY, JSON.stringify(draft));
+      return draft;
+    }
+
+    function clearReviewDraft() {
+      localStorage.removeItem(REVIEW_DRAFT_KEY);
+    }
+
     const track = document.getElementById('reviewsTrack');
-    const dotsWrap = document.getElementById('reviewsDots');
+    const counterEl = document.getElementById('reviewsCounter');
     let reviewCards = [];
-    let reviewDots = [];
     let reviewIndex = 0;
     let reviewSliderApi = null;
+    let reviewSlideWidth = 0;
 
-    if (track && dotsWrap) {
+    if (track) {
       const progressBar = document.getElementById('reviewsProgress');
       const slider = track.closest('.reviews-slider');
       let autoplayId = null;
       let touchStartX = 0;
       let touchStartY = 0;
       let touchLocked = false;
+      let sliderSyncPending = false;
 
       function refreshReviewCards() {
         reviewCards = [...track.querySelectorAll('.review-card')];
       }
 
-      function rebuildReviewDots() {
-        dotsWrap.innerHTML = '';
-        reviewCards.forEach((_, i) => {
-          const dot = document.createElement('button');
-          dot.type = 'button';
-          dot.className = 'reviews-slider__dot' + (i === reviewIndex ? ' is-active' : '');
-          dot.setAttribute('aria-label', `Отзыв ${i + 1}`);
-          dot.addEventListener('click', () => goToReview(i));
-          dotsWrap.appendChild(dot);
-        });
-        reviewDots = [...dotsWrap.querySelectorAll('.reviews-slider__dot')];
+      function updateReviewCounter() {
+        if (!counterEl || !reviewCards.length) return;
+        counterEl.textContent = `${reviewIndex + 1} / ${reviewCards.length}`;
       }
 
       function getReviewSlideWidth() {
-        return track.getBoundingClientRect().width || track.offsetWidth;
+        const width = track.getBoundingClientRect().width || track.offsetWidth;
+        if (width) reviewSlideWidth = width;
+        return reviewSlideWidth;
       }
 
-      function goToReview(i) {
+      function goToReview(i, animate = true) {
         if (!reviewCards.length) return;
         reviewIndex = (i + reviewCards.length) % reviewCards.length;
         const slideWidth = getReviewSlideWidth();
+        if (!slideWidth) return;
+        if (!animate || prefersReducedMotion.matches) {
+          track.style.transition = 'none';
+        } else {
+          track.style.transition = '';
+        }
         track.style.transform = `translate3d(-${reviewIndex * slideWidth}px, 0, 0)`;
-        reviewDots.forEach((d, idx) => d.classList.toggle('is-active', idx === reviewIndex));
+        updateReviewCounter();
         if (progressBar) {
           progressBar.style.width = `${((reviewIndex + 1) / reviewCards.length) * 100}%`;
+        }
+        if (!animate || prefersReducedMotion.matches) {
+          requestAnimationFrame(() => { track.style.transition = ''; });
         }
       }
 
@@ -1133,25 +1164,40 @@
       function startAutoplay() {
         if (prefersReducedMotion.matches || isMobile() || reviewCards.length < 2) return;
         stopAutoplay();
-        autoplayId = setInterval(() => goToReview(reviewIndex + 1), 6000);
+        autoplayId = setInterval(() => goToReview(reviewIndex + 1), 7000);
       }
 
       function syncReviewSlider() {
-        if (!getReviewSlideWidth()) return;
-        goToReview(reviewIndex);
+        if (sliderSyncPending) return;
+        sliderSyncPending = true;
+        requestAnimationFrame(() => {
+          sliderSyncPending = false;
+          if (!getReviewSlideWidth()) return;
+          goToReview(reviewIndex, false);
+        });
       }
 
-      function addReviewCard(author, date, text, id, prepend = true) {
-        const card = createReviewCardEl(author, date, text, id);
-        if (prepend) {
-          track.insertBefore(card, track.firstChild);
+      function prependUserReviews(reviews) {
+        const fragment = document.createDocumentFragment();
+        reviews.forEach(review => {
+          if (!track.querySelector(`[data-review-id="${review.id}"]`)) {
+            fragment.appendChild(createReviewCardEl(review.author, review.date, review.text, review.id));
+          }
+        });
+        if (fragment.childNodes.length) {
+          track.insertBefore(fragment, track.firstChild);
           reviewIndex = 0;
-        } else {
-          track.appendChild(card);
+          refreshReviewCards();
+          syncReviewSlider();
         }
+      }
+
+      function addReviewCard(author, date, text, id) {
+        const card = createReviewCardEl(author, date, text, id);
+        track.insertBefore(card, track.firstChild);
+        reviewIndex = 0;
         refreshReviewCards();
-        rebuildReviewDots();
-        requestAnimationFrame(() => syncReviewSlider());
+        syncReviewSlider();
         stopAutoplay();
         startAutoplay();
         return card;
@@ -1159,21 +1205,45 @@
 
       reviewSliderApi = { addReviewCard, goToReview, syncReviewSlider };
 
+      prependUserReviews(loadStoredReviews());
+
+      if (window.STUDIA_MAI_API) {
+        fetch(`${window.STUDIA_MAI_API}/api/reviews`)
+          .then(res => res.ok ? res.json() : null)
+          .then(data => {
+            if (!data?.reviews?.length) return;
+            const fresh = [];
+            data.reviews.forEach(review => {
+              if (!track.querySelector(`[data-review-id="${review.id}"]`)) {
+                fresh.push(review);
+                saveStoredReview(review);
+              }
+            });
+            prependUserReviews(fresh);
+          })
+          .catch(() => {});
+      }
+
       refreshReviewCards();
-      rebuildReviewDots();
-      requestAnimationFrame(() => syncReviewSlider());
-      startAutoplay();
+      requestAnimationFrame(() => {
+        syncReviewSlider();
+        startAutoplay();
+      });
 
       const reviewsReveal = track.closest('.reveal');
       if (reviewsReveal && typeof ResizeObserver !== 'undefined') {
-        const reviewResizeObs = new ResizeObserver(() => syncReviewSlider());
+        let resizeTimer = null;
+        const reviewResizeObs = new ResizeObserver(() => {
+          clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(syncReviewSlider, 80);
+        });
         reviewResizeObs.observe(track);
       }
 
       if (reviewsReveal && !reviewsReveal.classList.contains('is-visible')) {
         const reviewRevealObs = new IntersectionObserver((entries) => {
           if (entries[0]?.isIntersecting) {
-            requestAnimationFrame(() => syncReviewSlider());
+            syncReviewSlider();
             reviewRevealObs.disconnect();
           }
         }, { threshold: 0.05 });
@@ -1185,6 +1255,7 @@
         if (reviewResizeTicking) return;
         reviewResizeTicking = true;
         requestAnimationFrame(() => {
+          reviewSlideWidth = 0;
           syncReviewSlider();
           reviewResizeTicking = false;
         });
@@ -1214,9 +1285,7 @@
         if (!e.touches.length || touchLocked) return;
         const diffX = Math.abs(e.touches[0].clientX - touchStartX);
         const diffY = Math.abs(e.touches[0].clientY - touchStartY);
-        if (diffX > diffY && diffX > 10) {
-          touchLocked = true;
-        }
+        if (diffX > diffY && diffX > 10) touchLocked = true;
       }, { passive: true });
 
       track?.addEventListener('touchend', e => {
@@ -1234,43 +1303,89 @@
         if (document.hidden) stopAutoplay();
         else startAutoplay();
       });
-
-      loadStoredReviews().forEach(review => {
-        if (!track.querySelector(`[data-review-id="${review.id}"]`)) {
-          addReviewCard(review.author, review.date, review.text, review.id, true);
-        }
-      });
-
-      if (window.STUDIA_MAI_API) {
-        fetch(`${window.STUDIA_MAI_API}/api/reviews`)
-          .then(res => res.ok ? res.json() : null)
-          .then(data => {
-            if (!data?.reviews) return;
-            data.reviews.forEach(review => {
-              if (!track.querySelector(`[data-review-id="${review.id}"]`)) {
-                addReviewCard(review.author, review.date, review.text, review.id, true);
-                saveStoredReview(review);
-              }
-            });
-          })
-          .catch(() => {});
-      }
     }
 
     const reviewModal = document.getElementById('reviewModal');
     const reviewForm = document.getElementById('reviewForm');
     const reviewFormMessage = document.getElementById('reviewFormMessage');
+    const reviewDraftStatus = document.getElementById('reviewDraftStatus');
+    const reviewAuthorInput = document.getElementById('reviewAuthor');
+    const reviewTextInput = document.getElementById('reviewText');
+    const continueReviewBtn = document.getElementById('openReviewModalContinue');
+    let draftSaveTimer = null;
 
-    function setReviewModalOpen(open) {
+    function updateContinueButton() {
+      if (!continueReviewBtn) return;
+      const draft = loadReviewDraft();
+      const hasDraft = Boolean(draft && (draft.author || draft.text));
+      continueReviewBtn.disabled = !hasDraft;
+      continueReviewBtn.classList.toggle('is-disabled', !hasDraft);
+    }
+
+    function showDraftStatus(draft) {
+      if (!reviewDraftStatus || !draft) {
+        if (reviewDraftStatus) reviewDraftStatus.hidden = true;
+        return;
+      }
+      reviewDraftStatus.textContent = `Черновик сохранён · ${formatReviewDate(new Date(draft.savedAt))}`;
+      reviewDraftStatus.hidden = false;
+    }
+
+    function fillReviewForm(author, text) {
+      if (reviewAuthorInput) reviewAuthorInput.value = author || '';
+      if (reviewTextInput) reviewTextInput.value = text || '';
+    }
+
+    function setReviewModalOpen(open, mode = 'add') {
       if (!reviewModal) return;
       reviewModal.hidden = !open;
       document.documentElement.classList.toggle('review-modal-open', open);
+      const title = document.getElementById('reviewModalTitle');
       if (open) {
-        document.getElementById('reviewAuthor')?.focus();
-      } else {
-        reviewForm?.reset();
+        if (mode === 'continue') {
+          const draft = loadReviewDraft();
+          if (!draft || (!draft.author && !draft.text)) {
+            showReviewFormMessage('Нет сохранённого черновика', false);
+            return;
+          }
+          if (title) title.textContent = 'Дополнить отзыв';
+          fillReviewForm(draft.author, draft.text);
+          showDraftStatus(draft);
+        } else {
+          if (title) title.textContent = 'Добавить отзыв';
+          fillReviewForm('', '');
+          if (reviewDraftStatus) reviewDraftStatus.hidden = true;
+        }
         if (reviewFormMessage) reviewFormMessage.hidden = true;
+        reviewAuthorInput?.focus();
       }
+    }
+
+    function persistReviewDraft() {
+      const author = reviewAuthorInput?.value || '';
+      const text = reviewTextInput?.value || '';
+      if (!author.trim() && !text.trim()) {
+        clearReviewDraft();
+        if (reviewDraftStatus) reviewDraftStatus.hidden = true;
+        updateContinueButton();
+        return;
+      }
+      const draft = saveReviewDraft(author, text);
+      showDraftStatus(draft);
+      updateContinueButton();
+    }
+
+    function scheduleDraftSave() {
+      clearTimeout(draftSaveTimer);
+      draftSaveTimer = setTimeout(persistReviewDraft, 450);
+    }
+
+    function closeReviewModal() {
+      clearTimeout(draftSaveTimer);
+      if (reviewModal && !reviewModal.hidden) persistReviewDraft();
+      if (reviewModal) reviewModal.hidden = true;
+      document.documentElement.classList.remove('review-modal-open');
+      if (reviewFormMessage) reviewFormMessage.hidden = true;
     }
 
     function showReviewFormMessage(text, ok) {
@@ -1280,20 +1395,23 @@
       reviewFormMessage.hidden = false;
     }
 
-    document.getElementById('openReviewModal')?.addEventListener('click', () => setReviewModalOpen(true));
-    document.getElementById('closeReviewModal')?.addEventListener('click', () => setReviewModalOpen(false));
-    document.getElementById('reviewModalBackdrop')?.addEventListener('click', () => setReviewModalOpen(false));
+    document.getElementById('openReviewModalAdd')?.addEventListener('click', () => setReviewModalOpen(true, 'add'));
+    document.getElementById('openReviewModalContinue')?.addEventListener('click', () => setReviewModalOpen(true, 'continue'));
+    document.getElementById('closeReviewModal')?.addEventListener('click', closeReviewModal);
+    document.getElementById('reviewModalBackdrop')?.addEventListener('click', closeReviewModal);
 
     document.addEventListener('keydown', e => {
-      if (e.key === 'Escape' && reviewModal && !reviewModal.hidden) {
-        setReviewModalOpen(false);
-      }
+      if (e.key === 'Escape' && reviewModal && !reviewModal.hidden) closeReviewModal();
     });
 
-    reviewForm?.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const author = document.getElementById('reviewAuthor')?.value?.trim() || '';
-      const text = document.getElementById('reviewText')?.value?.trim() || '';
+    reviewAuthorInput?.addEventListener('input', scheduleDraftSave);
+    reviewTextInput?.addEventListener('input', scheduleDraftSave);
+
+    reviewForm?.addEventListener('submit', e => e.preventDefault());
+
+    document.getElementById('publishReview')?.addEventListener('click', async () => {
+      const author = reviewAuthorInput?.value?.trim() || '';
+      const text = reviewTextInput?.value?.trim() || '';
 
       if (!author || !text) {
         showReviewFormMessage('Заполните имя и текст отзыва', false);
@@ -1328,8 +1446,13 @@
       }
 
       saveStoredReview(review);
-      reviewSliderApi?.addReviewCard(review.author, review.date, review.text, review.id, true);
-      setReviewModalOpen(false);
+      reviewSliderApi?.addReviewCard(review.author, review.date, review.text, review.id);
+      clearReviewDraft();
+      updateContinueButton();
+      closeReviewModal();
+      fillReviewForm('', '');
+      if (reviewDraftStatus) reviewDraftStatus.hidden = true;
+
       const notice = document.getElementById('reviewSuccessNotice');
       if (notice) {
         notice.textContent = saved ? 'Спасибо! Ваш отзыв опубликован.' : 'Спасибо! Ваш отзыв добавлен в слайдер.';
@@ -1341,6 +1464,8 @@
         block: 'start'
       });
     });
+
+    updateContinueButton();
 
     document.getElementById('contactForm')?.addEventListener('submit', (e) => e.preventDefault());
 

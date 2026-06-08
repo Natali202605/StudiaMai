@@ -1875,10 +1875,11 @@ ul {
   min-height: 300px;
   overflow: hidden;
   border-radius: var(--radius-xl);
-  transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   position: relative;
   align-items: stretch;
-  will-change: transform;
+  contain: layout style;
+  backface-visibility: hidden;
 }
 
 .reviews-slider__track::before,
@@ -1924,9 +1925,10 @@ ul {
   padding: clamp(36px, 5vw, 52px);
   display: flex;
   flex-direction: column;
-  box-shadow: var(--shadow), var(--shadow-inner);
+  box-shadow: var(--shadow-float-card), var(--neon-emerald-sm), var(--shadow-inner);
   min-height: 300px;
   position: relative;
+  backface-visibility: hidden;
 }
 
 .review-card__quote {
@@ -2034,6 +2036,22 @@ ul {
   transform: translateY(0);
 }
 
+.reviews-slider__counter {
+  min-width: 72px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-accent-dark);
+  padding: 10px 16px;
+  border-radius: 100px;
+  border: 1px solid rgba(16, 185, 129, 0.28);
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: var(--shadow-sm), var(--shadow-inner);
+  flex-shrink: 0;
+  user-select: none;
+}
+
 .reviews-slider__dots {
   display: flex;
   gap: 8px;
@@ -2076,8 +2094,24 @@ ul {
   margin-top: 24px;
 }
 
+.reviews-slider__actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+}
+
 .reviews-write-btn {
-  min-width: 220px;
+  min-width: 200px;
+}
+
+.reviews-write-btn.is-disabled,
+.reviews-write-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+  box-shadow: none;
 }
 
 .reviews-write-notice {
@@ -2200,6 +2234,14 @@ ul {
   outline: none;
   border-color: rgba(16, 185, 129, 0.55);
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12);
+}
+
+.review-form__autosave {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--color-accent-dark);
+  text-align: center;
 }
 
 .review-form__message {
@@ -3063,9 +3105,21 @@ html.review-modal-open {
     justify-content: center;
   }
 
+  .reviews-slider__counter {
+    font-size: 13px;
+    padding: 8px 14px;
+    min-width: 64px;
+  }
+
+  .reviews-slider__actions-row {
+    flex-direction: column;
+    align-items: stretch;
+    max-width: 320px;
+  }
+
   .reviews-write-btn {
     width: 100%;
-    max-width: 320px;
+    max-width: none;
   }
 
   .review-modal {
