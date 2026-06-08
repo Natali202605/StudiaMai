@@ -1138,8 +1138,8 @@ ul {
 }
 
 .consultation-block__steps {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(0, 118, 88, 0.32);
+  border: 1px solid rgba(0, 200, 158, 0.40);
   border-radius: var(--radius-xl);
   padding: 36px 40px;
   backdrop-filter: var(--glass-blur);
@@ -1181,8 +1181,8 @@ ul {
 }
 
 .free-card {
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.32);
+  background: rgba(0, 118, 88, 0.34);
+  border: 1px solid rgba(0, 200, 158, 0.42);
   border-radius: var(--radius-lg);
   padding: 24px 28px;
   display: flex;
@@ -1196,7 +1196,7 @@ ul {
 }
 
 .free-card:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 132, 98, 0.40);
   box-shadow: var(--shadow-float-card-accent-hover), inset 0 1px 0 rgba(255, 255, 255, 0.28);
   transform: translateY(-4px);
 }
@@ -2472,8 +2472,8 @@ html.review-modal-open body {
 }
 
 .booking-form {
-  background: rgba(255, 255, 255, 0.14);
-  border: 1px solid rgba(255, 255, 255, 0.36);
+  background: rgba(0, 118, 88, 0.34);
+  border: 1px solid rgba(0, 200, 158, 0.42);
   border-radius: var(--radius-xl);
   padding: clamp(32px, 5vw, 44px);
   backdrop-filter: blur(16px);
