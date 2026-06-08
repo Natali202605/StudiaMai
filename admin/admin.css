@@ -1,13 +1,21 @@
 :root {
-  --adm-bg: #f8fbf9;
-  --adm-card: #ffffff;
+  --adm-bg: #fffbf7;
+  --adm-bg-image: url('../images/admin-bg.png');
+  --adm-card: rgba(255, 255, 255, 0.88);
+  --adm-card-glass: linear-gradient(135deg, rgba(255, 251, 247, 0.84) 0%, rgba(232, 251, 243, 0.80) 48%, rgba(245, 237, 228, 0.82) 100%);
   --adm-text: #2a2a2a;
   --adm-muted: #5a5a5a;
   --adm-accent: #10b981;
   --adm-accent-dark: #059669;
-  --adm-border: rgba(16, 185, 129, 0.22);
-  --adm-shadow: 0 8px 28px rgba(141, 155, 132, 0.12);
+  --adm-border: rgba(16, 185, 129, 0.32);
+  --adm-shadow-inner: inset 0 1px 0 rgba(255, 255, 255, 0.88);
+  --adm-shadow-float: 0 4px 8px rgba(5, 150, 105, 0.15), 0 14px 34px rgba(141, 155, 132, 0.26), 0 28px 58px rgba(141, 155, 132, 0.20);
+  --adm-shadow-float-hover: 0 6px 14px rgba(5, 150, 105, 0.20), 0 20px 46px rgba(141, 155, 132, 0.32), 0 38px 76px rgba(141, 155, 132, 0.24);
+  --adm-shadow-glow: 0 0 14px rgba(52, 211, 153, 0.50), 0 0 28px rgba(16, 185, 129, 0.26), 0 8px 26px rgba(5, 150, 105, 0.18);
+  --adm-shadow-glow-hover: 0 0 20px rgba(52, 211, 153, 0.62), 0 0 40px rgba(16, 185, 129, 0.34), 0 12px 34px rgba(5, 150, 105, 0.24);
+  --adm-shadow: var(--adm-shadow-float);
   --adm-radius: 16px;
+  --adm-transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   --font-sans: 'Outfit', sans-serif;
   --font-serif: 'Cormorant Garamond', Georgia, serif;
 }
@@ -16,7 +24,11 @@
 
 body {
   font-family: var(--font-sans);
-  background: var(--adm-bg);
+  background-color: var(--adm-bg);
+  background-image: var(--adm-bg-image);
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
   color: var(--adm-text);
   min-height: 100vh;
 }
@@ -26,22 +38,36 @@ body {
 }
 
 .login {
+  position: relative;
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: linear-gradient(165deg, #fffdf9 0%, #d1fae5 42%, #fff5eb 100%);
+  background: transparent;
+}
+
+.login::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(165deg, rgba(255, 253, 249, 0.42) 0%, rgba(209, 250, 229, 0.30) 42%, rgba(255, 245, 235, 0.40) 100%);
+  pointer-events: none;
 }
 
 .login__card {
+  position: relative;
+  z-index: 1;
   width: 100%;
   max-width: 400px;
-  background: var(--adm-card);
+  background: var(--adm-card-glass);
   border: 1px solid var(--adm-border);
   border-radius: 24px;
   padding: 40px 36px;
-  box-shadow: var(--adm-shadow);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: var(--adm-shadow-float), var(--adm-shadow-glow), var(--adm-shadow-inner);
+  transition: transform var(--adm-transition), box-shadow var(--adm-transition);
 }
 
 .login__title {
@@ -163,27 +189,42 @@ body {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: 0.25s ease;
+  transition: transform var(--adm-transition), box-shadow var(--adm-transition), background var(--adm-transition), border-color var(--adm-transition), color var(--adm-transition);
 }
 
 .admin-btn--primary {
   background: linear-gradient(135deg, #34d399, #10b981, #059669);
   color: #fff;
-  box-shadow: 0 4px 18px rgba(16, 185, 129, 0.25);
+  box-shadow: var(--adm-shadow-float), var(--adm-shadow-glow), var(--adm-shadow-inner);
+}
+
+.admin-btn--primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--adm-shadow-float-hover), var(--adm-shadow-glow-hover), var(--adm-shadow-inner);
 }
 
 .admin-btn--ghost {
-  background: #fff;
+  background: rgba(255, 255, 255, 0.82);
   color: var(--adm-accent-dark);
   border: 1px solid var(--adm-border);
   margin-right: 12px;
   margin-top: 16px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: var(--adm-shadow-float), var(--adm-shadow-inner);
+}
+
+.admin-btn--ghost:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: var(--adm-shadow-float-hover), var(--adm-shadow-glow), var(--adm-shadow-inner);
 }
 
 .admin {
   display: grid;
   grid-template-columns: 240px 1fr;
   min-height: 100vh;
+  background: transparent;
 }
 
 .admin__sidebar {
@@ -246,8 +287,10 @@ body {
 }
 
 .admin__main {
+  position: relative;
   padding: 32px 40px;
   overflow-y: auto;
+  background: linear-gradient(165deg, rgba(255, 253, 249, 0.34) 0%, rgba(209, 250, 229, 0.22) 48%, rgba(255, 245, 235, 0.32) 100%);
 }
 
 .admin__panel { display: none; }
@@ -267,16 +310,24 @@ body {
 }
 
 .admin__stat {
-  background: var(--adm-card);
+  background: var(--adm-card-glass);
   border: 1px solid var(--adm-border);
   border-radius: var(--adm-radius);
   padding: 24px;
-  box-shadow: var(--adm-shadow);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: var(--adm-shadow-float), var(--adm-shadow-glow), var(--adm-shadow-inner);
   display: flex;
   flex-direction: column;
   gap: 8px;
   font-size: 14px;
   color: var(--adm-muted);
+  transition: transform var(--adm-transition), box-shadow var(--adm-transition);
+}
+
+.admin__stat:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--adm-shadow-float-hover), var(--adm-shadow-glow-hover), var(--adm-shadow-inner);
 }
 
 .admin__stat-num {
@@ -291,10 +342,12 @@ body {
 .admin__table {
   width: 100%;
   border-collapse: collapse;
-  background: var(--adm-card);
+  background: var(--adm-card-glass);
   border-radius: var(--adm-radius);
   overflow: hidden;
-  box-shadow: var(--adm-shadow);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: var(--adm-shadow-float), var(--adm-shadow-glow), var(--adm-shadow-inner);
   font-size: 14px;
 }
 
@@ -331,11 +384,19 @@ body {
 }
 
 .admin__photo-card {
-  background: var(--adm-card);
+  background: var(--adm-card-glass);
   border: 1px solid var(--adm-border);
   border-radius: var(--adm-radius);
   padding: 16px;
-  box-shadow: var(--adm-shadow);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: var(--adm-shadow-float), var(--adm-shadow-glow), var(--adm-shadow-inner);
+  transition: transform var(--adm-transition), box-shadow var(--adm-transition);
+}
+
+.admin__photo-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--adm-shadow-float-hover), var(--adm-shadow-glow-hover), var(--adm-shadow-inner);
 }
 
 .admin__photo-card img {
@@ -388,4 +449,19 @@ body {
   .admin__logout { margin-top: 0; width: 100%; }
   .admin__main { padding: 20px; }
   .admin__proc-row { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  body {
+    background-attachment: scroll;
+  }
+
+  .login__card,
+  .admin__stat,
+  .admin__table,
+  .admin__photo-card,
+  .admin-btn--ghost {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
 }

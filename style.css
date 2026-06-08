@@ -1281,7 +1281,8 @@ ul {
   padding: clamp(28px, 4vw, 40px) clamp(28px, 4vw, 44px);
 }
 
-.approach-card__title {
+.approach-card__title,
+.approach-principles__title {
   font-family: var(--font-serif);
   font-size: clamp(20px, 2.5vw, 24px);
   font-weight: 500;
@@ -1328,14 +1329,6 @@ ul {
   border-radius: var(--radius-xl);
   padding: 36px 40px;
   box-shadow: var(--shadow-glow-beige);
-}
-
-.approach-principles__title {
-  font-family: var(--font-serif);
-  font-size: 22px;
-  margin-bottom: 20px;
-  line-height: 1.4;
-  color: #000000;
 }
 
 .approach-principles ul {
