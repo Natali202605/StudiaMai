@@ -69,6 +69,7 @@
   --bg-light-overlay: linear-gradient(150deg, rgba(255, 255, 255, 0.74) 0%, rgba(255, 246, 236, 0.68) 50%, rgba(0, 210, 168, 0.64) 100%);
   --bg-light-overlay-soft: linear-gradient(165deg, rgba(255, 255, 255, 0.72) 0%, rgba(180, 245, 225, 0.66) 100%);
   --bg-light-overlay-hero: linear-gradient(180deg, rgba(255, 255, 255, 0.68) 0%, rgba(255, 250, 244, 0.58) 55%, rgba(255, 252, 248, 0.50) 100%);
+  --bg-section-image: url('images/bg-section.png');
   --bg-section-bright: #FFFFFF;
   --glass-blur: blur(12px);
 
@@ -105,11 +106,11 @@ body {
   color: var(--color-text);
   font-feature-settings: 'kern' 1, 'liga' 1;
   background-color: #FFFCF8;
-  background-image:
-    var(--pattern-vector),
-    linear-gradient(180deg, #FFFCF8 0%, #FFF6EE 100%);
-  background-size: 140px 140px, 100% 100%;
-  background-attachment: scroll;
+  background-image: var(--bg-section-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -479,12 +480,11 @@ ul {
 .hero__bg {
   position: absolute;
   inset: 0;
-  background-image:
-    var(--bg-light-overlay-hero),
-    var(--bg-light-image);
+  background-image: var(--bg-section-image);
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
+  background-attachment: fixed;
   z-index: 0;
   overflow: hidden;
 }
@@ -752,12 +752,20 @@ ul {
 
 .section:not(.section--accent):not(.section--cta) {
   background-color: transparent;
-  background-image: none;
+  background-image: var(--bg-section-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 .section--alt {
-  background-color: var(--bg-section-bright);
-  background-image: none;
+  background-color: transparent;
+  background-image: var(--bg-section-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   border-top: 1px solid rgba(168, 196, 184, 0.15);
   border-bottom: 1px solid rgba(168, 196, 184, 0.15);
 }
@@ -765,20 +773,24 @@ ul {
 .section--accent {
   background-image:
     radial-gradient(ellipse at 15% 0%, rgba(255, 255, 255, 0.20) 0%, transparent 50%),
-    linear-gradient(155deg, rgba(0, 150, 108, 0.84) 0%, rgba(0, 200, 158, 0.80) 38%, rgba(0, 228, 176, 0.76) 72%, rgba(0, 239, 192, 0.70) 100%);
-  background-size: 100% 100%, 100% 100%;
-  background-position: center, center;
-  background-repeat: no-repeat, no-repeat;
+    linear-gradient(155deg, rgba(0, 150, 108, 0.84) 0%, rgba(0, 200, 158, 0.80) 38%, rgba(0, 228, 176, 0.76) 72%, rgba(0, 239, 192, 0.70) 100%),
+    var(--bg-section-image);
+  background-size: 100% 100%, 100% 100%, cover;
+  background-position: center, center, center;
+  background-repeat: no-repeat, no-repeat, no-repeat;
+  background-attachment: fixed;
   color: var(--color-white);
 }
 
 .section--cta {
   background-image:
     radial-gradient(ellipse at 100% 50%, rgba(0, 235, 190, 0.34) 0%, transparent 50%),
-    linear-gradient(160deg, rgba(0, 130, 95, 0.86) 0%, rgba(0, 168, 125, 0.82) 32%, rgba(0, 205, 158, 0.78) 60%, rgba(0, 228, 176, 0.74) 85%, rgba(0, 239, 192, 0.68) 100%);
-  background-size: 100% 100%, 100% 100%;
-  background-position: center, center;
-  background-repeat: no-repeat, no-repeat;
+    linear-gradient(160deg, rgba(0, 130, 95, 0.86) 0%, rgba(0, 168, 125, 0.82) 32%, rgba(0, 205, 158, 0.78) 60%, rgba(0, 228, 176, 0.74) 85%, rgba(0, 239, 192, 0.68) 100%),
+    var(--bg-section-image);
+  background-size: 100% 100%, 100% 100%, cover;
+  background-position: center, center, center;
+  background-repeat: no-repeat, no-repeat, no-repeat;
+  background-attachment: fixed;
   color: var(--color-white);
 }
 
@@ -1295,11 +1307,14 @@ ul {
 
 .approach-principles__title {
   font-family: var(--font-serif);
-  font-size: clamp(26px, 3.4vw, 34px);
-  font-weight: 600;
+  font-size: clamp(32px, 4.4vw, 44px);
+  font-weight: 700;
   color: #000000;
+  -webkit-text-fill-color: #000000;
   margin-bottom: 24px;
-  line-height: 1.3;
+  line-height: 1.28;
+  letter-spacing: 0.01em;
+  text-rendering: optimizeLegibility;
 }
 
 .approach-grid {
@@ -2656,10 +2671,12 @@ html.review-modal-open body {
   overflow: hidden;
   background-image:
     radial-gradient(ellipse at 20% 0%, rgba(168, 196, 184, 0.14) 0%, transparent 50%),
-    linear-gradient(168deg, rgba(61, 69, 64, 0.88) 0%, rgba(74, 85, 72, 0.84) 45%, rgba(94, 109, 96, 0.80) 100%);
-  background-size: 100% 100%, 100% 100%;
-  background-position: center, center;
-  background-repeat: no-repeat, no-repeat;
+    linear-gradient(168deg, rgba(61, 69, 64, 0.88) 0%, rgba(74, 85, 72, 0.84) 45%, rgba(94, 109, 96, 0.80) 100%),
+    var(--bg-section-image);
+  background-size: 100% 100%, 100% 100%, cover;
+  background-position: center, center, center;
+  background-repeat: no-repeat, no-repeat, no-repeat;
+  background-attachment: fixed;
   color: rgba(255, 255, 255, 0.85);
   padding-top: clamp(60px, 8vw, 80px);
   border-top: 2px solid rgba(168, 196, 184, 0.25);
@@ -2998,14 +3015,18 @@ html.review-modal-open body {
     font-size: 16px;
     line-height: 1.75;
     background-attachment: scroll;
-    background-image:
-      var(--pattern-vector),
-      linear-gradient(180deg, #FFFCF8 0%, #FFF6EE 100%);
-    background-size: 140px 140px, 100% 100%;
+    background-image: var(--bg-section-image);
+    background-size: cover;
+    background-position: center;
   }
 
-  .hero__bg {
-    background-image: var(--bg-light-overlay-hero), var(--bg-light-image);
+  .hero__bg,
+  .section:not(.section--accent):not(.section--cta),
+  .section--alt,
+  .section--accent,
+  .section--cta,
+  .footer {
+    background-attachment: scroll;
   }
 
   .hero__accent {
