@@ -997,7 +997,7 @@
           reviewSlideWidth = 0;
           reviewSliderApi.syncReviewSlider();
         }
-      }, 120);
+      }, isMobile() ? 220 : 120);
     }
 
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -1149,7 +1149,6 @@
       let autoplayId = null;
       let touchStartX = 0;
       let touchStartY = 0;
-      let touchLocked = false;
       let sliderSyncPending = false;
 
       function refreshReviewCards() {
@@ -1173,13 +1172,22 @@
 
       function getReviewSlideWidth() {
         const measureEl = viewport || track.parentElement || track;
-        const width = measureEl.getBoundingClientRect().width || measureEl.offsetWidth;
-        if (width) {
-          reviewSlideWidth = Math.round(width);
+        const width = Math.round(measureEl.getBoundingClientRect().width || measureEl.offsetWidth);
+        if (!width) return 0;
+        if (width === reviewSlideWidth) return reviewSlideWidth;
+        reviewSlideWidth = width;
+        viewport?.style.setProperty('--review-slide-width', `${width}px`);
+        if (!isMobile()) {
           reviewCards.forEach(card => {
             card.style.flexBasis = `${reviewSlideWidth}px`;
             card.style.width = `${reviewSlideWidth}px`;
             card.style.minWidth = `${reviewSlideWidth}px`;
+          });
+        } else {
+          reviewCards.forEach(card => {
+            card.style.flexBasis = '';
+            card.style.width = '';
+            card.style.minWidth = '';
           });
         }
         return reviewSlideWidth;
@@ -1190,17 +1198,14 @@
         reviewIndex = (i + reviewCards.length) % reviewCards.length;
         const slideWidth = getReviewSlideWidth();
         if (!slideWidth) return;
-        if (!animate || prefersReducedMotion.matches) {
-          track.style.transition = 'none';
-        } else {
-          track.style.transition = '';
-        }
+        const useMotion = animate && !prefersReducedMotion.matches;
+        track.style.transition = useMotion ? '' : 'none';
         track.style.transform = `translate3d(-${reviewIndex * slideWidth}px, 0, 0)`;
         updateReviewCounter();
         if (progressBar) {
           progressBar.style.width = `${((reviewIndex + 1) / reviewCards.length) * 100}%`;
         }
-        if (!animate || prefersReducedMotion.matches) {
+        if (!useMotion) {
           requestAnimationFrame(() => { track.style.transition = ''; });
         }
       }
@@ -1260,7 +1265,8 @@
       prependUserReviews(loadStoredReviews());
       sanitizeReviewCards();
 
-      if (window.STUDIA_MAI_API) {
+      function loadRemoteReviews() {
+        if (!window.STUDIA_MAI_API) return;
         fetch(`${window.STUDIA_MAI_API}/api/reviews`)
           .then(res => res.ok ? res.json() : null)
           .then(data => {
@@ -1275,6 +1281,19 @@
             prependUserReviews(fresh);
           })
           .catch(() => {});
+      }
+
+      const reviewsSection = document.getElementById('reviews');
+      if (reviewsSection && 'IntersectionObserver' in window) {
+        const reviewsLoadObs = new IntersectionObserver((entries) => {
+          if (entries[0]?.isIntersecting) {
+            loadRemoteReviews();
+            reviewsLoadObs.disconnect();
+          }
+        }, { rootMargin: '180px 0px' });
+        reviewsLoadObs.observe(reviewsSection);
+      } else {
+        loadRemoteReviews();
       }
 
       refreshReviewCards();
@@ -1300,12 +1319,13 @@
       const reviewsReveal = track.closest('.reveal');
       if (viewport && typeof ResizeObserver !== 'undefined') {
         let resizeTimer = null;
+        const resizeDelay = isMobile() ? 280 : 160;
         const reviewResizeObs = new ResizeObserver(() => {
           clearTimeout(resizeTimer);
           resizeTimer = setTimeout(() => {
             reviewSlideWidth = 0;
             syncReviewSlider();
-          }, 120);
+          }, resizeDelay);
         });
         reviewResizeObs.observe(viewport);
       }
@@ -1337,29 +1357,17 @@
         if (!e.touches.length) return;
         touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
-        touchLocked = false;
         stopAutoplay();
       }, { passive: true });
-
-      swipeTarget?.addEventListener('touchmove', e => {
-        if (!e.touches.length || touchLocked) return;
-        const diffX = Math.abs(e.touches[0].clientX - touchStartX);
-        const diffY = Math.abs(e.touches[0].clientY - touchStartY);
-        if (diffX > diffY * 1.25 && diffX > 12) {
-          touchLocked = true;
-          if (isMobile() && e.cancelable) e.preventDefault();
-        }
-      }, { passive: false });
 
       swipeTarget?.addEventListener('touchend', e => {
         if (!e.changedTouches.length) return;
         const diffX = touchStartX - e.changedTouches[0].clientX;
         const diffY = touchStartY - e.changedTouches[0].clientY;
-        const threshold = isMobile() ? 40 : 50;
-        if (Math.abs(diffX) > threshold && Math.abs(diffX) > Math.abs(diffY)) {
+        const threshold = isMobile() ? 36 : 50;
+        if (Math.abs(diffX) > threshold && Math.abs(diffX) > Math.abs(diffY) * 1.15) {
           goToReview(reviewIndex + (diffX > 0 ? 1 : -1));
         }
-        touchLocked = false;
       }, { passive: true });
 
       document.addEventListener('visibilitychange', () => {

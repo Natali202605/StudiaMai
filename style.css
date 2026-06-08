@@ -3072,6 +3072,28 @@ html.review-modal-open body {
     display: none;
   }
 
+  .hero__bg,
+  .section::after,
+  .footer::after {
+    filter: none;
+    opacity: 0.58;
+  }
+
+  .section--accent::before,
+  .section--cta::before {
+    display: none;
+  }
+
+  .section {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 520px;
+  }
+
+  .hero,
+  .header {
+    content-visibility: visible;
+  }
+
   .section::before,
   .section--accent::before,
   .section--cta::before {
@@ -3094,9 +3116,20 @@ html.review-modal-open body {
     transition: none;
   }
 
+  .reviews-slider__viewport {
+    touch-action: pan-y;
+    --review-slide-width: 100%;
+  }
+
   .reviews-slider__track {
-    transition: transform 0.42s cubic-bezier(0.33, 1, 0.68, 1);
-    touch-action: pan-x pinch-zoom;
+    transition: transform 0.32s cubic-bezier(0.33, 1, 0.68, 1);
+    touch-action: pan-y;
+  }
+
+  .reviews-slider .review-card {
+    flex: 0 0 var(--review-slide-width, 100%);
+    width: var(--review-slide-width, 100%);
+    min-width: var(--review-slide-width, 100%);
   }
 
   .reviews-slider {
@@ -3512,6 +3545,7 @@ html.review-modal-open body {
   .audience-list li:hover,
   .approach-item:hover,
   .approach-card .approach-item:hover,
+  .free-card:hover,
   .service-card:hover,
   .service-card:hover::before,
   .benefits-list li:hover,
@@ -3823,4 +3857,39 @@ html.review-modal-open body {
   .booking-form__select {
     font-size: 16px;
   }
+
+  .checklist li,
+  .audience-list,
+  .master__info,
+  .approach-card,
+  .approach-principles,
+  .approach-item,
+  .service-card,
+  .benefits-list li,
+  .benefit-card,
+  .faq-item,
+  .format-card,
+  .rituals,
+  .price-list--inline .price-item,
+  .hero__top,
+  .hero__body,
+  .hero__stats,
+  .hero__body-photo,
+  .hero__brand-logo,
+  .master__portrait,
+  .master__credentials img,
+  .reviews-slider__viewport,
+  .reviews-slider__btn,
+  .section--accent .consultation-block__steps,
+  .section--accent .free-card,
+  .section--cta .booking-form,
+  .footer__card,
+  .footer__logo-wrap {
+    box-shadow: 0 4px 16px rgba(141, 155, 132, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  }
+
+  .btn {
+    box-shadow: 0 3px 12px rgba(0, 120, 90, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  }
+
 }
