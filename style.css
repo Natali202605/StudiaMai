@@ -24,6 +24,7 @@
   --color-white: #FFFFFF;
 
   --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-display: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
   --font-sans: 'Outfit', 'Segoe UI', sans-serif;
 
   --radius: 16px;
@@ -127,7 +128,6 @@ body.menu-open {
   width: 100%;
   left: 0;
   right: 0;
-  touch-action: none;
   overscroll-behavior: none;
 }
 
@@ -567,13 +567,20 @@ ul {
 }
 
 .hero__site-name {
-  font-family: var(--font-serif);
-  font-size: clamp(36px, 5.5vw, 64px);
+  font-family: var(--font-display);
+  font-size: clamp(34px, 5.2vw, 58px);
   font-weight: 500;
-  line-height: 1.08;
+  line-height: 1.14;
   color: var(--color-text);
-  letter-spacing: -0.01em;
+  letter-spacing: 0.02em;
   margin: 0;
+  text-wrap: balance;
+}
+
+.hero__site-name .accent--brand {
+  font-style: italic;
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 .hero__top-actions {
@@ -1860,6 +1867,11 @@ ul {
   align-items: center;
 }
 
+#reviews .container.reveal {
+  opacity: 1;
+  transform: none;
+}
+
 .reviews-slider {
   position: relative;
   width: 100%;
@@ -1878,8 +1890,6 @@ ul {
   transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   position: relative;
   align-items: stretch;
-  contain: layout style;
-  backface-visibility: hidden;
 }
 
 .reviews-slider__track::before,
@@ -1959,10 +1969,18 @@ ul {
   font-weight: 400;
   font-style: italic;
   color: var(--color-text);
-  flex: 1;
+  flex: 1 1 auto;
   margin-bottom: 24px;
   line-height: 1.62;
   letter-spacing: 0.01em;
+  position: relative;
+  z-index: 1;
+  display: block;
+  visibility: visible;
+  opacity: 1;
+  min-height: 1.5em;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .review-card__author {
@@ -1970,6 +1988,9 @@ ul {
   font-weight: 500;
   letter-spacing: 0.02em;
   color: var(--color-accent-dark);
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
 }
 
 .reviews-slider__progress {
@@ -2260,6 +2281,12 @@ ul {
 
 html.review-modal-open {
   overflow: hidden;
+  height: 100%;
+}
+
+html.review-modal-open body {
+  overflow: hidden;
+  touch-action: none;
 }
 
 /* ============================================
@@ -2944,6 +2971,19 @@ html.review-modal-open {
     font-size: 16px;
     line-height: 1.75;
     background-attachment: scroll;
+    background-image:
+      radial-gradient(ellipse at 12% 8%, rgba(167, 243, 208, 0.5) 0%, transparent 52%),
+      radial-gradient(ellipse at 88% 92%, rgba(255, 228, 210, 0.5) 0%, transparent 52%),
+      linear-gradient(165deg, #FFFDF9 0%, #D1FAE5 42%, #FFF5EB 100%);
+    background-size: 100% 100%, 100% 100%, 100% 100%;
+  }
+
+  .hero__bg {
+    background-image: var(--bg-light-overlay-section);
+  }
+
+  .hero__accent {
+    display: none;
   }
 
   .section::before,
@@ -2952,13 +2992,7 @@ html.review-modal-open {
     animation: none !important;
     will-change: auto;
     opacity: 0.35;
-  }
-
-  .hero__accent {
-    animation: none !important;
-    will-change: auto;
-    filter: blur(28px);
-    opacity: 0.2;
+    transform: none !important;
   }
 
   .reveal,
@@ -2975,12 +3009,20 @@ html.review-modal-open {
   }
 
   .reviews-slider__track {
-    transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1);
-    touch-action: pan-y;
+    transition: transform 0.42s cubic-bezier(0.33, 1, 0.68, 1);
+    touch-action: pan-x pinch-zoom;
   }
 
   .reviews-slider {
     touch-action: manipulation;
+  }
+
+  .review-card {
+    box-shadow: var(--shadow-sm), var(--shadow-inner);
+  }
+
+  .reviews-slider__progress-bar {
+    transition: width 0.42s cubic-bezier(0.33, 1, 0.68, 1);
   }
 
   .reviews-slider__btn {
@@ -3049,6 +3091,12 @@ html.review-modal-open {
 
   .nav--open {
     display: flex;
+    touch-action: pan-y;
+  }
+
+  body.menu-open .nav {
+    touch-action: pan-y;
+    overscroll-behavior: contain;
   }
 
   .header__actions {
@@ -3170,10 +3218,20 @@ html.review-modal-open {
 
   .btn,
   .nav__link,
-  .reviews-slider__btn,
-  .reviews-slider__dot {
+  .reviews-slider__btn {
     min-height: 44px;
     touch-action: manipulation;
+  }
+
+  .checklist li,
+  .approach-item,
+  .service-card,
+  .benefit-card,
+  .faq-item,
+  .format-card,
+  .review-card,
+  .btn {
+    transition: none;
   }
 
   .price-item__details summary,
@@ -3367,7 +3425,9 @@ html.review-modal-open {
   .checklist li:hover,
   .audience-list li:hover,
   .approach-item:hover,
+  .approach-card .approach-item:hover,
   .service-card:hover,
+  .service-card:hover::before,
   .benefits-list li:hover,
   .benefit-card:hover,
   .faq-item:hover,
@@ -3378,6 +3438,11 @@ html.review-modal-open {
   .btn--ghost-light:hover,
   .reviews-slider__btn:hover {
     transform: none;
+    box-shadow: inherit;
+  }
+
+  .service-card:hover::before {
+    opacity: 0;
   }
 
   .btn--glow::after {
@@ -3443,10 +3508,6 @@ html.review-modal-open {
 
 .section-header .section__eyebrow::after {
   background: linear-gradient(90deg, var(--color-mint), transparent);
-}
-
-.hero__site-name {
-  letter-spacing: -0.01em;
 }
 
 .master__highlight {

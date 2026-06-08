@@ -15,7 +15,7 @@
   <title>Студия красоты «Май» — Красота, в которой комфортно оставаться собой</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -601,7 +601,7 @@
 
   <!-- Отзывы -->
   <section class="section section--alt" id="reviews">
-    <div class="container reveal">
+    <div class="container reveal is-visible">
       <div class="section-row section-row--reviews">
         <div class="section-row__head">
           <p class="section__eyebrow section__eyebrow--left">Доверие</p>
@@ -979,11 +979,18 @@
       }
     });
 
-    window.addEventListener('resize', () => {
+    function handleViewportChange() {
       if (!isMobile() && nav?.classList.contains('nav--open')) {
         setMenuOpen(false);
       }
-    }, { passive: true });
+      if (isMobile()) {
+        revealEls.forEach(el => el.classList.add('is-visible'));
+      }
+      if (reviewSliderApi?.syncReviewSlider) {
+        reviewSlideWidth = 0;
+        reviewSliderApi.syncReviewSlider();
+      }
+    }
 
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', e => {
@@ -1066,9 +1073,18 @@
       return card;
     }
 
+    function isValidReview(review) {
+      return Boolean(
+        review &&
+        String(review.author || '').trim() &&
+        String(review.text || '').trim()
+      );
+    }
+
     function loadStoredReviews() {
       try {
-        return JSON.parse(localStorage.getItem(REVIEWS_STORAGE_KEY) || '[]');
+        const list = JSON.parse(localStorage.getItem(REVIEWS_STORAGE_KEY) || '[]');
+        return Array.isArray(list) ? list.filter(isValidReview) : [];
       } catch {
         return [];
       }
@@ -1123,13 +1139,24 @@
         reviewCards = [...track.querySelectorAll('.review-card')];
       }
 
+      function sanitizeReviewCards() {
+        track.querySelectorAll('.review-card').forEach(card => {
+          const textEl = card.querySelector('.review-card__text');
+          const text = textEl?.textContent?.replace(/[«»"“”\s]/g, '') || '';
+          if (!text) card.remove();
+        });
+        refreshReviewCards();
+        if (reviewIndex >= reviewCards.length) reviewIndex = 0;
+      }
+
       function updateReviewCounter() {
         if (!counterEl || !reviewCards.length) return;
         counterEl.textContent = `${reviewIndex + 1} / ${reviewCards.length}`;
       }
 
       function getReviewSlideWidth() {
-        const width = track.getBoundingClientRect().width || track.offsetWidth;
+        const sliderEl = track.closest('.reviews-slider');
+        const width = (sliderEl || track).getBoundingClientRect().width || track.offsetWidth;
         if (width) reviewSlideWidth = width;
         return reviewSlideWidth;
       }
@@ -1205,7 +1232,9 @@
 
       reviewSliderApi = { addReviewCard, goToReview, syncReviewSlider };
 
+      sanitizeReviewCards();
       prependUserReviews(loadStoredReviews());
+      sanitizeReviewCards();
 
       if (window.STUDIA_MAI_API) {
         fetch(`${window.STUDIA_MAI_API}/api/reviews`)
@@ -1225,10 +1254,19 @@
       }
 
       refreshReviewCards();
-      requestAnimationFrame(() => {
+      updateReviewCounter();
+      if (progressBar && reviewCards.length) {
+        progressBar.style.width = `${((reviewIndex + 1) / reviewCards.length) * 100}%`;
+      }
+
+      function initReviewSlider() {
+        reviewSlideWidth = 0;
         syncReviewSlider();
         startAutoplay();
-      });
+      }
+
+      requestAnimationFrame(initReviewSlider);
+      window.addEventListener('load', initReviewSlider, { once: true });
 
       const reviewsReveal = track.closest('.reveal');
       if (reviewsReveal && typeof ResizeObserver !== 'undefined') {
@@ -1285,8 +1323,11 @@
         if (!e.touches.length || touchLocked) return;
         const diffX = Math.abs(e.touches[0].clientX - touchStartX);
         const diffY = Math.abs(e.touches[0].clientY - touchStartY);
-        if (diffX > diffY && diffX > 10) touchLocked = true;
-      }, { passive: true });
+        if (diffX > diffY && diffX > 8) {
+          touchLocked = true;
+          if (isMobile() && e.cancelable) e.preventDefault();
+        }
+      }, { passive: false });
 
       track?.addEventListener('touchend', e => {
         if (!e.changedTouches.length) return;
@@ -1338,16 +1379,25 @@
 
     function setReviewModalOpen(open, mode = 'add') {
       if (!reviewModal) return;
+      if (open && mode === 'continue') {
+        const draft = loadReviewDraft();
+        if (!draft || (!draft.author && !draft.text)) {
+          const notice = document.getElementById('reviewSuccessNotice');
+          if (notice) {
+            notice.textContent = 'Нет сохранённого черновика';
+            notice.hidden = false;
+            clearTimeout(notice._hideTimer);
+            notice._hideTimer = setTimeout(() => { notice.hidden = true; }, 3200);
+          }
+          return;
+        }
+      }
       reviewModal.hidden = !open;
       document.documentElement.classList.toggle('review-modal-open', open);
       const title = document.getElementById('reviewModalTitle');
       if (open) {
         if (mode === 'continue') {
           const draft = loadReviewDraft();
-          if (!draft || (!draft.author && !draft.text)) {
-            showReviewFormMessage('Нет сохранённого черновика', false);
-            return;
-          }
           if (title) title.textContent = 'Дополнить отзыв';
           fillReviewForm(draft.author, draft.text);
           showDraftStatus(draft);
@@ -1413,7 +1463,7 @@
       const author = reviewAuthorInput?.value?.trim() || '';
       const text = reviewTextInput?.value?.trim() || '';
 
-      if (!author || !text) {
+      if (!isValidReview({ author, text })) {
         showReviewFormMessage('Заполните имя и текст отзыва', false);
         return;
       }
@@ -1487,6 +1537,9 @@
         window.prompt('Скопируйте номер:', phoneNumber);
       }
     });
+
+    window.addEventListener('resize', handleViewportChange, { passive: true });
+    mobileMq.addEventListener('change', handleViewportChange);
   </script>
 
 </body>
