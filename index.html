@@ -30,22 +30,26 @@
           <span class="logo__sub">«Май» · Пермь</span>
         </span>
       </a>
-      <nav class="nav">
+      <nav class="nav" id="siteNav" aria-label="Основное меню">
         <a href="#about" class="nav__link">О нас</a>
         <a href="#consultation" class="nav__link">Консультация</a>
         <a href="#services" class="nav__link">Услуги</a>
         <a href="#reviews" class="nav__link">Отзывы</a>
         <a href="#contacts" class="nav__link">Контакты</a>
         <a href="admin/" class="nav__link nav__link--staff">Вход для сотрудников</a>
+        <div class="nav__actions">
+          <a href="https://vk.com/id838426893" target="_blank" rel="noopener" class="btn btn--primary btn--small nav__cta">Записаться</a>
+        </div>
       </nav>
       <div class="header__actions">
         <a href="admin/" class="btn btn--ghost btn--small header__admin">Вход для сотрудников</a>
         <a href="https://vk.com/id838426893" target="_blank" rel="noopener" class="btn btn--small header__cta">Записаться</a>
       </div>
-      <button class="burger" aria-label="Открыть меню" aria-expanded="false">
+      <button class="burger" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="siteNav">
         <span></span><span></span><span></span>
       </button>
     </div>
+    <button type="button" class="nav-backdrop" id="navBackdrop" aria-hidden="true" tabindex="-1" hidden></button>
   </header>
 
   <!-- Первый экран -->
@@ -934,6 +938,7 @@
   <script>
     const burger = document.querySelector('.burger');
     const nav = document.querySelector('.nav');
+    const navBackdrop = document.getElementById('navBackdrop');
     const header = document.querySelector('.header');
     const mobileMq = window.matchMedia('(max-width: 768px)');
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -948,7 +953,13 @@
       if (!nav || !burger) return;
 
       nav.classList.toggle('nav--open', open);
+      header?.classList.toggle('header--menu-open', open);
+      if (navBackdrop) {
+        navBackdrop.hidden = !open;
+        navBackdrop.setAttribute('aria-hidden', String(!open));
+      }
       burger.setAttribute('aria-expanded', String(open));
+      burger.setAttribute('aria-label', open ? 'Закрыть меню' : 'Открыть меню');
       document.documentElement.classList.toggle('menu-open', open);
 
       if (open) {
@@ -966,7 +977,9 @@
       setMenuOpen(!nav.classList.contains('nav--open'));
     });
 
-    nav?.querySelectorAll('.nav__link').forEach(link => {
+    navBackdrop?.addEventListener('click', () => setMenuOpen(false));
+
+    nav?.querySelectorAll('.nav__link, .nav__actions a').forEach(link => {
       link.addEventListener('click', () => setMenuOpen(false));
     });
 
