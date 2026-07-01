@@ -396,27 +396,31 @@ ul {
   line-height: 0;
 }
 
+.brand-title-wrap {
+  display: block;
+  line-height: 0;
+  background: transparent;
+}
+
+.brand-title-wrap--header {
+  width: clamp(220px, 32vw, 320px);
+}
+
+.brand-title-wrap--hero {
+  width: min(100%, 860px);
+}
+
 .brand-title-img {
   display: block;
-  width: auto;
-  max-width: 100%;
+  width: 100%;
   height: auto;
-  object-fit: contain;
-}
-
-.brand-title-img--header {
-  height: clamp(30px, 4.2vw, 42px);
-  width: auto;
-}
-
-.brand-title-img--hero {
-  height: clamp(52px, 8.5vw, 92px);
-  width: auto;
+  max-width: 100%;
 }
 
 .hero__site-name {
   margin: 0;
   line-height: 0;
+  width: 100%;
 }
 
 .logo__sub {
@@ -2996,8 +3000,8 @@ html.review-modal-open body {
     margin: 0;
   }
 
-  .brand-title-img--hero {
-    height: clamp(44px, 9vw, 68px);
+  .brand-title-wrap--hero {
+    width: min(100%, 620px);
   }
 
   .hero__title--slogan {
@@ -3503,8 +3507,12 @@ html.review-modal-open body {
 }
 
 @media (max-width: 480px) {
-  .brand-title-img--header {
-    height: clamp(26px, 5vw, 34px);
+  .brand-title-wrap--header {
+    width: clamp(180px, 48vw, 260px);
+  }
+
+  .brand-title-wrap--hero {
+    width: min(100%, 520px);
   }
 
   .logo__mark {
