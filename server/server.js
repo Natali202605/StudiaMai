@@ -40,6 +40,7 @@ const DEFAULT_IMAGES = {
   service_brows: 'images/browi-resnitsy.png',
   service_cosmetology: 'images/kosmetologiya.png',
   service_massage: 'images/massazh.png',
+  service_trichology: 'images/volosy.png',
   service_depilation: 'images/massazh.png',
   master_portrait: 'images/galina-portret.png',
   master_card: 'images/galina-bolotova.png',

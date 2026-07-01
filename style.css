@@ -1521,7 +1521,8 @@ ul {
 .service-card:nth-child(1) { border-color: rgba(168, 196, 184, 0.5); background: var(--card-gradient-mint); }
 .service-card:nth-child(2) { border-color: rgba(141, 155, 132, 0.45); background: var(--card-gradient-beige); }
 .service-card:nth-child(3) { border-color: rgba(220, 203, 195, 0.55); background: var(--card-gradient-warm); }
-.service-card:nth-child(4) { border-color: rgba(232, 223, 212, 0.6); background: var(--card-gradient-soft); }
+.service-card:nth-child(4) { border-color: rgba(200, 185, 165, 0.55); background: var(--card-gradient-beige); }
+.service-card:nth-child(5) { border-color: rgba(232, 223, 212, 0.6); background: var(--card-gradient-soft); }
 
 .service-card::before {
   content: '';
@@ -1557,7 +1558,8 @@ ul {
 .service-card:nth-child(1)::before { background: linear-gradient(180deg, #A8C4B8, #8D9B84); }
 .service-card:nth-child(2)::before { background: linear-gradient(180deg, #8D9B84, #6E7D66); }
 .service-card:nth-child(3)::before { background: linear-gradient(180deg, #DCCBC3, #A8C4B8); }
-.service-card:nth-child(4)::before { background: linear-gradient(180deg, #EDE4DE, #8D9B84); }
+.service-card:nth-child(4)::before { background: linear-gradient(180deg, #C9B59A, #8D9B84); }
+.service-card:nth-child(5)::before { background: linear-gradient(180deg, #EDE4DE, #8D9B84); }
 
 .service-card:hover::before {
   width: 7px;
@@ -1635,6 +1637,14 @@ ul {
 .service-card__prices .price-list {
   padding-top: 8px;
   border-top: 1px solid rgba(0, 212, 168, 0.15);
+}
+
+.service-card__prices--pending {
+  min-height: 56px;
+}
+
+.service-card__prices--pending .price-list {
+  min-height: 24px;
 }
 
 .service-details summary {

@@ -17,6 +17,7 @@
     service_brows: 'Услуга: брови',
     service_cosmetology: 'Услуга: косметология',
     service_massage: 'Услуга: массаж',
+    service_trichology: 'Услуга: трихология',
     service_depilation: 'Услуга: депиляция',
     master_portrait: 'Портрет мастера',
     master_card: 'Визитка',
