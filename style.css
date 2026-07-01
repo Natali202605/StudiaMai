@@ -3104,16 +3104,46 @@ html.review-modal-open body {
 
   .service-card {
     flex-direction: column;
+    content-visibility: auto;
+    contain-intrinsic-size: auto 460px;
   }
 
   .service-card__media {
     flex: none;
     width: 100%;
-    min-height: 180px;
+    min-height: 160px;
+    max-height: 260px;
+  }
+
+  .service-card__media::after {
+    display: none;
   }
 
   .service-card__image {
-    min-height: 180px;
+    min-height: 160px;
+    max-height: 260px;
+    object-position: center center;
+  }
+
+  .service-card__header {
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .service-card__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+  }
+
+  .service-card__icon svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .service-card__title {
+    font-size: clamp(22px, 5.4vw, 28px);
+    overflow-wrap: anywhere;
   }
 }
 
@@ -3140,7 +3170,13 @@ html.review-modal-open body {
   .section::after,
   .footer::after {
     filter: none;
-    opacity: 0.58;
+    opacity: 0.48;
+    background-size: cover;
+    background-attachment: scroll;
+  }
+
+  #services .service-card {
+    transform: translateZ(0);
   }
 
   .section--accent::before,
@@ -3521,8 +3557,18 @@ html.review-modal-open body {
     width: clamp(100px, 34vw, 140px);
   }
 
+  .service-card__title {
+    font-size: clamp(20px, 5.8vw, 24px);
+  }
+
+  .service-card__media,
+  .service-card__image {
+    max-height: 220px;
+    min-height: 140px;
+  }
+
   .brand-title-wrap--hero {
-    width: min(100%, 520px);
+    width: min(100%, 480px);
   }
 
   .logo__mark {

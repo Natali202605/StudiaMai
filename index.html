@@ -265,7 +265,7 @@
         <!-- Брови / услуги Броволога -->
         <div class="service-card">
           <div class="service-card__media">
-            <img src="images/browi-resnitsy.png" alt="Ухоженные брови и ресницы — результат работы мастера" class="service-card__image" data-cms-img="service_brows" loading="lazy" decoding="async">
+            <img src="images/browi-resnitsy.jpg" alt="Ухоженные брови и ресницы — результат работы мастера" class="service-card__image" data-cms-img="service_brows" loading="lazy" decoding="async" fetchpriority="low">
           </div>
           <div class="service-card__body">
           <div class="service-card__header">
@@ -410,7 +410,7 @@
         <!-- Массажи лица -->
         <div class="service-card">
           <div class="service-card__media">
-            <img src="images/massazh.png" alt="Профессиональный массаж лица" class="service-card__image" data-cms-img="service_massage" loading="lazy" decoding="async">
+            <img src="images/massazh.jpg" alt="Профессиональный массаж лица" class="service-card__image" data-cms-img="service_massage" loading="lazy" decoding="async" fetchpriority="low">
           </div>
           <div class="service-card__body">
           <div class="service-card__header">
@@ -452,7 +452,7 @@
         <!-- Лечение и уход за волосами / Услуги Трихолога -->
         <div class="service-card">
           <div class="service-card__media">
-            <img src="images/volosy.png" alt="Лечение и уход за волосами — студия красоты Май" class="service-card__image" data-cms-img="service_trichology" loading="lazy" decoding="async">
+            <img src="images/volosy.jpg" alt="Лечение и уход за волосами — студия красоты Май" class="service-card__image" data-cms-img="service_trichology" loading="lazy" decoding="async" fetchpriority="low">
           </div>
           <div class="service-card__body">
           <div class="service-card__header">
@@ -469,7 +469,7 @@
         <!-- Женская депиляция -->
         <div class="service-card">
           <div class="service-card__media">
-            <img src="images/nogi.png" alt="Женская депиляция — ухоженная кожа" class="service-card__image" data-cms-img="service_depilation" loading="lazy" decoding="async">
+            <img src="images/nogi.jpg" alt="Женская депиляция — ухоженная кожа" class="service-card__image" data-cms-img="service_depilation" loading="lazy" decoding="async" fetchpriority="low">
           </div>
           <div class="service-card__body">
           <div class="service-card__header">
@@ -1038,7 +1038,7 @@
           reviewSlideWidth = 0;
           reviewSliderApi.syncReviewSlider();
         }
-      }, isMobile() ? 220 : 120);
+      }, isMobile() ? 280 : 120);
     }
 
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -1358,9 +1358,9 @@
       }, { once: true });
 
       const reviewsReveal = track.closest('.reveal');
-      if (viewport && typeof ResizeObserver !== 'undefined') {
+      if (viewport && typeof ResizeObserver !== 'undefined' && !isMobile()) {
         let resizeTimer = null;
-        const resizeDelay = isMobile() ? 280 : 160;
+        const resizeDelay = 160;
         const reviewResizeObs = new ResizeObserver(() => {
           clearTimeout(resizeTimer);
           resizeTimer = setTimeout(() => {
