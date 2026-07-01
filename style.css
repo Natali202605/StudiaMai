@@ -1799,10 +1799,18 @@ ul {
 }
 
 .rituals__media {
-  flex: 0 0 32%;
+  flex: 0 0 38%;
   min-height: 220px;
   overflow: hidden;
   position: relative;
+}
+
+.rituals__media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 55%, rgba(255, 255, 255, 0.35) 100%);
+  pointer-events: none;
 }
 
 .rituals__image {
@@ -3179,6 +3187,10 @@ html.review-modal-open body {
     width: 100%;
     min-height: 160px;
     max-height: 260px;
+  }
+
+  .rituals__media::after {
+    display: none;
   }
 
   .rituals__image {
