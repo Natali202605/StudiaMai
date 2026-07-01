@@ -3281,8 +3281,7 @@ html.review-modal-open body {
 
   .service-card {
     flex-direction: column;
-    content-visibility: auto;
-    contain-intrinsic-size: auto 460px;
+    contain: layout style;
   }
 
   .service-card__media {
@@ -3368,23 +3367,23 @@ html.review-modal-open body {
   body {
     font-size: 16px;
     line-height: 1.75;
+    text-rendering: auto;
   }
 
-  .hero__accent {
+  .section::after,
+  .footer::after {
     display: none;
   }
 
-  .hero__bg,
-  .section::after,
-  .footer::after {
+  .hero__bg {
     filter: none;
     opacity: 0.48;
     background-size: cover;
     background-attachment: scroll;
   }
 
-  #services .service-card {
-    transform: translateZ(0);
+  .hero__accent {
+    display: none;
   }
 
   .section--accent::before,
@@ -3394,7 +3393,14 @@ html.review-modal-open body {
 
   .section {
     content-visibility: auto;
-    contain-intrinsic-size: auto 520px;
+    contain-intrinsic-size: auto 480px;
+  }
+
+  #hero,
+  #services,
+  #reviews,
+  .rituals {
+    content-visibility: visible;
   }
 
   .hero,
@@ -3427,14 +3433,22 @@ html.review-modal-open body {
   .reviews-slider__viewport {
     touch-action: pan-y;
     --review-slide-width: 100%;
+    box-shadow: var(--shadow-sm), var(--shadow-inner);
+  }
+
+  .reviews-slider__viewport::before,
+  .reviews-slider__viewport::after {
+    display: none;
   }
 
   .reviews-slider__track {
     transition: transform 0.32s cubic-bezier(0.33, 1, 0.68, 1);
     touch-action: pan-y;
+    contain: layout style;
   }
 
   .reviews-slider .review-card {
+    contain: layout style paint;
     flex: 0 0 var(--review-slide-width, 100%);
     width: var(--review-slide-width, 100%);
     min-width: var(--review-slide-width, 100%);
@@ -4250,6 +4264,17 @@ html.review-modal-open body {
 
   .btn {
     box-shadow: 0 3px 12px rgba(0, 120, 90, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  }
+
+  .btn--primary,
+  .btn--light {
+    box-shadow: 0 3px 12px rgba(0, 120, 90, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    text-shadow: none;
+  }
+
+  .btn--ghost,
+  .btn--ghost-light {
+    box-shadow: 0 2px 10px rgba(0, 120, 90, 0.12);
   }
 
 }

@@ -15,7 +15,8 @@
   <title>Студия красоты «Май» — Красота, в которой комфортно оставаться собой</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet"></noscript>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -107,7 +108,7 @@
             </div>
           </div>
           <div class="hero__body-media">
-            <img src="images/hero-studio.png" alt="Рабочее место студии красоты «Май»" class="hero__body-photo" data-cms-img="hero_studio">
+            <img src="images/hero-studio.png" alt="Рабочее место студии красоты «Май»" class="hero__body-photo" data-cms-img="hero_studio" width="800" height="600" decoding="async" loading="lazy">
           </div>
         </div>
       </div>
@@ -334,7 +335,7 @@
         <!-- Косметологические процедуры -->
         <div class="service-card">
           <div class="service-card__media">
-            <img src="images/kosmetologiya.png" alt="Рабочее место косметолога — студия красоты Май" class="service-card__image" data-cms-img="service_cosmetology" loading="lazy" decoding="async">
+            <img src="images/kosmetologiya.png" alt="Рабочее место косметолога — студия красоты Май" class="service-card__image" data-cms-img="service_cosmetology" loading="lazy" decoding="async" fetchpriority="low">
           </div>
           <div class="service-card__body">
           <div class="service-card__header">
@@ -1044,14 +1045,11 @@
         if (!isMobile() && nav?.classList.contains('nav--open')) {
           setMenuOpen(false);
         }
-        if (isMobile() || prefersReducedMotion.matches) {
-          revealEls.forEach(el => el.classList.add('is-visible'));
-        }
         if (reviewSliderApi?.syncReviewSlider) {
           reviewSlideWidth = 0;
           reviewSliderApi.syncReviewSlider();
         }
-      }, isMobile() ? 280 : 120);
+      }, isMobile() ? 200 : 120);
     }
 
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -1226,7 +1224,11 @@
 
       function getReviewSlideWidth() {
         const measureEl = viewport || track.parentElement || track;
-        const width = Math.round(measureEl.getBoundingClientRect().width || measureEl.offsetWidth);
+        const width = Math.round(
+          isMobile() && viewport
+            ? viewport.clientWidth
+            : (measureEl.getBoundingClientRect().width || measureEl.offsetWidth)
+        );
         if (!width) return 0;
         if (width === reviewSlideWidth) return reviewSlideWidth;
         reviewSlideWidth = width;
@@ -1371,9 +1373,9 @@
       }, { once: true });
 
       const reviewsReveal = track.closest('.reveal');
-      if (viewport && typeof ResizeObserver !== 'undefined' && !isMobile()) {
+      if (viewport && typeof ResizeObserver !== 'undefined') {
         let resizeTimer = null;
-        const resizeDelay = 160;
+        const resizeDelay = isMobile() ? 200 : 160;
         const reviewResizeObs = new ResizeObserver(() => {
           clearTimeout(resizeTimer);
           resizeTimer = setTimeout(() => {
@@ -1626,6 +1628,9 @@
 
     window.addEventListener('resize', handleViewportChange, { passive: true });
     mobileMq.addEventListener('change', handleViewportChange);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleViewportChange, { passive: true });
+    }
   </script>
 
 </body>
