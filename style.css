@@ -403,7 +403,7 @@ ul {
 }
 
 .brand-title-wrap--header {
-  width: clamp(220px, 32vw, 320px);
+  width: clamp(110px, 12vw, 150px);
 }
 
 .brand-title-wrap--hero {
@@ -3508,7 +3508,7 @@ html.review-modal-open body {
 
 @media (max-width: 480px) {
   .brand-title-wrap--header {
-    width: clamp(180px, 48vw, 260px);
+    width: clamp(100px, 34vw, 140px);
   }
 
   .brand-title-wrap--hero {
