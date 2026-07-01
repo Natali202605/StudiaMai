@@ -1786,8 +1786,7 @@ ul {
 
 .rituals {
   display: flex;
-  flex-direction: row;
-  align-items: stretch;
+  flex-direction: column;
   background: var(--card-gradient-warm);
   border: var(--border-mint);
   border-radius: var(--radius-xl);
@@ -1796,6 +1795,12 @@ ul {
   box-shadow: var(--shadow), var(--shadow-inner);
   margin-top: 8px;
   position: relative;
+}
+
+.rituals__head {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
 }
 
 .rituals__media {
@@ -1820,19 +1825,6 @@ ul {
   object-fit: cover;
 }
 
-.rituals__body {
-  flex: 1;
-  min-width: 0;
-  padding: clamp(32px, 5vw, 44px);
-  overflow: visible;
-}
-
-@media (max-width: 1200px) and (min-width: 993px) {
-  .rituals__media {
-    flex: 0 0 32%;
-  }
-}
-
 .rituals::before {
   content: '';
   position: absolute;
@@ -1843,15 +1835,60 @@ ul {
   height: 3px;
   border-radius: 0 0 4px 4px;
   background: linear-gradient(90deg, var(--color-mint), var(--color-accent));
+  z-index: 2;
 }
 
 .rituals__title {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: clamp(28px, 4vw, 40px);
   font-family: var(--font-serif);
-  font-size: clamp(28px, 3.5vw, 38px);
+  font-size: clamp(26px, 3.2vw, 36px);
   font-weight: 500;
-  margin-bottom: 24px;
   text-align: left;
   line-height: 1.2;
+  display: flex;
+  align-items: center;
+}
+
+.rituals .price-list--inline {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(12px, 1.6vw, 20px);
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: clamp(20px, 3vw, 28px) clamp(24px, 3.5vw, 36px) clamp(28px, 4vw, 36px);
+  border-top: 1px solid rgba(0, 212, 168, 0.12);
+  box-sizing: border-box;
+}
+
+.rituals .price-list--inline .price-item {
+  min-width: 0;
+  padding: clamp(16px, 2vw, 20px);
+  background: var(--card-gradient-soft);
+  border-radius: var(--radius);
+  border: var(--border-mint);
+  border-bottom: var(--border-mint);
+}
+
+.rituals .price-list--inline .price-item__row {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.rituals .price-list--inline .price-item__name {
+  width: 100%;
+  line-height: 1.35;
+  overflow-wrap: break-word;
+}
+
+.rituals .price-list--inline .price-item__price {
+  font-family: var(--font-serif);
+  font-size: clamp(17px, 1.7vw, 20px);
+  white-space: normal;
 }
 
 .price-list--inline {
@@ -1869,24 +1906,6 @@ ul {
   border-radius: var(--radius);
   border: var(--border-mint);
   border-bottom: var(--border-mint);
-}
-
-.rituals .price-list--inline .price-item__row {
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 6px 10px;
-}
-
-.rituals .price-list--inline .price-item__name {
-  flex: 1 1 100%;
-  line-height: 1.35;
-  overflow-wrap: break-word;
-}
-
-.rituals .price-list--inline .price-item__price {
-  flex: 0 0 auto;
-  font-size: clamp(17px, 1.7vw, 20px);
-  white-space: normal;
 }
 
 .price-list--inline .price-item__price {
@@ -3210,6 +3229,10 @@ html.review-modal-open body {
     flex-direction: column;
   }
 
+  .rituals__head {
+    flex-direction: column;
+  }
+
   .rituals__media {
     flex: none;
     width: 100%;
@@ -3227,8 +3250,9 @@ html.review-modal-open body {
     object-position: center center;
   }
 
-  .rituals__body {
-    padding: clamp(28px, 5vw, 36px);
+  .rituals__title {
+    padding: clamp(24px, 4vw, 32px);
+    align-items: flex-start;
   }
 
   .rituals .price-list--inline {
@@ -3705,8 +3729,12 @@ html.review-modal-open body {
     padding: 0;
   }
 
-  .rituals__body {
-    padding: 28px 24px;
+  .rituals__title {
+    padding: 24px 24px 0;
+  }
+
+  .rituals .price-list--inline {
+    padding: 20px 24px 24px;
   }
 
   .rituals__media,
