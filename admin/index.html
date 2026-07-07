@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="admin.css?v=simple5">
+  <link rel="stylesheet" href="admin.css?v=simple6">
   <script>
     var STUDIA_MAI_USER = 'admin';
     var STUDIA_MAI_PASS = 'Mai2026!';
@@ -472,6 +472,18 @@
         </div>
 
         <div class="admin__edit-block">
+          <h3 class="admin__subtitle">Прайс-листы новых карточек</h3>
+          <p class="admin__msg admin__msg--compact">Заполните услуги для карточек, которые пока пустые на сайте (например, трихология). Позиции отображаются в том же стиле, что и остальные услуги.</p>
+          <div id="servicesEditor"></div>
+          <p class="admin__msg" id="servicesMsg" hidden></p>
+          <div class="admin__toolbar">
+            <button type="button" class="admin-btn admin-btn--primary" onclick="return studiaMaiSaveServices()">Сохранить прайс</button>
+            <button type="button" class="admin-btn admin-btn--ghost" onclick="return studiaMaiResetServices()">Сбросить прайс</button>
+            <button type="button" class="admin-btn admin-btn--ghost" onclick="return studiaMaiExportServices()">Скачать services.json</button>
+          </div>
+        </div>
+
+        <div class="admin__edit-block">
           <h3 class="admin__subtitle">Фото</h3>
           <p class="admin__msg admin__msg--compact">Логотип, услуги, портрет мастера и другие изображения. Можно указать путь к файлу или загрузить новое (до 2 МБ).</p>
           <div class="admin__photos" id="photosGrid"></div>
@@ -550,7 +562,7 @@
       </section>
     </main>
   </div>
-  <script src="../js/site-api.js?v=cms2"></script>
-  <script src="admin-panel.js?v=3"></script>
+  <script src="../js/site-api.js?v=cms3"></script>
+  <script src="admin-panel.js?v=4"></script>
 </body>
 </html>

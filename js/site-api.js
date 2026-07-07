@@ -3,6 +3,7 @@
   const DATA_BASE = window.STUDIA_MAI_DATA_BASE || 'data';
   const STORAGE_CONTENT = 'studia_mai_cms_content';
   const STORAGE_IMAGES = 'studia_mai_cms_images';
+  const STORAGE_SERVICES = 'studia_mai_cms_services';
   const STORAGE_CONFIG = 'studia_mai_site_config';
   const STORAGE_BOOKINGS = 'studia_mai_bookings_local';
   const DEFAULT_ADMIN_EMAIL = 'brow_studia_may@mail.ru';
@@ -97,10 +98,102 @@
     });
   }
 
+  function escapeHtml(str) {
+    return String(str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function buildPriceItemHtml(item) {
+    if (item.type === 'subtitle') {
+      const text = item.text || '';
+      if (!text) return '';
+      return `<li class="price-list__subtitle">${escapeHtml(text)}</li>`;
+    }
+
+    const name = item.name || '';
+    if (!name && !item.price && !item.time && !item.details) return '';
+
+    let priceClass = 'price-item__price';
+    const price = item.price || '';
+    if (/^(от\s*)?0\s*₽|бесплатн/i.test(price)) priceClass += ' price-free';
+
+    let html = '<li class="price-item">';
+    html += '<div class="price-item__row">';
+    html += `<span class="price-item__name">${escapeHtml(name)}</span>`;
+    if (price) html += `<span class="${priceClass}">${escapeHtml(price)}</span>`;
+    html += '</div>';
+    if (item.time) html += `<span class="price-item__time">${escapeHtml(item.time)}</span>`;
+    if (item.details) {
+      html += `<details class="price-item__details"><summary>Подробнее</summary><p>${escapeHtml(item.details)}</p></details>`;
+    }
+    html += '</li>';
+    return html;
+  }
+
+  function normalizeServiceItems(items) {
+    if (!Array.isArray(items)) return [];
+    return items.map((item) => {
+      if (!item || typeof item !== 'object') return null;
+      if (item.type === 'subtitle' || (item.text && !item.name)) {
+        return { type: 'subtitle', text: String(item.text || item.subtitle || '').trim() };
+      }
+      return {
+        type: 'item',
+        name: String(item.name || '').trim(),
+        price: String(item.price || '').trim(),
+        time: String(item.time || '').trim(),
+        details: String(item.details || '').trim()
+      };
+    }).filter(Boolean);
+  }
+
+  function applyServices(services) {
+    if (!services) return;
+
+    document.querySelectorAll('[data-service-prices]').forEach((ul) => {
+      const key = ul.dataset.servicePrices;
+      const data = services[key];
+      const items = normalizeServiceItems(data?.items);
+      const pricesWrap = ul.closest('.service-card__prices');
+
+      if (!items.length) {
+        ul.innerHTML = '';
+        if (pricesWrap) pricesWrap.classList.add('service-card__prices--pending');
+        return;
+      }
+
+      ul.innerHTML = items.map(buildPriceItemHtml).filter(Boolean).join('');
+      if (pricesWrap) pricesWrap.classList.remove('service-card__prices--pending');
+    });
+
+    document.querySelectorAll('[data-service-desc]').forEach((el) => {
+      const key = el.dataset.serviceDesc;
+      const desc = services[key]?.desc;
+      if (desc) {
+        el.textContent = desc;
+        el.hidden = false;
+      } else {
+        el.textContent = '';
+        el.hidden = true;
+      }
+    });
+  }
+
+  async function loadServicesData() {
+    const fromFile = await fetchDataJson('services.json');
+    const fromStorage = readStorageJson(STORAGE_SERVICES);
+    return mergeObjects(fromFile || {}, fromStorage || {});
+  }
+
   async function loadCms() {
     const data = await loadContentData();
+    const services = await loadServicesData();
     applyContent(data.content);
     applyImages(data.images);
+    applyServices(services);
   }
 
   function getFormData(form) {
@@ -281,15 +374,18 @@
   window.StudiaMaiSite = {
     loadCms,
     loadContentData,
+    loadServicesData,
     loadSiteConfig,
     applyContent,
     applyImages,
+    applyServices,
     readLocalBookings,
     saveLocalBookings,
     sendAdminEmail: (subject, message) => notifyEmail({ notificationEmail: DEFAULT_ADMIN_EMAIL }, subject, message),
     DEFAULT_ADMIN_EMAIL,
     STORAGE_CONTENT,
     STORAGE_IMAGES,
+    STORAGE_SERVICES,
     STORAGE_CONFIG,
     STORAGE_BOOKINGS
   };

@@ -24,6 +24,13 @@
     master_certificates: 'Сертификаты'
   };
 
+  var SERVICE_LABELS = {
+    trichology: {
+      title: 'Трихология — лечение и уход за волосами',
+      hint: 'Карточка «Услуги Трихолога» на сайте. Позиции отображаются в том же стиле, что и остальные услуги.'
+    }
+  };
+
   var STATUS_LABELS = {
     new: 'Новая',
     done: 'Обработана',
@@ -34,6 +41,7 @@
   var DEFAULT_NOTIFY_EMAIL = 'brow_studia_may@mail.ru';
   var baseContent = {};
   var baseImages = {};
+  var baseServices = {};
   var baseConfig = {};
   var bookingsCache = [];
   var selectedBookingId = null;
@@ -110,6 +118,218 @@
     storageSet(window.StudiaMaiSite ? window.StudiaMaiSite.STORAGE_IMAGES : 'studia_mai_cms_images', JSON.stringify(images));
     if (window.StudiaMaiSite) window.StudiaMaiSite.applyImages(images);
   }
+
+  function normalizeServiceItem(item) {
+    if (!item || typeof item !== 'object') return null;
+    if (item.type === 'subtitle' || (item.text && !item.name)) {
+      return { type: 'subtitle', text: String(item.text || item.subtitle || '').trim() };
+    }
+    return {
+      type: 'item',
+      name: String(item.name || '').trim(),
+      price: String(item.price || '').trim(),
+      time: String(item.time || '').trim(),
+      details: String(item.details || '').trim()
+    };
+  }
+
+  function getServicesState() {
+    var stored = readJson(window.StudiaMaiSite ? window.StudiaMaiSite.STORAGE_SERVICES : 'studia_mai_cms_services') || {};
+    var out = {};
+    var key;
+    for (key in SERVICE_LABELS) {
+      if (!Object.prototype.hasOwnProperty.call(SERVICE_LABELS, key)) continue;
+      var base = baseServices[key] || { desc: '', items: [] };
+      var over = stored[key];
+      var items = over && Array.isArray(over.items) ? over.items : (base.items || []);
+      out[key] = {
+        desc: over && over.desc != null ? over.desc : (base.desc || ''),
+        items: items.map(normalizeServiceItem).filter(Boolean)
+      };
+    }
+    return out;
+  }
+
+  function saveServicesState(services) {
+    storageSet(window.StudiaMaiSite ? window.StudiaMaiSite.STORAGE_SERVICES : 'studia_mai_cms_services', JSON.stringify(services));
+    if (window.StudiaMaiSite && window.StudiaMaiSite.applyServices) {
+      window.StudiaMaiSite.applyServices(services);
+    }
+  }
+
+  function readServicesFromDom() {
+    var services = getServicesState();
+    var key;
+    for (key in SERVICE_LABELS) {
+      if (!Object.prototype.hasOwnProperty.call(SERVICE_LABELS, key)) continue;
+      var descEl = getEl('serviceDesc_' + key);
+      if (descEl) services[key].desc = descEl.value.trim();
+      var rows = document.querySelectorAll('[data-service-row="' + key + '"]');
+      var items = [];
+      var i;
+      for (i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        var rowType = row.getAttribute('data-row-type');
+        if (rowType === 'subtitle') {
+          var textInput = row.querySelector('[data-field="text"]');
+          items.push({ type: 'subtitle', text: textInput ? textInput.value.trim() : '' });
+        } else {
+          items.push({
+            type: 'item',
+            name: (row.querySelector('[data-field="name"]') || {}).value || '',
+            price: (row.querySelector('[data-field="price"]') || {}).value || '',
+            time: (row.querySelector('[data-field="time"]') || {}).value || '',
+            details: (row.querySelector('[data-field="details"]') || {}).value || ''
+          });
+        }
+      }
+      services[key].items = items.map(function (item) {
+        item.name = item.name ? item.name.trim() : '';
+        item.price = item.price ? item.price.trim() : '';
+        item.time = item.time ? item.time.trim() : '';
+        item.details = item.details ? item.details.trim() : '';
+        item.text = item.text ? item.text.trim() : '';
+        return item;
+      }).filter(function (item) {
+        if (item.type === 'subtitle') return Boolean(item.text);
+        return Boolean(item.name || item.price || item.time || item.details);
+      });
+    }
+    return services;
+  }
+
+  function renderServiceItemRow(key, index, item, total) {
+    var html = '<div class="admin__service-item' + (item.type === 'subtitle' ? ' admin__service-item--subtitle' : '') + '" data-service-row="' + key + '" data-row-type="' + (item.type === 'subtitle' ? 'subtitle' : 'item') + '">';
+    html += '<div class="admin__service-item__head">';
+    html += '<span class="admin__service-item__badge">' + (item.type === 'subtitle' ? 'Раздел' : 'Услуга') + '</span>';
+    html += '<div class="admin__service-item__actions">';
+    if (index > 0) {
+      html += '<button type="button" class="admin-btn admin-btn--ghost admin-btn--small" title="Выше" onclick="return studiaMaiMoveServiceItem(\'' + key + '\',' + index + ',-1)">↑</button>';
+    }
+    if (index < total - 1) {
+      html += '<button type="button" class="admin-btn admin-btn--ghost admin-btn--small" title="Ниже" onclick="return studiaMaiMoveServiceItem(\'' + key + '\',' + index + ',1)">↓</button>';
+    }
+    html += '<button type="button" class="admin-btn admin-btn--ghost admin-btn--small" title="Удалить" onclick="return studiaMaiRemoveServiceItem(\'' + key + '\',' + index + ')">×</button>';
+    html += '</div></div>';
+
+    if (item.type === 'subtitle') {
+      html += '<label class="admin__field admin__field--compact"><span>Название раздела</span>';
+      html += '<input type="text" data-field="text" value="' + escapeHtml(item.text || '') + '" placeholder="Например: Диагностика и консультации">';
+      html += '</label>';
+    } else {
+      html += '<div class="admin__service-item__grid">';
+      html += '<label class="admin__field admin__field--compact admin__field--wide"><span>Название услуги</span>';
+      html += '<input type="text" data-field="name" value="' + escapeHtml(item.name || '') + '" placeholder="Например: Консультация трихолога">';
+      html += '</label>';
+      html += '<label class="admin__field admin__field--compact"><span>Цена</span>';
+      html += '<input type="text" data-field="price" value="' + escapeHtml(item.price || '') + '" placeholder="от 1 500 ₽">';
+      html += '</label>';
+      html += '<label class="admin__field admin__field--compact"><span>Время</span>';
+      html += '<input type="text" data-field="time" value="' + escapeHtml(item.time || '') + '" placeholder="1 час">';
+      html += '</label>';
+      html += '</div>';
+      html += '<label class="admin__field admin__field--compact"><span>Описание для «Подробнее» (необязательно)</span>';
+      html += '<textarea data-field="details" rows="2" placeholder="Краткое описание процедуры">' + escapeHtml(item.details || '') + '</textarea>';
+      html += '</label>';
+    }
+
+    html += '</div>';
+    return html;
+  }
+
+  function renderServicesEditor(services) {
+    var box = getEl('servicesEditor');
+    if (!box) return;
+    services = services || getServicesState();
+    var html = '';
+    var key;
+    for (key in SERVICE_LABELS) {
+      if (!Object.prototype.hasOwnProperty.call(SERVICE_LABELS, key)) continue;
+      var meta = SERVICE_LABELS[key];
+      var data = services[key] || { desc: '', items: [] };
+      html += '<div class="admin__service-card" data-service-key="' + key + '">';
+      html += '<h4 class="admin__service-card__title">' + escapeHtml(meta.title) + '</h4>';
+      if (meta.hint) html += '<p class="admin__msg admin__msg--compact">' + escapeHtml(meta.hint) + '</p>';
+      html += '<label class="admin__field"><span>Краткое описание карточки (необязательно)</span>';
+      html += '<textarea id="serviceDesc_' + key + '" rows="2" placeholder="Появится под заголовком карточки, как у депиляции">' + escapeHtml(data.desc || '') + '</textarea>';
+      html += '</label>';
+      html += '<div class="admin__service-list">';
+      var i;
+      for (i = 0; i < data.items.length; i++) {
+        html += renderServiceItemRow(key, i, data.items[i], data.items.length);
+      }
+      if (!data.items.length) {
+        html += '<p class="admin__msg admin__msg--compact">Пока нет позиций. Добавьте услугу или раздел.</p>';
+      }
+      html += '</div>';
+      html += '<div class="admin__toolbar admin__toolbar--compact">';
+      html += '<button type="button" class="admin-btn admin-btn--ghost admin-btn--small" onclick="return studiaMaiAddServiceItem(\'' + key + '\',\'item\')">+ Услуга</button>';
+      html += '<button type="button" class="admin-btn admin-btn--ghost admin-btn--small" onclick="return studiaMaiAddServiceItem(\'' + key + '\',\'subtitle\')">+ Раздел</button>';
+      html += '</div></div>';
+    }
+    box.innerHTML = html;
+  }
+
+  window.studiaMaiAddServiceItem = function (key, type) {
+    var services = readServicesFromDom();
+    if (!services[key]) services[key] = { desc: '', items: [] };
+    if (type === 'subtitle') {
+      services[key].items.push({ type: 'subtitle', text: '' });
+    } else {
+      services[key].items.push({ type: 'item', name: '', price: '', time: '', details: '' });
+    }
+    renderServicesEditor(services);
+    return false;
+  };
+
+  window.studiaMaiRemoveServiceItem = function (key, index) {
+    var services = readServicesFromDom();
+    if (!services[key] || !services[key].items[index]) return false;
+    services[key].items.splice(index, 1);
+    renderServicesEditor(services);
+    return false;
+  };
+
+  window.studiaMaiMoveServiceItem = function (key, index, dir) {
+    var services = readServicesFromDom();
+    var items = services[key] ? services[key].items : [];
+    var newIndex = index + dir;
+    if (newIndex < 0 || newIndex >= items.length) return false;
+    var tmp = items[index];
+    items[index] = items[newIndex];
+    items[newIndex] = tmp;
+    renderServicesEditor(services);
+    return false;
+  };
+
+  window.studiaMaiSaveServices = function () {
+    var services = readServicesFromDom();
+    saveServicesState(services);
+    renderServicesEditor(services);
+    showMsg('servicesMsg', 'Прайс сохранён и применён на сайте (в этом браузере). Для всех посетителей — экспортируйте services.json и обновите сайт.', true);
+    return false;
+  };
+
+  window.studiaMaiResetServices = function () {
+    storageSet(window.StudiaMaiSite ? window.StudiaMaiSite.STORAGE_SERVICES : 'studia_mai_cms_services', '{}');
+    renderServicesEditor();
+    if (window.StudiaMaiSite && window.StudiaMaiSite.applyServices) {
+      window.StudiaMaiSite.applyServices(baseServices);
+    }
+    showMsg('servicesMsg', 'Прайс сброшен к исходному из data/services.json', true);
+    return false;
+  };
+
+  window.studiaMaiExportServices = function () {
+    var blob = new Blob([JSON.stringify(getServicesState(), null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'services.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    showMsg('servicesMsg', 'Файл services.json скачан', true);
+    return false;
+  };
 
   function saveConfigState(config) {
     storageSet(window.StudiaMaiSite ? window.StudiaMaiSite.STORAGE_CONFIG : 'studia_mai_site_config', JSON.stringify(config));
@@ -508,6 +728,7 @@
     var payload = {
       content: getContentState(),
       images: getImagesState(),
+      services: getServicesState(),
       config: getConfigState(),
       bookings: bookingsCache
     };
@@ -525,14 +746,17 @@
     Promise.all([
       fetchJson('../data/content.json'),
       fetchJson('../data/images.json'),
+      fetchJson('../data/services.json'),
       fetchJson('../data/config.json')
     ]).then(function (results) {
       baseContent = results[0] || {};
       baseImages = results[1] || {};
-      baseConfig = results[2] || {};
+      baseServices = results[2] || {};
+      baseConfig = results[3] || {};
       if (!baseConfig.notificationEmail) baseConfig.notificationEmail = DEFAULT_NOTIFY_EMAIL;
       saveConfigState(merge(baseConfig, readJson(window.StudiaMaiSite ? window.StudiaMaiSite.STORAGE_CONFIG : 'studia_mai_site_config') || {}));
       renderContentForm();
+      renderServicesEditor();
       renderPhotosGrid();
       renderNotifyForm();
       return loadBookings();

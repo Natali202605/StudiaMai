@@ -30,8 +30,7 @@
           <span class="logo__mark">
             <span class="brand-title-wrap brand-title-wrap--header">
               <span class="brand-title-composite">
-                <img src="images/brand-title-text.png" alt="Студия Май" class="brand-title-img brand-title-img--header" width="1129" height="343" decoding="async">
-                <img src="images/butterfly-outline.png" alt="" class="brand-title-butterfly" aria-hidden="true">
+                <img src="images/brand-title-composed.png" alt="Студия Май" class="brand-title-img brand-title-img--header" width="1129" height="343" decoding="async">
               </span>
             </span>
           </span>
@@ -73,8 +72,7 @@
           <p class="hero__site-name">
             <span class="brand-title-wrap brand-title-wrap--hero">
               <span class="brand-title-composite">
-                <img src="images/brand-title-text.png" alt="Студия Май" class="brand-title-img brand-title-img--hero" width="1129" height="343" decoding="async">
-                <img src="images/butterfly-outline.png" alt="" class="brand-title-butterfly" aria-hidden="true">
+                <img src="images/brand-title-composed.png" alt="Студия Май" class="brand-title-img brand-title-img--hero" width="1129" height="343" decoding="async">
               </span>
             </span>
           </p>
@@ -474,8 +472,9 @@
             <span class="service-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 20c0-5 2-9 5-11 3 2 5 6 5 11"/><path d="M12 20c0-5 2-9 5-11"/><path d="M17 20c0-4 1-7 3-9"/></svg></span>
             <h3 class="service-card__title">Лечение и уход за волосами / <span class="accent">Услуги Трихолога</span></h3>
           </div>
+          <p class="service-card__desc" data-service-desc="trichology" hidden></p>
           <div class="service-card__prices service-card__prices--pending">
-            <ul class="price-list">
+            <ul class="price-list" data-service-prices="trichology">
             </ul>
           </div>
           </div>
@@ -990,7 +989,7 @@
   </div>
 
   <script src="js/config.js"></script>
-  <script src="js/site-api.js"></script>
+  <script src="js/site-api.js?v=cms3"></script>
   <script>
     const burger = document.querySelector('.burger');
     const nav = document.querySelector('.nav');
