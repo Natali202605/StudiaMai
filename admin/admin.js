@@ -9,6 +9,9 @@
 
   const SERVER_REQUIRED_MSG = 'Админ-панель работает при запущенном сервере. В терминале: cd server && npm install && npm start';
   const TOKEN_KEY = 'studia_mai_admin_token';
+  const LOCAL_CREDENTIALS_KEY = 'studia_mai_admin_local_credentials';
+  const LOCAL_AUTH_TOKEN = 'offline-admin-session';
+  let forceOfflineMode = API === null;
 
   const PHOTO_LABELS = {
     logo: 'Логотип (шапка и подвал)',
@@ -35,6 +38,25 @@
   };
 
   function token() { return localStorage.getItem(TOKEN_KEY); }
+  function isOfflineMode() { return forceOfflineMode || API === null; }
+
+  function getLocalCredentials() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(LOCAL_CREDENTIALS_KEY) || 'null');
+      const username = String(parsed?.username || '').trim();
+      const password = String(parsed?.password || '');
+      if (username && password) return { username, password };
+    } catch {}
+    const defaults = { username: 'admin', password: 'Mai2026!' };
+    localStorage.setItem(LOCAL_CREDENTIALS_KEY, JSON.stringify(defaults));
+    return defaults;
+  }
+
+  function setLocalCredentials(username, password) {
+    const data = { username: String(username || '').trim(), password: String(password || '') };
+    localStorage.setItem(LOCAL_CREDENTIALS_KEY, JSON.stringify(data));
+    return data;
+  }
 
   function escapeHtml(value) {
     return String(value ?? '')
@@ -112,14 +134,17 @@
 
   async function loadAuthStatus() {
     const hint = document.getElementById('loginHint');
-    if (API === null) {
-      if (hint) hint.textContent = SERVER_REQUIRED_MSG;
+    if (isOfflineMode()) {
+      const creds = getLocalCredentials();
+      if (hint) hint.textContent = `Офлайн-режим: вход локально в браузере. Логин: ${creds.username}`;
       return;
     }
     try {
       await api('/api/auth/status');
     } catch (ex) {
-      if (hint) hint.textContent = ex.message;
+      forceOfflineMode = true;
+      const creds = getLocalCredentials();
+      if (hint) hint.textContent = `Офлайн-режим: вход локально в браузере. Логин: ${creds.username}`;
     }
   }
 
@@ -298,6 +323,19 @@
     const fd = new FormData(e.target);
     const err = document.getElementById('loginError');
     hideAuthErrors();
+    if (isOfflineMode()) {
+      const creds = getLocalCredentials();
+      const username = String(fd.get('username') || '').trim();
+      const password = String(fd.get('password') || '');
+      if (username !== creds.username || password !== creds.password) {
+        showAuthError(err, 'Неверный логин или пароль');
+        return;
+      }
+      localStorage.setItem(TOKEN_KEY, LOCAL_AUTH_TOKEN);
+      showApp();
+      refreshAll();
+      return;
+    }
     try {
       const { token: t } = await api('/api/auth/login', {
         method: 'POST',
@@ -310,6 +348,20 @@
       showApp();
       refreshAll();
     } catch (ex) {
+      if (ex.message === SERVER_REQUIRED_MSG || ex.message === 'Ошибка запроса') {
+        forceOfflineMode = true;
+        const creds = getLocalCredentials();
+        const username = String(fd.get('username') || '').trim();
+        const password = String(fd.get('password') || '');
+        if (username !== creds.username || password !== creds.password) {
+          showAuthError(err, 'Неверный логин или пароль');
+          return;
+        }
+        localStorage.setItem(TOKEN_KEY, LOCAL_AUTH_TOKEN);
+        showApp();
+        refreshAll();
+        return;
+      }
       showAuthError(err, ex.message);
     }
   });
@@ -350,6 +402,36 @@
     const msg = document.getElementById('passwordMsg');
     const newUsername = String(fd.get('newUsername') || '').trim();
     const newPassword = fd.get('newPassword');
+    if (isOfflineMode()) {
+      const currentPassword = String(fd.get('currentPassword') || '');
+      const creds = getLocalCredentials();
+      if (currentPassword !== creds.password) {
+        msg.textContent = 'Текущий пароль неверен';
+        msg.className = 'admin__msg';
+        msg.hidden = false;
+        return;
+      }
+      const nextUsername = newUsername || creds.username;
+      const nextPassword = String(newPassword || creds.password);
+      if (nextUsername.length < 3) {
+        msg.textContent = 'Логин — минимум 3 символа';
+        msg.className = 'admin__msg';
+        msg.hidden = false;
+        return;
+      }
+      if (nextPassword.length < 6) {
+        msg.textContent = 'Пароль — минимум 6 символов';
+        msg.className = 'admin__msg';
+        msg.hidden = false;
+        return;
+      }
+      const saved = setLocalCredentials(nextUsername, nextPassword);
+      msg.textContent = `Настройки входа сохранены. Логин: ${saved.username}`;
+      msg.className = 'admin__msg admin__msg--ok';
+      msg.hidden = false;
+      e.target.reset();
+      return;
+    }
     if (!newUsername && !newPassword) {
       msg.textContent = 'Укажите новый логин и/или новый пароль';
       msg.className = 'admin__msg';
@@ -379,12 +461,30 @@
   });
 
   async function refreshAll() {
-    await loadStats();
-    await loadLeads();
-    await loadBookings();
-    await loadContentForm();
-    await loadPhotos();
-    await loadProcedures();
+    if (isOfflineMode()) {
+      document.getElementById('statLeadsNew').textContent = '0';
+      document.getElementById('statBookingsNew').textContent = '0';
+      document.getElementById('statLeadsTotal').textContent = '0';
+      document.getElementById('statBookingsTotal').textContent = '0';
+      document.getElementById('badgeLeads').textContent = '0';
+      document.getElementById('badgeBookings').textContent = '0';
+      document.getElementById('leadsTable').innerHTML = '<p class="admin__msg">Офлайн-режим: данные заявок доступны только при запущенном сервере.</p>';
+      document.getElementById('bookingsTable').innerHTML = '<p class="admin__msg">Офлайн-режим: данные записей доступны только при запущенном сервере.</p>';
+      document.getElementById('photosGrid').innerHTML = '<p class="admin__msg">Офлайн-режим: загрузка фото доступна только при запущенном сервере.</p>';
+      document.getElementById('proceduresList').innerHTML = '<p class="admin__msg">Офлайн-режим: управление процедурами доступно только при запущенном сервере.</p>';
+      return;
+    }
+    try {
+      await loadStats();
+      await loadLeads();
+      await loadBookings();
+      await loadContentForm();
+      await loadPhotos();
+      await loadProcedures();
+    } catch {
+      forceOfflineMode = true;
+      await refreshAll();
+    }
   }
 
   function clearSession() {
@@ -394,7 +494,12 @@
 
   async function tryRestoreSession() {
     showLogin();
-    if (API === null) {
+    if (isOfflineMode()) {
+      if (token() === LOCAL_AUTH_TOKEN) {
+        showApp();
+        await refreshAll();
+        return;
+      }
       clearSession();
       loadAuthStatus();
       return;
