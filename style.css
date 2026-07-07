@@ -410,19 +410,22 @@ ul {
 
 .brand-title-butterfly {
   position: absolute;
-  top: 6%;
-  right: 5.2%;
-  width: 7.4%;
-  height: auto;
+  display: block;
+  top: -10%;
+  right: 7.4%;
+  width: 5.2%;
+  aspect-ratio: 1.05;
+  background: #2a2a2a;
+  -webkit-mask: url('images/babochka-clear.png') center / contain no-repeat;
+  mask: url('images/babochka-clear.png') center / contain no-repeat;
+  transform: rotate(-11deg);
+  transform-origin: 50% 100%;
   z-index: 2;
-  object-fit: contain;
   pointer-events: none;
-  transform: rotate(-10deg);
-  transform-origin: center bottom;
   filter:
-    drop-shadow(1px 1px 0 rgba(195, 195, 195, 0.72))
-    drop-shadow(2px 3px 5px rgba(175, 175, 175, 0.52))
-    drop-shadow(3px 6px 10px rgba(155, 155, 155, 0.32));
+    drop-shadow(1px 1px 0 rgba(200, 200, 200, 0.78))
+    drop-shadow(2px 3px 6px rgba(180, 180, 180, 0.55))
+    drop-shadow(3px 7px 12px rgba(160, 160, 160, 0.32));
 }
 
 .brand-title-wrap--header {
