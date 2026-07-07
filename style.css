@@ -408,51 +408,21 @@ ul {
   line-height: 0;
 }
 
-.brand-title-composite::after {
-  content: '';
-  position: absolute;
-  top: 4%;
-  right: 1.5%;
-  width: 13%;
-  height: 30%;
-  border-radius: 42% 38% 40% 36%;
-  z-index: 1;
-  pointer-events: none;
-}
-
-.brand-title-wrap--header .brand-title-composite::after {
-  background: #faf6f0;
-}
-
-.hero .brand-title-composite::after {
-  background: var(--color-bg);
-}
-
 .brand-title-butterfly {
   position: absolute;
+  top: 6%;
+  right: 5.2%;
+  width: 7.4%;
+  height: auto;
   z-index: 2;
   object-fit: contain;
   pointer-events: none;
-  mix-blend-mode: multiply;
+  transform: rotate(-10deg);
+  transform-origin: center bottom;
   filter:
-    drop-shadow(1px 2px 1px rgba(88, 88, 88, 0.42))
-    drop-shadow(2px 4px 7px rgba(168, 168, 168, 0.38));
-}
-
-.brand-title-butterfly--header {
-  top: -20%;
-  right: -4%;
-  width: 24%;
-  transform: rotate(-10deg);
-  transform-origin: center;
-}
-
-.brand-title-butterfly--hero {
-  top: -14%;
-  right: -1%;
-  width: 12.5%;
-  transform: rotate(-10deg);
-  transform-origin: center;
+    drop-shadow(1px 1px 0 rgba(195, 195, 195, 0.72))
+    drop-shadow(2px 3px 5px rgba(175, 175, 175, 0.52))
+    drop-shadow(3px 6px 10px rgba(155, 155, 155, 0.32));
 }
 
 .brand-title-wrap--header {
@@ -3857,18 +3827,6 @@ html.review-modal-open body {
 
   .brand-title-wrap--hero {
     width: min(100%, 480px);
-  }
-
-  .brand-title-butterfly--header {
-    top: -18%;
-    right: -3%;
-    width: 26%;
-  }
-
-  .brand-title-butterfly--hero {
-    top: -12%;
-    right: 0;
-    width: 14%;
   }
 
   .logo__mark {
