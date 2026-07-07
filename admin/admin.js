@@ -11,6 +11,8 @@
   const TOKEN_KEY = 'studia_mai_admin_token';
   const LOCAL_CREDENTIALS_KEY = 'studia_mai_admin_local_credentials';
   const LOCAL_AUTH_TOKEN = 'offline-admin-session';
+  const OFFLINE_FALLBACK_USERNAME = 'admin';
+  const OFFLINE_FALLBACK_PASSWORD = 'Mai2026!';
   let forceOfflineMode = API === null;
 
   const PHOTO_LABELS = {
@@ -56,6 +58,14 @@
     const data = { username: String(username || '').trim(), password: String(password || '') };
     localStorage.setItem(LOCAL_CREDENTIALS_KEY, JSON.stringify(data));
     return data;
+  }
+
+  function matchesOfflineCredentials(username, password) {
+    const creds = getLocalCredentials();
+    return (
+      (username === creds.username && password === creds.password) ||
+      (username === OFFLINE_FALLBACK_USERNAME && password === OFFLINE_FALLBACK_PASSWORD)
+    );
   }
 
   function escapeHtml(value) {
@@ -136,7 +146,7 @@
     const hint = document.getElementById('loginHint');
     if (isOfflineMode()) {
       const creds = getLocalCredentials();
-      if (hint) hint.textContent = `Офлайн-режим: вход локально в браузере. Логин: ${creds.username}`;
+      if (hint) hint.textContent = `Офлайн-режим: вход локально в браузере. Логин: ${creds.username} (резерв: ${OFFLINE_FALLBACK_USERNAME})`;
       return;
     }
     try {
@@ -144,7 +154,7 @@
     } catch (ex) {
       forceOfflineMode = true;
       const creds = getLocalCredentials();
-      if (hint) hint.textContent = `Офлайн-режим: вход локально в браузере. Логин: ${creds.username}`;
+      if (hint) hint.textContent = `Офлайн-режим: вход локально в браузере. Логин: ${creds.username} (резерв: ${OFFLINE_FALLBACK_USERNAME})`;
     }
   }
 
@@ -324,13 +334,13 @@
     const err = document.getElementById('loginError');
     hideAuthErrors();
     if (isOfflineMode()) {
-      const creds = getLocalCredentials();
       const username = String(fd.get('username') || '').trim();
       const password = String(fd.get('password') || '');
-      if (username !== creds.username || password !== creds.password) {
+      if (!matchesOfflineCredentials(username, password)) {
         showAuthError(err, 'Неверный логин или пароль');
         return;
       }
+      setLocalCredentials(username, password);
       localStorage.setItem(TOKEN_KEY, LOCAL_AUTH_TOKEN);
       showApp();
       refreshAll();
@@ -350,13 +360,13 @@
     } catch (ex) {
       if (ex.message === SERVER_REQUIRED_MSG || ex.message === 'Ошибка запроса') {
         forceOfflineMode = true;
-        const creds = getLocalCredentials();
         const username = String(fd.get('username') || '').trim();
         const password = String(fd.get('password') || '');
-        if (username !== creds.username || password !== creds.password) {
+        if (!matchesOfflineCredentials(username, password)) {
           showAuthError(err, 'Неверный логин или пароль');
           return;
         }
+        setLocalCredentials(username, password);
         localStorage.setItem(TOKEN_KEY, LOCAL_AUTH_TOKEN);
         showApp();
         refreshAll();
