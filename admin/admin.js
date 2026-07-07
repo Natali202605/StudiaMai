@@ -1,4 +1,5 @@
 (function () {
+  window.__studiaMaiAdminBooted = true;
   const API = (() => {
     if (typeof window.STUDIA_MAI_API === 'string') return window.STUDIA_MAI_API;
     if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {

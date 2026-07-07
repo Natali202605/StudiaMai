@@ -124,5 +124,67 @@
 
   <script src="../js/config.js"></script>
   <script src="admin.js?v=20260707-2"></script>
+  <script>
+    (function () {
+      const BOOT_FLAG = '__studiaMaiAdminBooted';
+      const TOKEN_KEY = 'studia_mai_admin_token';
+      const LOCAL_CREDENTIALS_KEY = 'studia_mai_admin_local_credentials';
+      const LOCAL_AUTH_TOKEN = 'offline-admin-session';
+      const DEFAULT_USERNAME = 'admin';
+      const DEFAULT_PASSWORD = 'Mai2026!';
+
+      function ensureCreds() {
+        try {
+          const parsed = JSON.parse(localStorage.getItem(LOCAL_CREDENTIALS_KEY) || 'null');
+          const username = String((parsed && parsed.username) || '').trim();
+          const password = String((parsed && parsed.password) || '');
+          if (username && password) return { username: username, password: password };
+        } catch (e) {}
+        const defaults = { username: DEFAULT_USERNAME, password: DEFAULT_PASSWORD };
+        localStorage.setItem(LOCAL_CREDENTIALS_KEY, JSON.stringify(defaults));
+        return defaults;
+      }
+
+      window.addEventListener('DOMContentLoaded', function () {
+        if (window[BOOT_FLAG]) return;
+
+        const loginForm = document.getElementById('loginForm');
+        const loginScreen = document.getElementById('loginScreen');
+        const adminApp = document.getElementById('adminApp');
+        const loginError = document.getElementById('loginError');
+        const loginHint = document.getElementById('loginHint');
+
+        const creds = ensureCreds();
+        if (loginHint) {
+          loginHint.textContent = 'Офлайн-режим: вход локально в браузере. Логин: ' + creds.username + ' (резерв: ' + DEFAULT_USERNAME + ')';
+        }
+
+        if (!loginForm) return;
+        loginForm.addEventListener('submit', function (e) {
+          e.preventDefault();
+          if (loginError) loginError.hidden = true;
+          const fd = new FormData(loginForm);
+          const username = String(fd.get('username') || '').trim();
+          const password = String(fd.get('password') || '');
+          const valid = (
+            (username === creds.username && password === creds.password) ||
+            (username === DEFAULT_USERNAME && password === DEFAULT_PASSWORD)
+          );
+          if (!valid) {
+            if (loginError) {
+              loginError.textContent = 'Неверный логин или пароль';
+              loginError.hidden = false;
+            }
+            return;
+          }
+
+          localStorage.setItem(LOCAL_CREDENTIALS_KEY, JSON.stringify({ username: username, password: password }));
+          localStorage.setItem(TOKEN_KEY, LOCAL_AUTH_TOKEN);
+          if (loginScreen) loginScreen.hidden = true;
+          if (adminApp) adminApp.hidden = false;
+        });
+      });
+    })();
+  </script>
 </body>
 </html>
