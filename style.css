@@ -411,17 +411,17 @@ ul {
 .brand-title-butterfly {
   position: absolute;
   display: block;
-  top: 2.5%;
-  right: 4.6%;
-  width: 6.8%;
+  top: 0.2%;
+  right: 0.3%;
+  width: 10.2%;
   height: auto;
   border: 0;
   padding: 0;
   margin: 0;
   background: transparent;
   object-fit: contain;
-  transform: rotate(-14deg);
-  transform-origin: 50% 88%;
+  transform: rotate(-12deg);
+  transform-origin: 50% 92%;
   z-index: 2;
   pointer-events: none;
   filter:
