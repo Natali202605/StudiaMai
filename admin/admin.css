@@ -118,6 +118,11 @@ body {
   background: #fff;
 }
 
+.admin__field input[readonly] {
+  background: rgba(209, 250, 229, 0.35);
+  color: var(--adm-muted);
+}
+
 .login__password-wrap {
   position: relative;
   display: block;

@@ -5,6 +5,7 @@
   const STORAGE_IMAGES = 'studia_mai_cms_images';
   const STORAGE_CONFIG = 'studia_mai_site_config';
   const STORAGE_BOOKINGS = 'studia_mai_bookings_local';
+  const DEFAULT_ADMIN_EMAIL = 'brow_studia_may@mail.ru';
 
   function storageGet(key) {
     try { return localStorage.getItem(key); } catch { return null; }
@@ -54,7 +55,9 @@
   async function loadSiteConfig() {
     const fromFile = await fetchDataJson('config.json');
     const fromStorage = readStorageJson(STORAGE_CONFIG);
-    return mergeObjects(fromFile || {}, fromStorage || {});
+    const merged = mergeObjects(fromFile || {}, fromStorage || {});
+    if (!merged.notificationEmail) merged.notificationEmail = DEFAULT_ADMIN_EMAIL;
+    return merged;
   }
 
   async function loadContentData() {
@@ -145,6 +148,27 @@
     saveLocalBookings(list.slice(0, 200));
   }
 
+  async function notifyEmail(config, subject, message) {
+    const email = config.notificationEmail || DEFAULT_ADMIN_EMAIL;
+    try {
+      const res = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(email)}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          _subject: subject,
+          _captcha: 'false',
+          message
+        })
+      });
+      return res.ok;
+    } catch {
+      return false;
+    }
+  }
+
   async function notifyWeb3Forms(config, booking) {
     if (!config.web3formsAccessKey) return false;
     const body = new FormData();
@@ -225,6 +249,12 @@
     let delivered = false;
 
     try {
+      if (await notifyEmail(config, 'Новая заявка — Студия «Май»', formatBookingMessage(booking))) {
+        delivered = true;
+      }
+    } catch { /* ignore */ }
+
+    try {
       if (await notifyWeb3Forms(config, booking)) delivered = true;
     } catch { /* ignore */ }
 
@@ -238,7 +268,7 @@
 
     appendLocalBooking(booking);
 
-    if (delivered || config.web3formsAccessKey || config.telegramBotToken || config.bookingsApiUrl) {
+    if (delivered || config.notificationEmail || config.web3formsAccessKey || config.telegramBotToken || config.bookingsApiUrl) {
       showFormMessage(msgEl, 'Заявка отправлена! Мы свяжемся с вами в ближайшее время.', true);
       form.reset();
       return;
@@ -256,6 +286,8 @@
     applyImages,
     readLocalBookings,
     saveLocalBookings,
+    sendAdminEmail: (subject, message) => notifyEmail({ notificationEmail: DEFAULT_ADMIN_EMAIL }, subject, message),
+    DEFAULT_ADMIN_EMAIL,
     STORAGE_CONTENT,
     STORAGE_IMAGES,
     STORAGE_CONFIG,

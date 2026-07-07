@@ -30,7 +30,8 @@
     cancelled: 'Отменена'
   };
 
-  var baseContent = {};
+  var notifySaveTimer = null;
+  var DEFAULT_NOTIFY_EMAIL = 'brow_studia_may@mail.ru';
   var baseImages = {};
   var baseConfig = {};
   var bookingsCache = [];
@@ -443,29 +444,62 @@
 
   function renderNotifyForm() {
     var config = getConfigState();
+    if (!config.notificationEmail) config.notificationEmail = DEFAULT_NOTIFY_EMAIL;
     var fields = [
-      ['notifyWeb3forms', 'web3formsAccessKey', 'Ключ Web3Forms (письма на email)'],
-      ['notifyEmail', 'notificationEmail', 'Email для ответов (необязательно)'],
-      ['notifyTelegramToken', 'telegramBotToken', 'Токен Telegram-бота'],
-      ['notifyTelegramChat', 'telegramChatId', 'Chat ID Telegram'],
-      ['notifyBookingsApi', 'bookingsApiUrl', 'URL хранилища заявок (Google Таблицы)']
+      ['notifyWeb3forms', 'web3formsAccessKey'],
+      ['notifyEmail', 'notificationEmail'],
+      ['notifyTelegramToken', 'telegramBotToken'],
+      ['notifyTelegramChat', 'telegramChatId'],
+      ['notifyBookingsApi', 'bookingsApiUrl']
     ];
     var i;
     for (i = 0; i < fields.length; i++) {
       var el = getEl(fields[i][0]);
-      if (el) el.value = config[fields[i][1]] || '';
+      if (el) {
+        el.value = config[fields[i][1]] || (fields[i][1] === 'notificationEmail' ? DEFAULT_NOTIFY_EMAIL : '');
+      }
+    }
+    bindNotifyAutoSave();
+  }
+
+  function bindNotifyAutoSave() {
+    var ids = ['notifyWeb3forms', 'notifyTelegramToken', 'notifyTelegramChat', 'notifyBookingsApi'];
+    var i;
+    for (i = 0; i < ids.length; i++) {
+      var el = getEl(ids[i]);
+      if (!el || el.getAttribute('data-autosave')) continue;
+      el.setAttribute('data-autosave', '1');
+      el.addEventListener('input', scheduleNotifySave);
+      el.addEventListener('change', scheduleNotifySave);
     }
   }
 
-  window.studiaMaiSaveNotify = function () {
+  function scheduleNotifySave() {
+    if (notifySaveTimer) clearTimeout(notifySaveTimer);
+    notifySaveTimer = setTimeout(function () {
+      studiaMaiSaveNotify(true);
+    }, 400);
+  }
+
+  window.studiaMaiSaveNotify = function (silent) {
     var config = getConfigState();
     config.web3formsAccessKey = getEl('notifyWeb3forms') ? getEl('notifyWeb3forms').value.trim() : '';
-    config.notificationEmail = getEl('notifyEmail') ? getEl('notifyEmail').value.trim() : '';
+    config.notificationEmail = DEFAULT_NOTIFY_EMAIL;
     config.telegramBotToken = getEl('notifyTelegramToken') ? getEl('notifyTelegramToken').value.trim() : '';
     config.telegramChatId = getEl('notifyTelegramChat') ? getEl('notifyTelegramChat').value.trim() : '';
     config.bookingsApiUrl = getEl('notifyBookingsApi') ? getEl('notifyBookingsApi').value.trim() : '';
     saveConfigState(config);
-    showMsg('notifyMsg', 'Настройки уведомлений сохранены', true);
+    if (!silent) {
+      showMsg('notifyMsg', 'Настройки уведомлений сохранены', true);
+    } else {
+      showMsg('notifyMsg', 'Сохранено', true);
+      var msg = getEl('notifyMsg');
+      if (msg) {
+        setTimeout(function () {
+          if (msg.textContent === 'Сохранено') msg.hidden = true;
+        }, 1500);
+      }
+    }
     return false;
   };
 
@@ -495,6 +529,8 @@
       baseContent = results[0] || {};
       baseImages = results[1] || {};
       baseConfig = results[2] || {};
+      if (!baseConfig.notificationEmail) baseConfig.notificationEmail = DEFAULT_NOTIFY_EMAIL;
+      saveConfigState(merge(baseConfig, readJson(window.StudiaMaiSite ? window.StudiaMaiSite.STORAGE_CONFIG : 'studia_mai_site_config') || {}));
       renderContentForm();
       renderPhotosGrid();
       renderNotifyForm();
