@@ -65,6 +65,11 @@ function normalizeDb(raw) {
   if (!db.content) db.content = {};
   if (!db.images) db.images = { ...DEFAULT_IMAGES };
   if (!db.procedures) db.procedures = [...DEFAULT_PROCEDURES];
+  if (db.user && !db.user.passwordHash && db.user.password) {
+    db.user.passwordHash = bcrypt.hashSync(String(db.user.password), 10);
+    delete db.user.password;
+    db.setupComplete = true;
+  }
   return db;
 }
 
