@@ -1695,6 +1695,19 @@ ul {
   padding-top: 16px;
 }
 
+.price-list__subtitle {
+  margin: 14px 0 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 212, 168, 0.2);
+  background: rgba(200, 255, 235, 0.32);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-emerald-deep);
+}
+
 .price-item {
   padding: 14px 0;
   font-size: 15px;
