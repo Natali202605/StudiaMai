@@ -1,12 +1,9 @@
 (function () {
-  window.__studiaMaiAdminBooted = true;
-  const API = (() => {
-    if (typeof window.STUDIA_MAI_API === 'string') return window.STUDIA_MAI_API;
-    if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
-      return location.port === '3000' ? '' : `http://${location.hostname}:3000`;
-    }
-    return null;
-  })();
+  const isLocalApi = (
+    (location.hostname === 'localhost' || location.hostname === '127.0.0.1') &&
+    location.port === '3000'
+  );
+  const API = isLocalApi ? '' : null;
 
   const SERVER_REQUIRED_MSG = 'Админ-панель работает при запущенном сервере. В терминале: cd server && npm install && npm start';
   const TOKEN_KEY = 'studia_mai_admin_token';
@@ -14,7 +11,7 @@
   const LOCAL_AUTH_TOKEN = 'offline-admin-session';
   const OFFLINE_FALLBACK_USERNAME = 'admin';
   const OFFLINE_FALLBACK_PASSWORD = 'Mai2026!';
-  let forceOfflineMode = API === null;
+  let forceOfflineMode = !isLocalApi;
 
   const PHOTO_LABELS = {
     logo: 'Логотип (шапка и подвал)',
@@ -41,7 +38,7 @@
   };
 
   function token() { return localStorage.getItem(TOKEN_KEY); }
-  function isOfflineMode() { return forceOfflineMode || API === null; }
+  function isOfflineMode() { return forceOfflineMode || API === null || API === ''; }
 
   function getLocalCredentials() {
     try {
@@ -329,53 +326,52 @@
     }
   });
 
-  document.getElementById('loginForm')?.addEventListener('submit', async e => {
-    e.preventDefault();
-    const fd = new FormData(e.target);
-    const err = document.getElementById('loginError');
-    hideAuthErrors();
-    if (isOfflineMode()) {
+  function loginOffline(username, password, err) {
+    if (!matchesOfflineCredentials(username, password)) {
+      showAuthError(err, 'Неверный логин или пароль');
+      return false;
+    }
+    setLocalCredentials(username, password);
+    localStorage.setItem(TOKEN_KEY, LOCAL_AUTH_TOKEN);
+    showApp();
+    refreshAll();
+    return true;
+  }
+
+  const loginForm = document.getElementById('loginForm');
+  if (loginForm && loginForm.dataset.authBound !== '1') {
+    loginForm.dataset.authBound = '1';
+    loginForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const err = document.getElementById('loginError');
+      hideAuthErrors();
       const username = String(fd.get('username') || '').trim();
       const password = String(fd.get('password') || '');
-      if (!matchesOfflineCredentials(username, password)) {
-        showAuthError(err, 'Неверный логин или пароль');
+
+      if (isOfflineMode()) {
+        loginOffline(username, password, err);
         return;
       }
-      setLocalCredentials(username, password);
-      localStorage.setItem(TOKEN_KEY, LOCAL_AUTH_TOKEN);
-      showApp();
-      refreshAll();
-      return;
-    }
-    try {
-      const { token: t } = await api('/api/auth/login', {
-        method: 'POST',
-        body: {
-          username: String(fd.get('username') || '').trim(),
-          password: fd.get('password')
-        }
-      });
-      localStorage.setItem(TOKEN_KEY, t);
-      showApp();
-      refreshAll();
-    } catch (ex) {
-      if (ex.message === SERVER_REQUIRED_MSG || ex.message === 'Ошибка запроса') {
-        forceOfflineMode = true;
-        const username = String(fd.get('username') || '').trim();
-        const password = String(fd.get('password') || '');
-        if (!matchesOfflineCredentials(username, password)) {
-          showAuthError(err, 'Неверный логин или пароль');
-          return;
-        }
-        setLocalCredentials(username, password);
-        localStorage.setItem(TOKEN_KEY, LOCAL_AUTH_TOKEN);
+
+      try {
+        const { token: t } = await api('/api/auth/login', {
+          method: 'POST',
+          body: { username, password }
+        });
+        localStorage.setItem(TOKEN_KEY, t);
         showApp();
         refreshAll();
-        return;
+      } catch (ex) {
+        if (ex.message === SERVER_REQUIRED_MSG || ex.message === 'Ошибка запроса') {
+          forceOfflineMode = true;
+          loginOffline(username, password, err);
+          return;
+        }
+        showAuthError(err, ex.message);
       }
-      showAuthError(err, ex.message);
-    }
-  });
+    });
+  }
 
   document.getElementById('logoutBtn')?.addEventListener('click', () => {
     localStorage.removeItem(TOKEN_KEY);

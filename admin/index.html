@@ -123,10 +123,9 @@
   </div>
 
   <script src="../js/config.js"></script>
-  <script src="admin.js?v=20260707-2"></script>
+  <script src="admin.js?v=20260707-3"></script>
   <script>
     (function () {
-      const BOOT_FLAG = '__studiaMaiAdminBooted';
       const TOKEN_KEY = 'studia_mai_admin_token';
       const LOCAL_CREDENTIALS_KEY = 'studia_mai_admin_local_credentials';
       const LOCAL_AUTH_TOKEN = 'offline-admin-session';
@@ -145,21 +144,20 @@
         return defaults;
       }
 
-      window.addEventListener('DOMContentLoaded', function () {
-        if (window[BOOT_FLAG]) return;
-
+      function bindLogin() {
         const loginForm = document.getElementById('loginForm');
         const loginScreen = document.getElementById('loginScreen');
         const adminApp = document.getElementById('adminApp');
         const loginError = document.getElementById('loginError');
         const loginHint = document.getElementById('loginHint');
-
         const creds = ensureCreds();
+
         if (loginHint) {
           loginHint.textContent = 'Офлайн-режим: вход локально в браузере. Логин: ' + creds.username + ' (резерв: ' + DEFAULT_USERNAME + ')';
         }
+        if (!loginForm || loginForm.dataset.authBound === '1') return;
+        loginForm.dataset.authBound = '1';
 
-        if (!loginForm) return;
         loginForm.addEventListener('submit', function (e) {
           e.preventDefault();
           if (loginError) loginError.hidden = true;
@@ -183,7 +181,13 @@
           if (loginScreen) loginScreen.hidden = true;
           if (adminApp) adminApp.hidden = false;
         });
-      });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bindLogin);
+      } else {
+        bindLogin();
+      }
     })();
   </script>
 </body>
