@@ -429,6 +429,123 @@ body {
   margin-bottom: 10px;
 }
 
+.admin__photo-path {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--adm-border);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.admin__photo-upload {
+  cursor: pointer;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.admin__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.admin__detail {
+  margin-top: 24px;
+  padding: 20px;
+  background: var(--adm-card-glass);
+  border: 1px solid var(--adm-border);
+  border-radius: var(--adm-radius);
+}
+
+.admin__detail-grid {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.admin__detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.admin__field--inline {
+  margin-bottom: 0;
+  min-width: 180px;
+}
+
+.admin__table-row {
+  cursor: pointer;
+}
+
+.admin__table-row:hover {
+  background: rgba(209, 250, 229, 0.25);
+}
+
+.admin__table-row.is-selected {
+  background: rgba(209, 250, 229, 0.45);
+}
+
+.admin__notify-help {
+  margin: 16px 0 24px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--adm-border);
+  border-radius: var(--adm-radius);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.admin__notify-help h3 {
+  font-size: 15px;
+  margin: 16px 0 8px;
+  color: var(--adm-accent-dark);
+}
+
+.admin__notify-help h3:first-child {
+  margin-top: 0;
+}
+
+.admin__notify-help ol {
+  margin: 0 0 8px 20px;
+}
+
+.admin__notify-help code {
+  font-size: 12px;
+  background: rgba(16, 185, 129, 0.1);
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+.admin-btn--small {
+  padding: 8px 14px;
+  font-size: 11px;
+}
+
+.admin__field textarea {
+  padding: 14px 16px;
+  border: 1px solid var(--adm-border);
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--adm-text);
+  background: #fff;
+  resize: vertical;
+  min-height: 88px;
+}
+
+.admin__form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .admin__proc-row {
   display: grid;
   grid-template-columns: 1fr 2fr 1fr 1fr auto;

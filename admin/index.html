@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="admin.css?v=simple3">
+  <link rel="stylesheet" href="admin.css?v=simple4">
   <script>
     var STUDIA_MAI_USER = 'admin';
     var STUDIA_MAI_PASS = 'Mai2026!';
@@ -159,6 +159,7 @@
       studiaMaiSessionSet(STUDIA_MAI_SESSION, '1');
       studiaMaiSetStatus('');
       studiaMaiShowApp();
+      if (window.studiaMaiAdminInit) window.studiaMaiAdminInit();
       return false;
     }
 
@@ -272,6 +273,7 @@
     function studiaMaiBoot() {
       if (studiaMaiSessionGet(STUDIA_MAI_SESSION) === '1') {
         studiaMaiShowApp();
+        if (window.studiaMaiAdminInit) window.studiaMaiAdminInit();
       } else {
         studiaMaiShowLogin();
       }
@@ -324,6 +326,10 @@
       <div class="admin__brand">Студия «Май»</div>
       <nav class="admin__nav">
         <button type="button" class="admin__nav-btn is-active" data-tab="dashboard" onclick="return studiaMaiSwitchTab('dashboard')">Обзор</button>
+        <button type="button" class="admin__nav-btn" data-tab="bookings" onclick="return studiaMaiSwitchTab('bookings')">Заявки <span class="admin__badge" id="bookingsBadge" hidden>0</span></button>
+        <button type="button" class="admin__nav-btn" data-tab="content" onclick="return studiaMaiSwitchTab('content')">Тексты</button>
+        <button type="button" class="admin__nav-btn" data-tab="photos" onclick="return studiaMaiSwitchTab('photos')">Фото</button>
+        <button type="button" class="admin__nav-btn" data-tab="notify" onclick="return studiaMaiSwitchTab('notify')">Уведомления</button>
         <button type="button" class="admin__nav-btn" data-tab="settings" onclick="return studiaMaiSwitchTab('settings')">Настройки</button>
       </nav>
       <button type="button" class="admin__logout" id="logoutBtn" onclick="return studiaMaiLogout()">Выйти</button>
@@ -335,15 +341,120 @@
         <p class="admin__msg admin__msg--ok" id="welcomeMsg"></p>
         <div class="admin__stats">
           <div class="admin__stat"><span class="admin__stat-num">✓</span><span>Вход работает</span></div>
-          <div class="admin__stat"><span class="admin__stat-num">—</span><span>Заявки с сайта</span></div>
+          <div class="admin__stat"><span class="admin__stat-num" id="statBookingsCount">0</span><span>Заявок в списке</span></div>
         </div>
         <p class="admin__msg">
-          Это упрощённая панель для GitHub Pages. Здесь можно войти и сменить логин/пароль.
-          Для правок текстов и цен на сайте — через редактор проекта или обратитесь к разработчику.
+          В панели можно просматривать заявки, менять тексты и фото на сайте, настроить уведомления о новых записях.
         </p>
         <p class="admin__msg">
           Сайт: <a href="../" target="_blank" rel="noopener">открыть главную страницу</a>
         </p>
+      </section>
+
+      <section class="admin__panel" data-panel="bookings">
+        <h2>Заявки с сайта</h2>
+        <p class="admin__msg">Список заявок из формы записи. Нажмите на строку, чтобы увидеть подробности.</p>
+        <div class="admin__toolbar">
+          <button type="button" class="admin-btn admin-btn--primary" onclick="return studiaMaiRefreshBookings()">Обновить список</button>
+        </div>
+        <p class="admin__msg" id="bookingsMsg" hidden></p>
+        <div class="admin__table-wrap">
+          <table class="admin__table">
+            <thead>
+              <tr>
+                <th>Дата</th>
+                <th>Имя</th>
+                <th>Телефон</th>
+                <th>Email</th>
+                <th>Статус</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="bookingsTableBody">
+              <tr><td colspan="6">Загрузка...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="admin__detail" id="bookingDetail">
+          <p class="admin__msg">Выберите заявку в таблице, чтобы увидеть подробности.</p>
+        </div>
+      </section>
+
+      <section class="admin__panel" data-panel="content">
+        <h2>Тексты на сайте</h2>
+        <p class="admin__msg">Изменения применяются сразу в этом браузере. Чтобы увидели все посетители — обновите файлы на GitHub (раздел «Уведомления» → Экспорт).</p>
+        <div class="admin__form" id="contentForm"></div>
+        <p class="admin__msg" id="contentMsg" hidden></p>
+        <div class="admin__toolbar">
+          <button type="button" class="admin-btn admin-btn--primary" onclick="return studiaMaiSaveContent()">Сохранить тексты</button>
+          <button type="button" class="admin-btn admin-btn--ghost" onclick="return studiaMaiResetContent()">Сбросить к исходным</button>
+        </div>
+      </section>
+
+      <section class="admin__panel" data-panel="photos">
+        <h2>Фото на сайте</h2>
+        <p class="admin__msg">Можно указать путь к файлу в папке images/ или загрузить новое фото (до 2 МБ).</p>
+        <div class="admin__photos" id="photosGrid"></div>
+        <p class="admin__msg" id="photosMsg" hidden></p>
+        <div class="admin__toolbar">
+          <button type="button" class="admin-btn admin-btn--primary" onclick="return studiaMaiSavePhotos()">Сохранить пути</button>
+          <button type="button" class="admin-btn admin-btn--ghost" onclick="return studiaMaiResetPhotos()">Сбросить к исходным</button>
+        </div>
+      </section>
+
+      <section class="admin__panel" data-panel="notify">
+        <h2>Уведомления о заявках</h2>
+        <p class="admin__msg admin__msg--ok">Как получать уведомления, когда клиент оставляет заявку на сайте:</p>
+        <div class="admin__notify-help">
+          <h3>1. Email (Web3Forms) — рекомендуется</h3>
+          <ol>
+            <li>Зайдите на <a href="https://web3forms.com" target="_blank" rel="noopener">web3forms.com</a></li>
+            <li>Укажите email, на который приходят заявки</li>
+            <li>Скопируйте Access Key и вставьте ниже</li>
+            <li>Нажмите «Сохранить настройки»</li>
+          </ol>
+          <h3>2. Telegram</h3>
+          <ol>
+            <li>Напишите боту <a href="https://t.me/BotFather" target="_blank" rel="noopener">@BotFather</a> → /newbot → получите токен</li>
+            <li>Напишите своему боту любое сообщение</li>
+            <li>Откройте <code>https://api.telegram.org/bot&lt;ТОКЕН&gt;/getUpdates</code> — найдите chat.id</li>
+            <li>Вставьте токен и Chat ID ниже</li>
+          </ol>
+          <h3>3. Общий список заявок (Google Таблицы)</h3>
+          <ol>
+            <li>Создайте Google Таблицу с колонками: дата, имя, телефон, email, комментарий, статус</li>
+            <li>Расширения → Apps Script → вставьте скрипт приёма заявок (doPost/doGet)</li>
+            <li>Опубликуйте как веб-приложение → скопируйте URL сюда</li>
+            <li>Тогда заявки будут видны и на сайте, и в таблице</li>
+          </ol>
+        </div>
+        <div class="admin__form" id="notifyForm">
+          <label class="admin__field">
+            <span>Ключ Web3Forms</span>
+            <input type="text" id="notifyWeb3forms" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+          </label>
+          <label class="admin__field">
+            <span>Email для ответов</span>
+            <input type="email" id="notifyEmail" placeholder="salon@example.com">
+          </label>
+          <label class="admin__field">
+            <span>Токен Telegram-бота</span>
+            <input type="text" id="notifyTelegramToken" placeholder="123456789:ABC...">
+          </label>
+          <label class="admin__field">
+            <span>Chat ID Telegram</span>
+            <input type="text" id="notifyTelegramChat" placeholder="-1001234567890">
+          </label>
+          <label class="admin__field">
+            <span>URL хранилища заявок</span>
+            <input type="url" id="notifyBookingsApi" placeholder="https://script.google.com/macros/s/.../exec">
+          </label>
+        </div>
+        <p class="admin__msg" id="notifyMsg" hidden></p>
+        <div class="admin__toolbar">
+          <button type="button" class="admin-btn admin-btn--primary" onclick="return studiaMaiSaveNotify()">Сохранить настройки</button>
+          <button type="button" class="admin-btn admin-btn--ghost" onclick="return studiaMaiExportData()">Экспорт данных (JSON)</button>
+        </div>
       </section>
 
       <section class="admin__panel" data-panel="settings">
@@ -373,5 +484,7 @@
       </section>
     </main>
   </div>
+  <script src="../js/site-api.js?v=cms1"></script>
+  <script src="admin-panel.js?v=1"></script>
 </body>
 </html>

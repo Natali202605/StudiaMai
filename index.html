@@ -915,7 +915,7 @@
             <input type="text" name="comment" id="bookingComment" placeholder="Комментарий (необязательно)">
           </div>
           <p class="booking-form__message" id="bookingMessage" hidden></p>
-          <a href="https://vk.com/away.php?to=https%3A%2F%2Fmst.link%2Fbolotova_galina&utf=1" target="_blank" rel="noopener" class="btn btn--primary btn--wide">Записаться</a>
+          <button type="submit" id="submitBooking" class="btn btn--primary btn--wide">Записаться</button>
           <p class="booking-form__phone">или позвоните: <a href="tel:+79024737800" id="bookingPhone" class="booking-form__phone-link" data-phone="+7 902 473-78-00" title="Нажмите, чтобы скопировать номер">+7 902 473-78-00</a></p>
           <label class="booking-form__agree">
             <input type="checkbox" name="pd_consent">
@@ -1614,7 +1614,6 @@
 
     updateContinueButton();
 
-    document.getElementById('contactForm')?.addEventListener('submit', (e) => e.preventDefault());
 
     // Телефон в форме: звонок на мобильных, копирование на компьютере
     const bookingPhone = document.getElementById('bookingPhone');
