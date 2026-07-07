@@ -1,530 +1,234 @@
 (function () {
-  const isLocalApi = (
-    (location.hostname === 'localhost' || location.hostname === '127.0.0.1') &&
-    location.port === '3000'
-  );
-  const API = isLocalApi ? '' : null;
+  'use strict';
 
-  const SERVER_REQUIRED_MSG = 'Админ-панель работает при запущенном сервере. В терминале: cd server && npm install && npm start';
-  const TOKEN_KEY = 'studia_mai_admin_token';
-  const LOCAL_CREDENTIALS_KEY = 'studia_mai_admin_local_credentials';
-  const LOCAL_AUTH_TOKEN = 'offline-admin-session';
-  const OFFLINE_FALLBACK_USERNAME = 'admin';
-  const OFFLINE_FALLBACK_PASSWORD = 'Mai2026!';
-  let forceOfflineMode = !isLocalApi;
+  var STORAGE_KEY = 'studia_mai_admin_simple_v1';
+  var SESSION_KEY = 'studia_mai_admin_simple_session';
+  var DEFAULT_USER = 'admin';
+  var DEFAULT_PASS = 'Mai2026!';
 
-  const PHOTO_LABELS = {
-    logo: 'Логотип (шапка и подвал)',
-    hero_logo: 'Логотип в hero',
-    hero_studio: 'Фото студии в hero',
-    service_brows: 'Услуга: брови',
-    service_cosmetology: 'Услуга: косметология',
-    service_massage: 'Услуга: массаж',
-    service_trichology: 'Услуга: трихология',
-    service_depilation: 'Услуга: депиляция',
-    master_portrait: 'Портрет мастера',
-    master_card: 'Визитка',
-    master_certificates: 'Сертификаты'
-  };
+  var loginScreen = document.getElementById('loginScreen');
+  var adminApp = document.getElementById('adminApp');
+  var loginForm = document.getElementById('loginForm');
+  var loginError = document.getElementById('loginError');
+  var loginHint = document.getElementById('loginHint');
+  var welcomeMsg = document.getElementById('welcomeMsg');
+  var passwordForm = document.getElementById('passwordForm');
+  var passwordMsg = document.getElementById('passwordMsg');
+  var logoutBtn = document.getElementById('logoutBtn');
 
-  const CONTENT_MAP = {
-    hero_text: 'hero_text',
-    hero_subtext: 'hero_subtext',
-    footer_phone: 'footer_phone',
-    footer_address: 'footer_address',
-    footer_entrance: 'footer_entrance',
-    footer_hours: 'footer_hours',
-    master_role: 'master_role'
-  };
-
-  function token() { return localStorage.getItem(TOKEN_KEY); }
-  function isOfflineMode() { return forceOfflineMode || API === null || API === ''; }
-
-  function getLocalCredentials() {
+  function loadCreds() {
     try {
-      const parsed = JSON.parse(localStorage.getItem(LOCAL_CREDENTIALS_KEY) || 'null');
-      const username = String(parsed?.username || '').trim();
-      const password = String(parsed?.password || '');
-      if (username && password) return { username, password };
-    } catch {}
-    const defaults = { username: 'admin', password: 'Mai2026!' };
-    localStorage.setItem(LOCAL_CREDENTIALS_KEY, JSON.stringify(defaults));
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        var data = JSON.parse(raw);
+        var u = String(data.username || '').trim();
+        var p = String(data.password || '');
+        if (u && p) return { username: u, password: p };
+      }
+    } catch (e) {}
+    var defaults = { username: DEFAULT_USER, password: DEFAULT_PASS };
+    saveCreds(defaults.username, defaults.password);
     return defaults;
   }
 
-  function setLocalCredentials(username, password) {
-    const data = { username: String(username || '').trim(), password: String(password || '') };
-    localStorage.setItem(LOCAL_CREDENTIALS_KEY, JSON.stringify(data));
-    return data;
+  function saveCreds(username, password) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      username: String(username || '').trim(),
+      password: String(password || '')
+    }));
   }
 
-  function matchesOfflineCredentials(username, password) {
-    const creds = getLocalCredentials();
-    return (
-      (username === creds.username && password === creds.password) ||
-      (username === OFFLINE_FALLBACK_USERNAME && password === OFFLINE_FALLBACK_PASSWORD)
-    );
+  function checkLogin(username, password) {
+    var creds = loadCreds();
+    return username === creds.username && password === creds.password;
   }
 
-  function escapeHtml(value) {
-    return String(value ?? '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+  function isLoggedIn() {
+    return sessionStorage.getItem(SESSION_KEY) === '1';
   }
 
-  function apiUrl(path) {
-    if (API === null) return null;
-    return `${API}${path}`;
-  }
-
-  async function api(path, options = {}) {
-    const url = apiUrl(path);
-    if (!url) throw new Error(SERVER_REQUIRED_MSG);
-
-    const headers = { ...(options.headers || {}) };
-    if (token()) headers.Authorization = `Bearer ${token()}`;
-    if (options.body && !(options.body instanceof FormData)) {
-      headers['Content-Type'] = 'application/json';
-      options.body = JSON.stringify(options.body);
-    }
-
-    let res;
-    try {
-      res = await fetch(url, { ...options, headers });
-    } catch {
-      throw new Error(SERVER_REQUIRED_MSG);
-    }
-
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      if (res.status === 401 && token() && path !== '/api/auth/login') {
-        localStorage.removeItem(TOKEN_KEY);
-        showLogin();
-        throw new Error(data.error || 'Сессия истекла, войдите снова');
-      }
-      if (data.error) throw new Error(data.error);
-      if (res.status === 401) throw new Error('Неверный логин или пароль');
-      if (res.status === 403) throw new Error('Доступ запрещён');
-      if (res.status === 404) throw new Error(SERVER_REQUIRED_MSG);
-      throw new Error('Ошибка запроса');
-    }
-    return data;
-  }
-
-  function initPasswordToggles(root = document) {
-    root.querySelectorAll('[data-password-toggle]').forEach(btn => {
-      if (btn.dataset.bound) return;
-      btn.dataset.bound = '1';
-      btn.addEventListener('click', () => {
-        const input = btn.parentElement?.querySelector('input');
-        if (!input) return;
-        const show = input.type === 'password';
-        input.type = show ? 'text' : 'password';
-        btn.textContent = show ? 'Скрыть' : 'Показать';
-        btn.classList.toggle('is-visible', show);
-        btn.setAttribute('aria-label', show ? 'Скрыть пароль' : 'Показать пароль');
-      });
-    });
-  }
-
-  function showAuthError(el, message) {
-    if (!el) return;
-    el.textContent = message;
-    el.hidden = false;
-  }
-
-  function hideAuthErrors() {
-    const el = document.getElementById('loginError');
-    if (el) el.hidden = true;
-  }
-
-  async function loadAuthStatus() {
-    const hint = document.getElementById('loginHint');
-    if (isOfflineMode()) {
-      const creds = getLocalCredentials();
-      if (hint) hint.textContent = `Офлайн-режим: вход локально в браузере. Логин: ${creds.username} (резерв: ${OFFLINE_FALLBACK_USERNAME})`;
-      return;
-    }
-    try {
-      await api('/api/auth/status');
-    } catch (ex) {
-      forceOfflineMode = true;
-      const creds = getLocalCredentials();
-      if (hint) hint.textContent = `Офлайн-режим: вход локально в браузере. Логин: ${creds.username} (резерв: ${OFFLINE_FALLBACK_USERNAME})`;
+  function setLoggedIn(value) {
+    if (value) {
+      sessionStorage.setItem(SESSION_KEY, '1');
+    } else {
+      sessionStorage.removeItem(SESSION_KEY);
     }
   }
 
   function showLogin() {
-    document.getElementById('loginScreen').hidden = false;
-    document.getElementById('adminApp').hidden = true;
+    if (loginScreen) loginScreen.hidden = false;
+    if (adminApp) adminApp.hidden = true;
   }
 
   function showApp() {
-    document.getElementById('loginScreen').hidden = true;
-    document.getElementById('adminApp').hidden = false;
-  }
-
-  function formatDate(iso) {
-    if (!iso) return '—';
-    return new Date(iso).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-  }
-
-  function statusBadge(status) {
-    const cls = status === 'done' ? 'admin__status--done' : 'admin__status--new';
-    const label = status === 'done' ? 'Обработано' : 'Новая';
-    return `<span class="admin__status ${cls}">${label}</span>`;
-  }
-
-  async function loadStats() {
-    const s = await api('/api/stats');
-    document.getElementById('statLeadsNew').textContent = s.leadsNew;
-    document.getElementById('statBookingsNew').textContent = s.bookingsNew;
-    document.getElementById('statLeadsTotal').textContent = s.leadsTotal;
-    document.getElementById('statBookingsTotal').textContent = s.bookingsTotal;
-    document.getElementById('badgeLeads').textContent = s.leadsNew;
-    document.getElementById('badgeBookings').textContent = s.bookingsNew;
-  }
-
-  async function loadLeads() {
-    const { leads } = await api('/api/leads');
-    const wrap = document.getElementById('leadsTable');
-    if (!leads.length) {
-      wrap.innerHTML = '<p class="admin__msg">Заявок пока нет</p>';
-      return;
+    if (loginScreen) loginScreen.hidden = true;
+    if (adminApp) adminApp.hidden = false;
+    var creds = loadCreds();
+    if (welcomeMsg) {
+      welcomeMsg.textContent = 'Вы вошли как «' + creds.username + '». Упрощённая панель активна.';
     }
-    wrap.innerHTML = `<table class="admin__table"><thead><tr>
-      <th>Дата</th><th>Имя</th><th>Телефон</th><th>Email</th><th>Статус</th><th></th>
-    </tr></thead><tbody>${leads.map(l => `<tr>
-      <td>${formatDate(l.createdAt)}</td>
-      <td>${escapeHtml(l.name)} ${escapeHtml(l.surname || '')}</td>
-      <td><a href="tel:${escapeHtml(l.phone)}">${escapeHtml(l.phone)}</a></td>
-      <td>${escapeHtml(l.email || '—')}</td>
-      <td>${statusBadge(l.status)}</td>
-      <td>${l.status !== 'done' ? `<button type="button" class="admin-btn admin-btn--ghost" data-done-lead="${escapeHtml(l.id)}">Готово</button>` : ''}</td>
-    </tr>`).join('')}</tbody></table>`;
-
-    wrap.querySelectorAll('[data-done-lead]').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        await api(`/api/leads/${btn.dataset.doneLead}`, { method: 'PATCH', body: { status: 'done' } });
-        loadLeads();
-        loadStats();
-      });
-    });
   }
 
-  async function loadBookings() {
-    const { bookings } = await api('/api/bookings');
-    const wrap = document.getElementById('bookingsTable');
-    if (!bookings.length) {
-      wrap.innerHTML = '<p class="admin__msg">Записей пока нет</p>';
-      return;
+  function showError(el, text) {
+    if (!el) return;
+    el.textContent = text;
+    el.hidden = false;
+  }
+
+  function hideError(el) {
+    if (el) el.hidden = true;
+  }
+
+  function initPasswordToggles() {
+    var buttons = document.querySelectorAll('[data-password-toggle]');
+    for (var i = 0; i < buttons.length; i++) {
+      (function (btn) {
+        btn.addEventListener('click', function () {
+          var input = btn.parentElement ? btn.parentElement.querySelector('input') : null;
+          if (!input) return;
+          var show = input.type === 'password';
+          input.type = show ? 'text' : 'password';
+          btn.textContent = show ? 'Скрыть' : 'Показать';
+        });
+      })(buttons[i]);
     }
-    wrap.innerHTML = `<table class="admin__table"><thead><tr>
-      <th>Дата</th><th>Клиент</th><th>Телефон</th><th>Email</th><th>Комментарий</th><th>Статус</th><th></th>
-    </tr></thead><tbody>${bookings.map(b => `<tr>
-      <td>${formatDate(b.createdAt)}</td>
-      <td>${escapeHtml(b.name)} ${escapeHtml(b.surname || '')}</td>
-      <td><a href="tel:${escapeHtml(b.phone)}">${escapeHtml(b.phone)}</a></td>
-      <td>${escapeHtml(b.email || '—')}</td>
-      <td>${escapeHtml(b.comment || '—')}</td>
-      <td>${statusBadge(b.status)}</td>
-      <td>${b.status !== 'done' ? `<button type="button" class="admin-btn admin-btn--ghost" data-done-booking="${escapeHtml(b.id)}">Готово</button>` : ''}</td>
-    </tr>`).join('')}</tbody></table>`;
-
-    wrap.querySelectorAll('[data-done-booking]').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        await api(`/api/bookings/${btn.dataset.doneBooking}`, { method: 'PATCH', body: { status: 'done' } });
-        loadBookings();
-        loadStats();
-      });
-    });
   }
 
-  async function loadContentForm() {
-    const { content } = await api('/api/content');
-    const form = document.getElementById('contentForm');
-    Object.entries(CONTENT_MAP).forEach(([field, key]) => {
-      if (form[field]) form[field].value = content[key] || '';
-    });
-  }
-
-  async function loadPhotos() {
-    const { images } = await api('/api/content');
-    const grid = document.getElementById('photosGrid');
-    grid.innerHTML = Object.entries(PHOTO_LABELS).map(([key, label]) => {
-      const src = images[key] || '';
-      const fullSrc = src.startsWith('/') ? (API || '') + src : '../' + src;
-      return `<div class="admin__photo-card">
-        <img src="${fullSrc}" alt="${label}">
-        <span>${label}</span>
-        <input type="file" accept="image/*" data-upload="${key}">
-      </div>`;
-    }).join('');
-
-    grid.querySelectorAll('[data-upload]').forEach(input => {
-      input.addEventListener('change', async () => {
-        if (!input.files[0]) return;
-        const fd = new FormData();
-        fd.append('file', input.files[0]);
-        try {
-          await api(`/api/images/${input.dataset.upload}`, { method: 'POST', body: fd });
-          loadPhotos();
-        } catch (e) {
-          alert(e.message);
-        }
-      });
-    });
-  }
-
-  let procedures = [];
-
-  async function loadProcedures() {
-    const data = await api('/api/procedures');
-    procedures = data.procedures || [];
-    renderProcedures();
-  }
-
-  function renderProcedures() {
-    const list = document.getElementById('proceduresList');
-    list.innerHTML = procedures.map((p, i) => `
-      <div class="admin__proc-row" data-idx="${i}">
-        <input type="text" value="${escapeHtml(p.category || '')}" data-f="category" placeholder="Категория">
-        <input type="text" value="${escapeHtml(p.name || '')}" data-f="name" placeholder="Название">
-        <input type="text" value="${escapeHtml(p.price || '')}" data-f="price" placeholder="Цена">
-        <input type="text" value="${escapeHtml(p.duration || '')}" data-f="duration" placeholder="Время">
-        <button type="button" class="admin__proc-del" data-del="${i}">×</button>
-      </div>`).join('');
-
-    list.querySelectorAll('[data-f]').forEach(inp => {
-      inp.addEventListener('input', () => {
-        const row = inp.closest('[data-idx]');
-        const idx = +row.dataset.idx;
-        procedures[idx][inp.dataset.f] = inp.value;
-      });
-    });
-    list.querySelectorAll('[data-del]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        procedures.splice(+btn.dataset.del, 1);
-        renderProcedures();
-      });
-    });
-  }
-
-  document.getElementById('addProcedure')?.addEventListener('click', () => {
-    procedures.push({ id: `p${Date.now()}`, category: '', name: '', price: '', duration: '' });
-    renderProcedures();
-  });
-
-  document.getElementById('saveProcedures')?.addEventListener('click', async () => {
-    try {
-      await api('/api/procedures', { method: 'PUT', body: { procedures } });
-      alert('Список процедур сохранён');
-    } catch (e) {
-      alert(e.message);
+  function initTabs() {
+    var navBtns = document.querySelectorAll('.admin__nav-btn');
+    for (var i = 0; i < navBtns.length; i++) {
+      (function (btn) {
+        btn.addEventListener('click', function () {
+          var tab = btn.getAttribute('data-tab');
+          var allBtns = document.querySelectorAll('.admin__nav-btn');
+          var allPanels = document.querySelectorAll('.admin__panel');
+          for (var j = 0; j < allBtns.length; j++) allBtns[j].classList.remove('is-active');
+          for (var k = 0; k < allPanels.length; k++) allPanels[k].classList.remove('is-active');
+          btn.classList.add('is-active');
+          var panel = document.querySelector('[data-panel="' + tab + '"]');
+          if (panel) panel.classList.add('is-active');
+        });
+      })(navBtns[i]);
     }
-  });
+  }
 
-  function loginOffline(username, password, err) {
-    if (!matchesOfflineCredentials(username, password)) {
-      showAuthError(err, 'Неверный логин или пароль');
+  function handleLogin(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    hideError(loginError);
+
+    var usernameInput = document.getElementById('loginUsername');
+    var passwordInput = document.getElementById('loginPassword');
+    var username = usernameInput ? String(usernameInput.value || '').trim() : '';
+    var password = passwordInput ? String(passwordInput.value || '') : '';
+
+    if (!username || !password) {
+      showError(loginError, 'Введите логин и пароль');
       return false;
     }
-    setLocalCredentials(username, password);
-    localStorage.setItem(TOKEN_KEY, LOCAL_AUTH_TOKEN);
+
+    if (!checkLogin(username, password)) {
+      showError(loginError, 'Неверный логин или пароль');
+      return false;
+    }
+
+    setLoggedIn(true);
     showApp();
-    refreshAll();
-    return true;
+    return false;
   }
 
-  const loginForm = document.getElementById('loginForm');
-  if (loginForm && loginForm.dataset.authBound !== '1') {
-    loginForm.dataset.authBound = '1';
-    loginForm.addEventListener('submit', async e => {
-      e.preventDefault();
-      const fd = new FormData(e.target);
-      const err = document.getElementById('loginError');
-      hideAuthErrors();
-      const username = String(fd.get('username') || '').trim();
-      const password = String(fd.get('password') || '');
-
-      if (isOfflineMode()) {
-        loginOffline(username, password, err);
-        return;
-      }
-
-      try {
-        const { token: t } = await api('/api/auth/login', {
-          method: 'POST',
-          body: { username, password }
-        });
-        localStorage.setItem(TOKEN_KEY, t);
-        showApp();
-        refreshAll();
-      } catch (ex) {
-        if (ex.message === SERVER_REQUIRED_MSG || ex.message === 'Ошибка запроса') {
-          forceOfflineMode = true;
-          loginOffline(username, password, err);
-          return;
-        }
-        showAuthError(err, ex.message);
-      }
-    });
-  }
-
-  document.getElementById('logoutBtn')?.addEventListener('click', () => {
-    localStorage.removeItem(TOKEN_KEY);
+  function handleLogout() {
+    setLoggedIn(false);
     showLogin();
-    loadAuthStatus();
-  });
+    if (loginForm) loginForm.reset();
+    updateHint();
+  }
 
-  document.querySelectorAll('.admin__nav-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.admin__nav-btn').forEach(b => b.classList.remove('is-active'));
-      document.querySelectorAll('.admin__panel').forEach(p => p.classList.remove('is-active'));
-      btn.classList.add('is-active');
-      document.querySelector(`[data-panel="${btn.dataset.tab}"]`)?.classList.add('is-active');
-    });
-  });
+  function handlePasswordChange(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    if (!passwordMsg) return false;
 
-  document.getElementById('contentForm')?.addEventListener('submit', async e => {
-    e.preventDefault();
-    const fd = new FormData(e.target);
-    const content = {};
-    Object.keys(CONTENT_MAP).forEach(field => {
-      content[CONTENT_MAP[field]] = fd.get(field) || '';
-    });
-    try {
-      await api('/api/content', { method: 'PUT', body: { content } });
-      alert('Тексты сохранены');
-    } catch (ex) {
-      alert(ex.message);
-    }
-  });
+    passwordMsg.hidden = true;
+    var fd = new FormData(passwordForm);
+    var current = String(fd.get('currentPassword') || '');
+    var newUser = String(fd.get('newUsername') || '').trim();
+    var newPass = String(fd.get('newPassword') || '');
+    var creds = loadCreds();
 
-  document.getElementById('passwordForm')?.addEventListener('submit', async e => {
-    e.preventDefault();
-    const fd = new FormData(e.target);
-    const msg = document.getElementById('passwordMsg');
-    const newUsername = String(fd.get('newUsername') || '').trim();
-    const newPassword = fd.get('newPassword');
-    if (isOfflineMode()) {
-      const currentPassword = String(fd.get('currentPassword') || '');
-      const creds = getLocalCredentials();
-      if (currentPassword !== creds.password) {
-        msg.textContent = 'Текущий пароль неверен';
-        msg.className = 'admin__msg';
-        msg.hidden = false;
-        return;
-      }
-      const nextUsername = newUsername || creds.username;
-      const nextPassword = String(newPassword || creds.password);
-      if (nextUsername.length < 3) {
-        msg.textContent = 'Логин — минимум 3 символа';
-        msg.className = 'admin__msg';
-        msg.hidden = false;
-        return;
-      }
-      if (nextPassword.length < 6) {
-        msg.textContent = 'Пароль — минимум 6 символов';
-        msg.className = 'admin__msg';
-        msg.hidden = false;
-        return;
-      }
-      const saved = setLocalCredentials(nextUsername, nextPassword);
-      msg.textContent = `Настройки входа сохранены. Логин: ${saved.username}`;
-      msg.className = 'admin__msg admin__msg--ok';
-      msg.hidden = false;
-      e.target.reset();
-      return;
+    if (current !== creds.password) {
+      showError(passwordMsg, 'Текущий пароль неверен');
+      passwordMsg.className = 'admin__msg';
+      return false;
     }
-    if (!newUsername && !newPassword) {
-      msg.textContent = 'Укажите новый логин и/или новый пароль';
-      msg.className = 'admin__msg';
-      msg.hidden = false;
-      return;
+
+    var nextUser = newUser || creds.username;
+    var nextPass = newPass || creds.password;
+
+    if (nextUser.length < 3) {
+      showError(passwordMsg, 'Логин — минимум 3 символа');
+      passwordMsg.className = 'admin__msg';
+      return false;
     }
-    try {
-      const result = await api('/api/auth/change-password', {
-        method: 'POST',
-        body: {
-          currentPassword: fd.get('currentPassword'),
-          newUsername: newUsername || undefined,
-          newPassword: newPassword || undefined
-        }
+
+    if (nextPass.length < 6) {
+      showError(passwordMsg, 'Пароль — минимум 6 символов');
+      passwordMsg.className = 'admin__msg';
+      return false;
+    }
+
+    saveCreds(nextUser, nextPass);
+    passwordMsg.textContent = 'Настройки сохранены. Новый логин: ' + nextUser;
+    passwordMsg.className = 'admin__msg admin__msg--ok';
+    passwordMsg.hidden = false;
+    passwordForm.reset();
+    updateHint();
+    if (welcomeMsg) {
+      welcomeMsg.textContent = 'Вы вошли как «' + nextUser + '». Упрощённая панель активна.';
+    }
+    return false;
+  }
+
+  function updateHint() {
+    if (!loginHint) return;
+    var creds = loadCreds();
+    loginHint.textContent = 'Логин по умолчанию: ' + DEFAULT_USER + ' · Пароль: ' + DEFAULT_PASS + '. Ваш текущий логин: ' + creds.username + '.';
+  }
+
+  function init() {
+    loadCreds();
+    updateHint();
+    initPasswordToggles();
+    initTabs();
+
+    if (loginForm) {
+      loginForm.addEventListener('submit', handleLogin);
+    }
+
+    var loginBtn = document.getElementById('loginBtn');
+    if (loginBtn) {
+      loginBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        handleLogin(e);
       });
-      msg.textContent = result.username
-        ? `Настройки входа сохранены. Логин: ${result.username}`
-        : 'Настройки входа сохранены';
-      msg.className = 'admin__msg admin__msg--ok';
-      msg.hidden = false;
-      e.target.reset();
-    } catch (ex) {
-      msg.textContent = ex.message;
-      msg.className = 'admin__msg';
-      msg.hidden = false;
     }
-  });
 
-  async function refreshAll() {
-    if (isOfflineMode()) {
-      document.getElementById('statLeadsNew').textContent = '0';
-      document.getElementById('statBookingsNew').textContent = '0';
-      document.getElementById('statLeadsTotal').textContent = '0';
-      document.getElementById('statBookingsTotal').textContent = '0';
-      document.getElementById('badgeLeads').textContent = '0';
-      document.getElementById('badgeBookings').textContent = '0';
-      document.getElementById('leadsTable').innerHTML = '<p class="admin__msg">Офлайн-режим: данные заявок доступны только при запущенном сервере.</p>';
-      document.getElementById('bookingsTable').innerHTML = '<p class="admin__msg">Офлайн-режим: данные записей доступны только при запущенном сервере.</p>';
-      document.getElementById('photosGrid').innerHTML = '<p class="admin__msg">Офлайн-режим: загрузка фото доступна только при запущенном сервере.</p>';
-      document.getElementById('proceduresList').innerHTML = '<p class="admin__msg">Офлайн-режим: управление процедурами доступно только при запущенном сервере.</p>';
-      return;
+    if (passwordForm) {
+      passwordForm.addEventListener('submit', handlePasswordChange);
     }
-    try {
-      await loadStats();
-      await loadLeads();
-      await loadBookings();
-      await loadContentForm();
-      await loadPhotos();
-      await loadProcedures();
-    } catch {
-      forceOfflineMode = true;
-      await refreshAll();
-    }
-  }
 
-  function clearSession() {
-    localStorage.removeItem(TOKEN_KEY);
-    showLogin();
-  }
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', handleLogout);
+    }
 
-  async function tryRestoreSession() {
-    showLogin();
-    if (isOfflineMode()) {
-      if (token() === LOCAL_AUTH_TOKEN) {
-        showApp();
-        await refreshAll();
-        return;
-      }
-      clearSession();
-      loadAuthStatus();
-      return;
-    }
-    if (!token()) {
-      loadAuthStatus();
-      return;
-    }
-    try {
-      await api('/api/auth/session');
+    if (isLoggedIn()) {
       showApp();
-      await refreshAll();
-    } catch {
-      clearSession();
-      loadAuthStatus();
+    } else {
+      showLogin();
     }
   }
 
-  initPasswordToggles();
-  tryRestoreSession();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 })();

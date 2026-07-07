@@ -15,22 +15,22 @@
     <div class="login__card">
       <h1 class="login__title">Студия «Май»</h1>
       <p class="login__sub">Вход для сотрудников</p>
-      <form id="loginForm">
+      <form id="loginForm" action="#" method="post">
         <label class="login__field">
           <span>Логин</span>
-          <input type="text" name="username" autocomplete="username" required>
+          <input type="text" name="username" id="loginUsername" autocomplete="username" required>
         </label>
         <label class="login__field">
           <span>Пароль</span>
           <span class="login__password-wrap">
-            <input type="password" name="password" autocomplete="current-password" required>
+            <input type="password" name="password" id="loginPassword" autocomplete="current-password" required>
             <button type="button" class="login__password-toggle" data-password-toggle aria-label="Показать пароль">Показать</button>
           </span>
         </label>
         <p class="login__error" id="loginError" hidden></p>
-        <button type="submit" class="admin-btn admin-btn--primary admin-btn--block">Войти</button>
+        <button type="submit" class="admin-btn admin-btn--primary admin-btn--block" id="loginBtn">Войти</button>
       </form>
-      <p class="login__hint" id="loginHint">Для работы панели запустите сервер: <code>cd server && npm install && npm start</code></p>
+      <p class="login__hint" id="loginHint"></p>
       <a href="../" class="login__back">← Вернуться на сайт</a>
     </div>
   </div>
@@ -40,11 +40,6 @@
       <div class="admin__brand">Студия «Май»</div>
       <nav class="admin__nav">
         <button type="button" class="admin__nav-btn is-active" data-tab="dashboard">Обзор</button>
-        <button type="button" class="admin__nav-btn" data-tab="leads">Заявки <span class="admin__badge" id="badgeLeads">0</span></button>
-        <button type="button" class="admin__nav-btn" data-tab="bookings">Записи <span class="admin__badge" id="badgeBookings">0</span></button>
-        <button type="button" class="admin__nav-btn" data-tab="content">Тексты</button>
-        <button type="button" class="admin__nav-btn" data-tab="photos">Фото</button>
-        <button type="button" class="admin__nav-btn" data-tab="procedures">Процедуры</button>
         <button type="button" class="admin__nav-btn" data-tab="settings">Настройки</button>
       </nav>
       <button type="button" class="admin__logout" id="logoutBtn">Выйти</button>
@@ -53,54 +48,27 @@
     <main class="admin__main">
       <section class="admin__panel is-active" data-panel="dashboard">
         <h2>Обзор</h2>
+        <p class="admin__msg admin__msg--ok" id="welcomeMsg"></p>
         <div class="admin__stats">
-          <div class="admin__stat"><span class="admin__stat-num" id="statLeadsNew">0</span><span>Новых заявок</span></div>
-          <div class="admin__stat"><span class="admin__stat-num" id="statBookingsNew">0</span><span>Новых записей</span></div>
-          <div class="admin__stat"><span class="admin__stat-num" id="statLeadsTotal">0</span><span>Всего заявок</span></div>
-          <div class="admin__stat"><span class="admin__stat-num" id="statBookingsTotal">0</span><span>Всего записей</span></div>
+          <div class="admin__stat"><span class="admin__stat-num">✓</span><span>Вход работает</span></div>
+          <div class="admin__stat"><span class="admin__stat-num">—</span><span>Заявки с сайта</span></div>
         </div>
-      </section>
-
-      <section class="admin__panel" data-panel="leads">
-        <h2>Заявки с сайта</h2>
-        <div class="admin__table-wrap" id="leadsTable"></div>
-      </section>
-
-      <section class="admin__panel" data-panel="bookings">
-        <h2>Онлайн-запись на процедуры</h2>
-        <div class="admin__table-wrap" id="bookingsTable"></div>
-      </section>
-
-      <section class="admin__panel" data-panel="content">
-        <h2>Тексты на сайте</h2>
-        <form class="admin__form" id="contentForm">
-          <label class="admin__field"><span>Текст hero (абзац 1)</span><textarea name="hero_text" rows="3"></textarea></label>
-          <label class="admin__field"><span>Текст hero (абзац 2)</span><textarea name="hero_subtext" rows="3"></textarea></label>
-          <label class="admin__field"><span>Телефон в подвале</span><input type="text" name="footer_phone"></label>
-          <label class="admin__field"><span>Адрес</span><input type="text" name="footer_address"></label>
-          <label class="admin__field"><span>Вход</span><input type="text" name="footer_entrance"></label>
-          <label class="admin__field"><span>Часы работы</span><input type="text" name="footer_hours"></label>
-          <label class="admin__field"><span>Специализация мастера</span><input type="text" name="master_role"></label>
-          <button type="submit" class="admin-btn admin-btn--primary">Сохранить тексты</button>
-        </form>
-      </section>
-
-      <section class="admin__panel" data-panel="photos">
-        <h2>Фотографии</h2>
-        <div class="admin__photos" id="photosGrid"></div>
-      </section>
-
-      <section class="admin__panel" data-panel="procedures">
-        <h2>Процедуры для онлайн-записи</h2>
-        <div id="proceduresList"></div>
-        <button type="button" class="admin-btn admin-btn--ghost" id="addProcedure">+ Добавить процедуру</button>
-        <button type="button" class="admin-btn admin-btn--primary" id="saveProcedures">Сохранить список</button>
+        <p class="admin__msg">
+          Это упрощённая панель для GitHub Pages. Здесь можно войти и сменить логин/пароль.
+          Для правок текстов и цен на сайте — через редактор проекта или обратитесь к разработчику.
+        </p>
+        <p class="admin__msg">
+          Сайт: <a href="../" target="_blank" rel="noopener">открыть главную страницу</a>
+        </p>
       </section>
 
       <section class="admin__panel" data-panel="settings">
         <h2>Настройки входа</h2>
-        <form class="admin__form" id="passwordForm">
-          <label class="admin__field"><span>Новый логин</span><input type="text" name="newUsername" autocomplete="username" placeholder="Оставьте пустым, если не меняете"></label>
+        <form class="admin__form" id="passwordForm" action="#" method="post">
+          <label class="admin__field">
+            <span>Новый логин</span>
+            <input type="text" name="newUsername" autocomplete="username" placeholder="Оставьте пустым, если не меняете">
+          </label>
           <label class="admin__field">
             <span>Текущий пароль</span>
             <span class="login__password-wrap">
@@ -111,7 +79,7 @@
           <label class="admin__field">
             <span>Новый пароль</span>
             <span class="login__password-wrap">
-              <input type="password" name="newPassword" minlength="6" placeholder="Оставьте пустым, если не меняете">
+              <input type="password" name="newPassword" minlength="6" placeholder="Минимум 6 символов">
               <button type="button" class="login__password-toggle" data-password-toggle aria-label="Показать пароль">Показать</button>
             </span>
           </label>
@@ -122,73 +90,6 @@
     </main>
   </div>
 
-  <script src="../js/config.js"></script>
-  <script src="admin.js?v=20260707-3"></script>
-  <script>
-    (function () {
-      const TOKEN_KEY = 'studia_mai_admin_token';
-      const LOCAL_CREDENTIALS_KEY = 'studia_mai_admin_local_credentials';
-      const LOCAL_AUTH_TOKEN = 'offline-admin-session';
-      const DEFAULT_USERNAME = 'admin';
-      const DEFAULT_PASSWORD = 'Mai2026!';
-
-      function ensureCreds() {
-        try {
-          const parsed = JSON.parse(localStorage.getItem(LOCAL_CREDENTIALS_KEY) || 'null');
-          const username = String((parsed && parsed.username) || '').trim();
-          const password = String((parsed && parsed.password) || '');
-          if (username && password) return { username: username, password: password };
-        } catch (e) {}
-        const defaults = { username: DEFAULT_USERNAME, password: DEFAULT_PASSWORD };
-        localStorage.setItem(LOCAL_CREDENTIALS_KEY, JSON.stringify(defaults));
-        return defaults;
-      }
-
-      function bindLogin() {
-        const loginForm = document.getElementById('loginForm');
-        const loginScreen = document.getElementById('loginScreen');
-        const adminApp = document.getElementById('adminApp');
-        const loginError = document.getElementById('loginError');
-        const loginHint = document.getElementById('loginHint');
-        const creds = ensureCreds();
-
-        if (loginHint) {
-          loginHint.textContent = 'Офлайн-режим: вход локально в браузере. Логин: ' + creds.username + ' (резерв: ' + DEFAULT_USERNAME + ')';
-        }
-        if (!loginForm || loginForm.dataset.authBound === '1') return;
-        loginForm.dataset.authBound = '1';
-
-        loginForm.addEventListener('submit', function (e) {
-          e.preventDefault();
-          if (loginError) loginError.hidden = true;
-          const fd = new FormData(loginForm);
-          const username = String(fd.get('username') || '').trim();
-          const password = String(fd.get('password') || '');
-          const valid = (
-            (username === creds.username && password === creds.password) ||
-            (username === DEFAULT_USERNAME && password === DEFAULT_PASSWORD)
-          );
-          if (!valid) {
-            if (loginError) {
-              loginError.textContent = 'Неверный логин или пароль';
-              loginError.hidden = false;
-            }
-            return;
-          }
-
-          localStorage.setItem(LOCAL_CREDENTIALS_KEY, JSON.stringify({ username: username, password: password }));
-          localStorage.setItem(TOKEN_KEY, LOCAL_AUTH_TOKEN);
-          if (loginScreen) loginScreen.hidden = true;
-          if (adminApp) adminApp.hidden = false;
-        });
-      }
-
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', bindLogin);
-      } else {
-        bindLogin();
-      }
-    })();
-  </script>
+  <script src="admin.js?v=simple1"></script>
 </body>
 </html>
