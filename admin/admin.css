@@ -33,7 +33,12 @@ body {
   min-height: 100vh;
 }
 
-#adminApp[hidden] {
+#adminApp[hidden],
+.is-hidden {
+  display: none !important;
+}
+
+#loginScreen.is-hidden {
   display: none !important;
 }
 

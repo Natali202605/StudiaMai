@@ -15,7 +15,7 @@
     <div class="login__card">
       <h1 class="login__title">Студия «Май»</h1>
       <p class="login__sub">Вход для сотрудников</p>
-      <form id="loginForm" action="#" method="post">
+      <form id="loginForm" action="javascript:void(0)" method="post">
         <label class="login__field">
           <span>Логин</span>
           <input type="text" name="username" id="loginUsername" autocomplete="username" required>
@@ -28,14 +28,15 @@
           </span>
         </label>
         <p class="login__error" id="loginError" hidden></p>
-        <button type="submit" class="admin-btn admin-btn--primary admin-btn--block" id="loginBtn">Войти</button>
+        <button type="button" class="admin-btn admin-btn--primary admin-btn--block" id="loginBtn">Войти</button>
       </form>
-      <p class="login__hint" id="loginHint"></p>
+      <p class="login__hint" id="loginHint">Логин: <strong>admin</strong> · Пароль: <strong>Mai2026!</strong></p>
+      <button type="button" class="admin-btn admin-btn--ghost admin-btn--block" id="resetLoginBtn" style="margin-top:10px">Сбросить пароль на admin / Mai2026!</button>
       <a href="../" class="login__back">← Вернуться на сайт</a>
     </div>
   </div>
 
-  <div id="adminApp" class="admin" hidden>
+  <div id="adminApp" class="admin is-hidden" hidden>
     <aside class="admin__sidebar">
       <div class="admin__brand">Студия «Май»</div>
       <nav class="admin__nav">
@@ -64,7 +65,7 @@
 
       <section class="admin__panel" data-panel="settings">
         <h2>Настройки входа</h2>
-        <form class="admin__form" id="passwordForm" action="#" method="post">
+        <form class="admin__form" id="passwordForm" action="javascript:void(0)" method="post">
           <label class="admin__field">
             <span>Новый логин</span>
             <input type="text" name="newUsername" autocomplete="username" placeholder="Оставьте пустым, если не меняете">
@@ -90,6 +91,72 @@
     </main>
   </div>
 
-  <script src="admin.js?v=simple1"></script>
+  <script>
+    (function () {
+      var DEFAULT_USER = 'admin';
+      var DEFAULT_PASS = 'Mai2026!';
+
+      function trim(s) { return String(s || '').replace(/^\s+|\s+$/g, ''); }
+
+      function quickLogin() {
+        var userEl = document.getElementById('loginUsername');
+        var passEl = document.getElementById('loginPassword');
+        var err = document.getElementById('loginError');
+        var user = trim(userEl ? userEl.value : '');
+        var pass = passEl ? passEl.value : '';
+        var ok = (user === DEFAULT_USER && pass === DEFAULT_PASS);
+
+        if (!ok) {
+          if (err) {
+            err.textContent = 'Неверный логин или пароль';
+            err.hidden = false;
+          }
+          return;
+        }
+
+        if (err) err.hidden = true;
+        var loginScreen = document.getElementById('loginScreen');
+        var adminApp = document.getElementById('adminApp');
+        if (loginScreen) {
+          loginScreen.hidden = true;
+          loginScreen.classList.add('is-hidden');
+        }
+        if (adminApp) {
+          adminApp.hidden = false;
+          adminApp.classList.remove('is-hidden');
+        }
+        var welcome = document.getElementById('welcomeMsg');
+        if (welcome) welcome.textContent = 'Вы вошли. Упрощённая панель активна.';
+        try { sessionStorage.setItem('studia_mai_admin_ok', '1'); } catch (e) {}
+      }
+
+      function bindQuickLogin() {
+        var btn = document.getElementById('loginBtn');
+        var form = document.getElementById('loginForm');
+        if (btn) {
+          btn.onclick = function (e) {
+            if (e && e.preventDefault) e.preventDefault();
+            if (window.studiaMaiAdminLogin) window.studiaMaiAdminLogin();
+            else quickLogin();
+          };
+        }
+        if (form) {
+          form.onsubmit = function (e) {
+            if (e && e.preventDefault) e.preventDefault();
+            if (window.studiaMaiAdminLogin) window.studiaMaiAdminLogin();
+            else quickLogin();
+            return false;
+          };
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bindQuickLogin);
+      } else {
+        bindQuickLogin();
+      }
+    })();
+  </script>
+  <script src="admin.js?v=simple2"></script>
 </body>
 </html>
