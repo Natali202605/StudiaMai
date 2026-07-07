@@ -8,42 +8,325 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="admin.css">
+  <link rel="stylesheet" href="admin.css?v=simple3">
+  <script>
+    var STUDIA_MAI_USER = 'admin';
+    var STUDIA_MAI_PASS = 'Mai2026!';
+    var STUDIA_MAI_STORAGE = 'studia_mai_admin_simple_v3';
+    var STUDIA_MAI_SESSION = 'studia_mai_admin_ok';
+
+    function studiaMaiTrim(s) {
+      return String(s || '').replace(/^\s+|\s+$/g, '');
+    }
+
+    function studiaMaiGet(id) {
+      return document.getElementById(id);
+    }
+
+    function studiaMaiStorageGet(key) {
+      try { return localStorage.getItem(key); } catch (e) { return null; }
+    }
+
+    function studiaMaiStorageSet(key, value) {
+      try { localStorage.setItem(key, value); return true; } catch (e) { return false; }
+    }
+
+    function studiaMaiStorageRemove(key) {
+      try { localStorage.removeItem(key); return true; } catch (e) { return false; }
+    }
+
+    function studiaMaiSessionSet(key, value) {
+      try { sessionStorage.setItem(key, value); return true; } catch (e) { return false; }
+    }
+
+    function studiaMaiSessionGet(key) {
+      try { return sessionStorage.getItem(key); } catch (e) { return null; }
+    }
+
+    function studiaMaiSessionRemove(key) {
+      try { sessionStorage.removeItem(key); return true; } catch (e) { return false; }
+    }
+
+    function studiaMaiLoadCreds() {
+      var raw = studiaMaiStorageGet(STUDIA_MAI_STORAGE);
+      if (raw) {
+        try {
+          var data = JSON.parse(raw);
+          var u = studiaMaiTrim(data.username);
+          var p = String(data.password || '');
+          if (u && p) return { username: u, password: p };
+        } catch (e) {}
+      }
+      return { username: STUDIA_MAI_USER, password: STUDIA_MAI_PASS };
+    }
+
+    function studiaMaiSaveCreds(username, password) {
+      var creds = {
+        username: studiaMaiTrim(username),
+        password: String(password || '')
+      };
+      studiaMaiStorageSet(STUDIA_MAI_STORAGE, JSON.stringify(creds));
+      return creds;
+    }
+
+    function studiaMaiCheckLogin(username, password) {
+      var creds = studiaMaiLoadCreds();
+      if (username === creds.username && password === creds.password) return true;
+      if (username === STUDIA_MAI_USER && password === STUDIA_MAI_PASS) return true;
+      return false;
+    }
+
+    function studiaMaiShowLogin() {
+      var loginScreen = studiaMaiGet('loginScreen');
+      var adminApp = studiaMaiGet('adminApp');
+      if (loginScreen) {
+        loginScreen.style.display = 'flex';
+        loginScreen.removeAttribute('hidden');
+        loginScreen.classList.remove('is-hidden');
+      }
+      if (adminApp) {
+        adminApp.style.display = 'none';
+        adminApp.setAttribute('hidden', 'hidden');
+        adminApp.classList.add('is-hidden');
+      }
+    }
+
+    function studiaMaiShowApp() {
+      var loginScreen = studiaMaiGet('loginScreen');
+      var adminApp = studiaMaiGet('adminApp');
+      var welcome = studiaMaiGet('welcomeMsg');
+      var creds = studiaMaiLoadCreds();
+      if (loginScreen) {
+        loginScreen.style.display = 'none';
+        loginScreen.setAttribute('hidden', 'hidden');
+        loginScreen.classList.add('is-hidden');
+      }
+      if (adminApp) {
+        adminApp.style.display = 'grid';
+        adminApp.removeAttribute('hidden');
+        adminApp.classList.remove('is-hidden');
+      }
+      if (welcome) {
+        welcome.textContent = 'Вы вошли как «' + creds.username + '». Упрощённая панель активна.';
+      }
+    }
+
+    function studiaMaiSetError(text) {
+      var err = studiaMaiGet('loginError');
+      if (err) {
+        err.textContent = text;
+        err.style.display = 'block';
+        err.hidden = false;
+      }
+    }
+
+    function studiaMaiClearError() {
+      var err = studiaMaiGet('loginError');
+      if (err) {
+        err.textContent = '';
+        err.style.display = 'none';
+        err.hidden = true;
+      }
+    }
+
+    function studiaMaiSetStatus(text) {
+      var status = studiaMaiGet('loginStatus');
+      if (status) status.textContent = text;
+    }
+
+    function studiaMaiLogin() {
+      studiaMaiSetStatus('Проверка...');
+      studiaMaiClearError();
+
+      var userEl = studiaMaiGet('loginUsername');
+      var passEl = studiaMaiGet('loginPassword');
+      var username = studiaMaiTrim(userEl ? userEl.value : '');
+      var password = passEl ? passEl.value : '';
+
+      if (!username || !password) {
+        studiaMaiSetStatus('');
+        studiaMaiSetError('Введите логин и пароль');
+        return false;
+      }
+
+      if (!studiaMaiCheckLogin(username, password)) {
+        studiaMaiSetStatus('');
+        studiaMaiSetError('Неверный логин или пароль. Нажмите «Сбросить пароль».');
+        return false;
+      }
+
+      studiaMaiSaveCreds(username, password);
+      studiaMaiSessionSet(STUDIA_MAI_SESSION, '1');
+      studiaMaiSetStatus('');
+      studiaMaiShowApp();
+      return false;
+    }
+
+    function studiaMaiReset() {
+      studiaMaiStorageRemove(STUDIA_MAI_STORAGE);
+      studiaMaiStorageRemove('studia_mai_admin_simple_v2');
+      studiaMaiStorageRemove('studia_mai_admin_simple_v1');
+      studiaMaiStorageRemove('studia_mai_admin_local_credentials');
+      studiaMaiStorageRemove('studia_mai_admin_token');
+      studiaMaiSessionRemove(STUDIA_MAI_SESSION);
+      studiaMaiSaveCreds(STUDIA_MAI_USER, STUDIA_MAI_PASS);
+      studiaMaiClearError();
+      studiaMaiSetStatus('Пароль сброшен. Введите admin / Mai2026!');
+      var hint = studiaMaiGet('loginHint');
+      if (hint) {
+        hint.innerHTML = 'Логин: <strong>admin</strong> · Пароль: <strong>Mai2026!</strong>';
+      }
+      var userEl = studiaMaiGet('loginUsername');
+      var passEl = studiaMaiGet('loginPassword');
+      if (userEl) userEl.value = 'admin';
+      if (passEl) passEl.value = 'Mai2026!';
+      return false;
+    }
+
+    function studiaMaiLogout() {
+      studiaMaiSessionRemove(STUDIA_MAI_SESSION);
+      studiaMaiShowLogin();
+      studiaMaiSetStatus('');
+      return false;
+    }
+
+    function studiaMaiTogglePassword(btn) {
+      if (!btn || !btn.parentNode) return false;
+      var input = btn.parentNode.querySelector('input');
+      if (!input) return false;
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = 'Скрыть';
+      } else {
+        input.type = 'password';
+        btn.textContent = 'Показать';
+      }
+      return false;
+    }
+
+    function studiaMaiSwitchTab(tab) {
+      var btns = document.querySelectorAll('.admin__nav-btn');
+      var panels = document.querySelectorAll('.admin__panel');
+      var i;
+      for (i = 0; i < btns.length; i++) btns[i].classList.remove('is-active');
+      for (i = 0; i < panels.length; i++) panels[i].classList.remove('is-active');
+      var activeBtn = document.querySelector('.admin__nav-btn[data-tab="' + tab + '"]');
+      var activePanel = document.querySelector('.admin__panel[data-panel="' + tab + '"]');
+      if (activeBtn) activeBtn.classList.add('is-active');
+      if (activePanel) activePanel.classList.add('is-active');
+      return false;
+    }
+
+    function studiaMaiSaveSettings() {
+      var msg = studiaMaiGet('passwordMsg');
+      var form = studiaMaiGet('passwordForm');
+      if (!form) return false;
+
+      var currentEl = form.querySelector('[name="currentPassword"]');
+      var newUserEl = form.querySelector('[name="newUsername"]');
+      var newPassEl = form.querySelector('[name="newPassword"]');
+      var current = currentEl ? currentEl.value : '';
+      var newUser = studiaMaiTrim(newUserEl ? newUserEl.value : '');
+      var newPass = newPassEl ? newPassEl.value : '';
+      var creds = studiaMaiLoadCreds();
+
+      if (!msg) return false;
+      msg.hidden = true;
+
+      if (current !== creds.password && current !== STUDIA_MAI_PASS) {
+        msg.textContent = 'Текущий пароль неверен';
+        msg.className = 'admin__msg';
+        msg.hidden = false;
+        return false;
+      }
+
+      var nextUser = newUser || creds.username;
+      var nextPass = newPass || creds.password;
+
+      if (nextUser.length < 3) {
+        msg.textContent = 'Логин — минимум 3 символа';
+        msg.className = 'admin__msg';
+        msg.hidden = false;
+        return false;
+      }
+
+      if (nextPass.length < 6) {
+        msg.textContent = 'Пароль — минимум 6 символов';
+        msg.className = 'admin__msg';
+        msg.hidden = false;
+        return false;
+      }
+
+      studiaMaiSaveCreds(nextUser, nextPass);
+      msg.textContent = 'Настройки сохранены. Новый логин: ' + nextUser;
+      msg.className = 'admin__msg admin__msg--ok';
+      msg.hidden = false;
+      form.reset();
+      var welcome = studiaMaiGet('welcomeMsg');
+      if (welcome) {
+        welcome.textContent = 'Вы вошли как «' + nextUser + '». Упрощённая панель активна.';
+      }
+      return false;
+    }
+
+    function studiaMaiBoot() {
+      if (studiaMaiSessionGet(STUDIA_MAI_SESSION) === '1') {
+        studiaMaiShowApp();
+      } else {
+        studiaMaiShowLogin();
+      }
+    }
+
+    if (document.addEventListener) {
+      document.addEventListener('DOMContentLoaded', studiaMaiBoot);
+    } else {
+      window.onload = studiaMaiBoot;
+    }
+  </script>
 </head>
 <body>
+  <noscript>
+    <p style="padding:24px;text-align:center;font-family:sans-serif">
+      Для входа в админку нужен JavaScript. Включите его в настройках браузера.
+    </p>
+  </noscript>
+
   <div id="loginScreen" class="login">
     <div class="login__card">
       <h1 class="login__title">Студия «Май»</h1>
       <p class="login__sub">Вход для сотрудников</p>
-      <form id="loginForm" action="javascript:void(0)" method="post">
-        <label class="login__field">
-          <span>Логин</span>
-          <input type="text" name="username" id="loginUsername" autocomplete="username" required>
-        </label>
-        <label class="login__field">
-          <span>Пароль</span>
-          <span class="login__password-wrap">
-            <input type="password" name="password" id="loginPassword" autocomplete="current-password" required>
-            <button type="button" class="login__password-toggle" data-password-toggle aria-label="Показать пароль">Показать</button>
-          </span>
-        </label>
-        <p class="login__error" id="loginError" hidden></p>
-        <button type="button" class="admin-btn admin-btn--primary admin-btn--block" id="loginBtn">Войти</button>
-      </form>
+
+      <label class="login__field">
+        <span>Логин</span>
+        <input type="text" id="loginUsername" name="username" autocomplete="username" value="admin">
+      </label>
+      <label class="login__field">
+        <span>Пароль</span>
+        <span class="login__password-wrap">
+          <input type="password" id="loginPassword" name="password" autocomplete="current-password" value="Mai2026!">
+          <button type="button" class="login__password-toggle" onclick="return studiaMaiTogglePassword(this)">Показать</button>
+        </span>
+      </label>
+
+      <p class="login__error" id="loginError" hidden style="display:none"></p>
+      <p class="login__hint" id="loginStatus" style="min-height:18px;color:#059669;font-size:12px;text-align:center"></p>
+
+      <button type="button" class="admin-btn admin-btn--primary admin-btn--block" id="loginBtn" onclick="return studiaMaiLogin()">Войти</button>
+
       <p class="login__hint" id="loginHint">Логин: <strong>admin</strong> · Пароль: <strong>Mai2026!</strong></p>
-      <button type="button" class="admin-btn admin-btn--ghost admin-btn--block" id="resetLoginBtn" style="margin-top:10px">Сбросить пароль на admin / Mai2026!</button>
+      <button type="button" class="admin-btn admin-btn--ghost admin-btn--block" id="resetLoginBtn" style="margin-top:10px" onclick="return studiaMaiReset()">Сбросить пароль на admin / Mai2026!</button>
       <a href="../" class="login__back">← Вернуться на сайт</a>
     </div>
   </div>
 
-  <div id="adminApp" class="admin is-hidden" hidden>
+  <div id="adminApp" class="admin is-hidden" hidden style="display:none">
     <aside class="admin__sidebar">
       <div class="admin__brand">Студия «Май»</div>
       <nav class="admin__nav">
-        <button type="button" class="admin__nav-btn is-active" data-tab="dashboard">Обзор</button>
-        <button type="button" class="admin__nav-btn" data-tab="settings">Настройки</button>
+        <button type="button" class="admin__nav-btn is-active" data-tab="dashboard" onclick="return studiaMaiSwitchTab('dashboard')">Обзор</button>
+        <button type="button" class="admin__nav-btn" data-tab="settings" onclick="return studiaMaiSwitchTab('settings')">Настройки</button>
       </nav>
-      <button type="button" class="admin__logout" id="logoutBtn">Выйти</button>
+      <button type="button" class="admin__logout" id="logoutBtn" onclick="return studiaMaiLogout()">Выйти</button>
     </aside>
 
     <main class="admin__main">
@@ -65,7 +348,7 @@
 
       <section class="admin__panel" data-panel="settings">
         <h2>Настройки входа</h2>
-        <form class="admin__form" id="passwordForm" action="javascript:void(0)" method="post">
+        <div class="admin__form" id="passwordForm">
           <label class="admin__field">
             <span>Новый логин</span>
             <input type="text" name="newUsername" autocomplete="username" placeholder="Оставьте пустым, если не меняете">
@@ -73,90 +356,22 @@
           <label class="admin__field">
             <span>Текущий пароль</span>
             <span class="login__password-wrap">
-              <input type="password" name="currentPassword" required>
-              <button type="button" class="login__password-toggle" data-password-toggle aria-label="Показать пароль">Показать</button>
+              <input type="password" name="currentPassword">
+              <button type="button" class="login__password-toggle" onclick="return studiaMaiTogglePassword(this)">Показать</button>
             </span>
           </label>
           <label class="admin__field">
             <span>Новый пароль</span>
             <span class="login__password-wrap">
-              <input type="password" name="newPassword" minlength="6" placeholder="Минимум 6 символов">
-              <button type="button" class="login__password-toggle" data-password-toggle aria-label="Показать пароль">Показать</button>
+              <input type="password" name="newPassword" placeholder="Минимум 6 символов">
+              <button type="button" class="login__password-toggle" onclick="return studiaMaiTogglePassword(this)">Показать</button>
             </span>
           </label>
           <p class="admin__msg" id="passwordMsg" hidden></p>
-          <button type="submit" class="admin-btn admin-btn--primary">Сохранить настройки входа</button>
-        </form>
+          <button type="button" class="admin-btn admin-btn--primary" onclick="return studiaMaiSaveSettings()">Сохранить настройки входа</button>
+        </div>
       </section>
     </main>
   </div>
-
-  <script>
-    (function () {
-      var DEFAULT_USER = 'admin';
-      var DEFAULT_PASS = 'Mai2026!';
-
-      function trim(s) { return String(s || '').replace(/^\s+|\s+$/g, ''); }
-
-      function quickLogin() {
-        var userEl = document.getElementById('loginUsername');
-        var passEl = document.getElementById('loginPassword');
-        var err = document.getElementById('loginError');
-        var user = trim(userEl ? userEl.value : '');
-        var pass = passEl ? passEl.value : '';
-        var ok = (user === DEFAULT_USER && pass === DEFAULT_PASS);
-
-        if (!ok) {
-          if (err) {
-            err.textContent = 'Неверный логин или пароль';
-            err.hidden = false;
-          }
-          return;
-        }
-
-        if (err) err.hidden = true;
-        var loginScreen = document.getElementById('loginScreen');
-        var adminApp = document.getElementById('adminApp');
-        if (loginScreen) {
-          loginScreen.hidden = true;
-          loginScreen.classList.add('is-hidden');
-        }
-        if (adminApp) {
-          adminApp.hidden = false;
-          adminApp.classList.remove('is-hidden');
-        }
-        var welcome = document.getElementById('welcomeMsg');
-        if (welcome) welcome.textContent = 'Вы вошли. Упрощённая панель активна.';
-        try { sessionStorage.setItem('studia_mai_admin_ok', '1'); } catch (e) {}
-      }
-
-      function bindQuickLogin() {
-        var btn = document.getElementById('loginBtn');
-        var form = document.getElementById('loginForm');
-        if (btn) {
-          btn.onclick = function (e) {
-            if (e && e.preventDefault) e.preventDefault();
-            if (window.studiaMaiAdminLogin) window.studiaMaiAdminLogin();
-            else quickLogin();
-          };
-        }
-        if (form) {
-          form.onsubmit = function (e) {
-            if (e && e.preventDefault) e.preventDefault();
-            if (window.studiaMaiAdminLogin) window.studiaMaiAdminLogin();
-            else quickLogin();
-            return false;
-          };
-        }
-      }
-
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', bindQuickLogin);
-      } else {
-        bindQuickLogin();
-      }
-    })();
-  </script>
-  <script src="admin.js?v=simple2"></script>
 </body>
 </html>

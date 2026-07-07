@@ -34,8 +34,17 @@ body {
 }
 
 #adminApp[hidden],
+#loginScreen[hidden],
 .is-hidden {
   display: none !important;
+}
+
+#loginScreen {
+  display: flex;
+}
+
+#adminApp:not([hidden]):not(.is-hidden) {
+  display: grid;
 }
 
 #loginScreen.is-hidden {
