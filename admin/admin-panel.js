@@ -32,6 +32,7 @@
 
   var notifySaveTimer = null;
   var DEFAULT_NOTIFY_EMAIL = 'brow_studia_may@mail.ru';
+  var baseContent = {};
   var baseImages = {};
   var baseConfig = {};
   var bookingsCache = [];

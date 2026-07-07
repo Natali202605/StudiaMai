@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="admin.css?v=simple4">
+  <link rel="stylesheet" href="admin.css?v=simple5">
   <script>
     var STUDIA_MAI_USER = 'admin';
     var STUDIA_MAI_PASS = 'Mai2026!';
@@ -400,8 +400,7 @@
       <nav class="admin__nav">
         <button type="button" class="admin__nav-btn is-active" data-tab="dashboard" onclick="return studiaMaiSwitchTab('dashboard')">Обзор</button>
         <button type="button" class="admin__nav-btn" data-tab="bookings" onclick="return studiaMaiSwitchTab('bookings')">Заявки <span class="admin__badge" id="bookingsBadge" hidden>0</span></button>
-        <button type="button" class="admin__nav-btn" data-tab="content" onclick="return studiaMaiSwitchTab('content')">Тексты</button>
-        <button type="button" class="admin__nav-btn" data-tab="photos" onclick="return studiaMaiSwitchTab('photos')">Фото</button>
+        <button type="button" class="admin__nav-btn admin__nav-btn--edit" data-tab="edit" onclick="return studiaMaiSwitchTab('edit')">Редактировать</button>
         <button type="button" class="admin__nav-btn" data-tab="notify" onclick="return studiaMaiSwitchTab('notify')">Уведомления</button>
         <button type="button" class="admin__nav-btn" data-tab="settings" onclick="return studiaMaiSwitchTab('settings')">Настройки</button>
       </nav>
@@ -419,6 +418,10 @@
         <p class="admin__msg">
           В панели можно просматривать заявки, менять тексты и фото на сайте, настроить уведомления о новых записях.
         </p>
+        <div class="admin__toolbar admin__toolbar--hero">
+          <button type="button" class="admin-btn admin-btn--primary admin-btn--edit" onclick="return studiaMaiSwitchTab('edit')">Редактировать сайт</button>
+          <a href="../" target="_blank" rel="noopener" class="admin-btn admin-btn--ghost">Открыть сайт</a>
+        </div>
         <p class="admin__msg">
           Сайт: <a href="../" target="_blank" rel="noopener">открыть главную страницу</a>
         </p>
@@ -453,25 +456,35 @@
         </div>
       </section>
 
-      <section class="admin__panel" data-panel="content">
-        <h2>Тексты на сайте</h2>
-        <p class="admin__msg">Изменения применяются сразу в этом браузере. Чтобы увидели все посетители — обновите файлы на GitHub (раздел «Уведомления» → Экспорт).</p>
-        <div class="admin__form" id="contentForm"></div>
-        <p class="admin__msg" id="contentMsg" hidden></p>
-        <div class="admin__toolbar">
-          <button type="button" class="admin-btn admin-btn--primary" onclick="return studiaMaiSaveContent()">Сохранить тексты</button>
-          <button type="button" class="admin-btn admin-btn--ghost" onclick="return studiaMaiResetContent()">Сбросить к исходным</button>
-        </div>
-      </section>
+      <section class="admin__panel" data-panel="edit">
+        <h2>Редактирование сайта</h2>
+        <p class="admin__msg">Здесь можно изменить тексты и фотографии на сайте. Изменения сразу видны в этом браузере.</p>
 
-      <section class="admin__panel" data-panel="photos">
-        <h2>Фото на сайте</h2>
-        <p class="admin__msg">Можно указать путь к файлу в папке images/ или загрузить новое фото (до 2 МБ).</p>
-        <div class="admin__photos" id="photosGrid"></div>
-        <p class="admin__msg" id="photosMsg" hidden></p>
+        <div class="admin__edit-block">
+          <h3 class="admin__subtitle">Тексты</h3>
+          <p class="admin__msg admin__msg--compact">Главный экран, блок мастера, контакты в подвале.</p>
+          <div class="admin__form" id="contentForm"></div>
+          <p class="admin__msg" id="contentMsg" hidden></p>
+          <div class="admin__toolbar">
+            <button type="button" class="admin-btn admin-btn--primary" onclick="return studiaMaiSaveContent()">Сохранить тексты</button>
+            <button type="button" class="admin-btn admin-btn--ghost" onclick="return studiaMaiResetContent()">Сбросить тексты</button>
+          </div>
+        </div>
+
+        <div class="admin__edit-block">
+          <h3 class="admin__subtitle">Фото</h3>
+          <p class="admin__msg admin__msg--compact">Логотип, услуги, портрет мастера и другие изображения. Можно указать путь к файлу или загрузить новое (до 2 МБ).</p>
+          <div class="admin__photos" id="photosGrid"></div>
+          <p class="admin__msg" id="photosMsg" hidden></p>
+          <div class="admin__toolbar">
+            <button type="button" class="admin-btn admin-btn--primary" onclick="return studiaMaiSavePhotos()">Сохранить фото</button>
+            <button type="button" class="admin-btn admin-btn--ghost" onclick="return studiaMaiResetPhotos()">Сбросить фото</button>
+          </div>
+        </div>
+
         <div class="admin__toolbar">
-          <button type="button" class="admin-btn admin-btn--primary" onclick="return studiaMaiSavePhotos()">Сохранить пути</button>
-          <button type="button" class="admin-btn admin-btn--ghost" onclick="return studiaMaiResetPhotos()">Сбросить к исходным</button>
+          <a href="../" target="_blank" rel="noopener" class="admin-btn admin-btn--ghost">Посмотреть сайт после правок</a>
+          <button type="button" class="admin-btn admin-btn--ghost" onclick="return studiaMaiExportData()">Экспорт всех данных</button>
         </div>
       </section>
 
@@ -538,6 +551,6 @@
     </main>
   </div>
   <script src="../js/site-api.js?v=cms2"></script>
-  <script src="admin-panel.js?v=2"></script>
+  <script src="admin-panel.js?v=3"></script>
 </body>
 </html>
