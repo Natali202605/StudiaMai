@@ -80,6 +80,213 @@
         else el.textContent = content[key];
       }
     });
+
+    function setHtml(sel, html) {
+      if (html == null || html === '') return;
+      const el = document.querySelector(sel);
+      if (el) el.innerHTML = html;
+    }
+    function setText(sel, text) {
+      if (text == null || text === '') return;
+      const el = document.querySelector(sel);
+      if (el) el.textContent = text;
+    }
+    function setLink(sel, href, text) {
+      const el = document.querySelector(sel);
+      if (!el) return;
+      if (href) el.href = href;
+      if (text != null && text !== '') el.textContent = text;
+    }
+
+    setHtml('.hero__title--slogan', content.hero_slogan_html);
+    const heroValues = document.querySelectorAll('.hero__stats .hero__stat-value');
+    const heroLabels = document.querySelectorAll('.hero__stats .hero__stat-label');
+    if (heroValues[0] && content.hero_stat_rating != null) heroValues[0].textContent = content.hero_stat_rating;
+    if (heroLabels[0] && content.hero_stat_rating_label != null) heroLabels[0].textContent = content.hero_stat_rating_label;
+    if (heroValues[1] && content.hero_stat_reviews != null) heroValues[1].textContent = content.hero_stat_reviews;
+    if (heroLabels[1] && content.hero_stat_reviews_label != null) heroLabels[1].textContent = content.hero_stat_reviews_label;
+
+    setText('#about .section__eyebrow', content.about_eyebrow);
+    setHtml('#about .section__title', content.about_title_html);
+    if (Array.isArray(content.about_checklist)) {
+      const ul = document.querySelector('#about .checklist');
+      if (ul) ul.innerHTML = content.about_checklist.map(t => `<li>${escapeHtml(t)}</li>`).join('');
+    }
+
+    const audSec = document.querySelector('.audience-list')?.closest('.section');
+    if (audSec) {
+      setText('.section__eyebrow', content.audience_eyebrow, audSec);
+      setHtml('.section__title', content.audience_title_html, audSec);
+      setText('.section__lead', content.audience_lead, audSec);
+    }
+    function setTextIn(root, sel, text) {
+      if (text == null || text === '' || !root) return;
+      const el = root.querySelector(sel);
+      if (el) el.textContent = text;
+    }
+    function setHtmlIn(root, sel, html) {
+      if (html == null || html === '' || !root) return;
+      const el = root.querySelector(sel);
+      if (el) el.innerHTML = html;
+    }
+    if (audSec) {
+      setTextIn(audSec, '.section__eyebrow', content.audience_eyebrow);
+      setHtmlIn(audSec, '.section__title', content.audience_title_html);
+      setTextIn(audSec, '.section__lead', content.audience_lead);
+    }
+    if (Array.isArray(content.audience_list)) {
+      const ul = document.querySelector('.audience-list');
+      if (ul) ul.innerHTML = content.audience_list.map(t => `<li>${escapeHtml(t)}</li>`).join('');
+    }
+
+    setText('#consultation .section__eyebrow', content.consultation_eyebrow);
+    setHtml('#consultation .section__title', content.consultation_title_html);
+    setHtml('.consultation-block__quote', content.consultation_quote_html);
+    setText('.consultation-block__steps h3', content.consultation_steps_title);
+    if (Array.isArray(content.consultation_steps)) {
+      const ul = document.querySelector('.consultation-block__steps ul');
+      if (ul) ul.innerHTML = content.consultation_steps.map(t => `<li>${escapeHtml(t)}</li>`).join('');
+    }
+    const freeCards = document.querySelectorAll('.free-card p');
+    if (freeCards[0] && content.consultation_free_1 != null) freeCards[0].textContent = content.consultation_free_1;
+    if (freeCards[1] && content.consultation_free_2 != null) freeCards[1].textContent = content.consultation_free_2;
+
+    setText('.master .section__eyebrow', content.master_eyebrow);
+    setHtml('.master .section__title', content.master_title_html);
+    setText('.master__info p:nth-of-type(1)', content.master_p1);
+    setText('.master__info p:nth-of-type(2)', content.master_p2);
+    setText('.master__highlight', content.master_highlight);
+
+    const approachSec = document.querySelector('.approach-grid')?.closest('.section');
+    if (approachSec) {
+      setTextIn(approachSec, '.section__eyebrow', content.approach_eyebrow);
+      setHtmlIn(approachSec, '.section__title', content.approach_title_html);
+      setHtmlIn(approachSec, '.section__subtitle', content.approach_subtitle_html);
+      setTextIn(approachSec, '.section__lead', content.approach_lead);
+    }
+    setHtml('.approach-card__title', content.approach_card_title_html);
+    if (Array.isArray(content.approach_grid)) {
+      const grid = document.querySelector('.approach-grid');
+      if (grid) {
+        grid.innerHTML = content.approach_grid.map((t) => {
+          const parts = String(t).trim().split(/\s+/);
+          const first = parts.shift() || '';
+          const rest = parts.join(' ');
+          return `<div class="approach-item"><span class="accent">${escapeHtml(first)}</span>${rest ? ' ' + escapeHtml(rest) : ''}</div>`;
+        }).join('');
+      }
+    }
+    setHtml('.approach-principles__title', content.approach_principles_title_html);
+    if (Array.isArray(content.approach_principles_list_html)) {
+      const ul = document.querySelector('.approach-principles ul');
+      if (ul) ul.innerHTML = content.approach_principles_list_html.map(h => `<li>${h}</li>`).join('');
+    }
+
+    setText('#services .section__eyebrow', content.services_eyebrow);
+    setHtml('#services .section__title', content.services_title_html);
+    setText('#services .section__lead', content.services_lead);
+
+    const benSec = document.querySelector('.benefits-list')?.closest('.section');
+    if (benSec) {
+      setTextIn(benSec, '.section__eyebrow', content.benefits_eyebrow);
+      setHtmlIn(benSec, '.section__title', content.benefits_title_html);
+      setTextIn(benSec, '.section__lead', content.benefits_lead);
+    }
+    if (Array.isArray(content.benefits_items)) {
+      const ul = document.querySelector('.benefits-list');
+      if (ul) {
+        ul.innerHTML = content.benefits_items.map((t, i) => {
+          const num = String(i + 1).padStart(2, '0');
+          const featured = i === content.benefits_items.length - 1 ? ' benefit-card--featured' : '';
+          return `<li class="benefit-card${featured}"><span class="benefit-card__num">${num}</span><span class="benefit-card__text">${escapeHtml(t)}</span></li>`;
+        }).join('');
+      }
+    }
+
+    const faqSec = document.querySelector('.faq-grid')?.closest('.section');
+    if (faqSec) {
+      setTextIn(faqSec, '.section__eyebrow', content.faq_eyebrow);
+      setHtmlIn(faqSec, '.section__title', content.faq_title_html);
+    }
+    if (Array.isArray(content.faq_items)) {
+      const grid = document.querySelector('.faq-grid');
+      if (grid) {
+        grid.innerHTML = content.faq_items.map(item => (
+          `<div class="faq-item"><h3>${escapeHtml(item.q || '')}</h3><p>${escapeHtml(item.a || '')}</p></div>`
+        )).join('');
+      }
+    }
+
+    const revSec = document.querySelector('#reviews');
+    if (revSec) {
+      setTextIn(revSec, '.section__eyebrow', content.reviews_eyebrow);
+      setHtmlIn(revSec, '.section__title', content.reviews_title_html);
+      setTextIn(revSec, '.section__lead', content.reviews_lead);
+    }
+    if (Array.isArray(content.reviews)) {
+      const track = document.getElementById('reviewsTrack');
+      if (track) {
+        track.innerHTML = content.reviews.map((r) => {
+          const stars = '★'.repeat(Math.min(5, Math.max(1, Number(r.stars) || 5)));
+          return `<div class="review-card"><span class="review-card__quote" aria-hidden="true">"</span><div class="review-card__stars">${stars}</div><p class="review-card__text">${escapeHtml(r.text || '')}</p><span class="review-card__author">${escapeHtml(r.author || '')}</span></div>`;
+        }).join('');
+      }
+    }
+
+    const fmtSec = document.querySelector('.format-cards')?.closest('.section');
+    if (fmtSec) {
+      setTextIn(fmtSec, '.section__eyebrow', content.format_eyebrow);
+      setHtmlIn(fmtSec, '.section__title', content.format_title_html);
+    }
+    const fmtCards = document.querySelectorAll('.format-card');
+    if (fmtCards[0]) {
+      if (content.format_card_1_price != null) fmtCards[0].querySelector('.format-card__price').textContent = content.format_card_1_price;
+      if (content.format_card_1_text != null) fmtCards[0].querySelector('p').textContent = content.format_card_1_text;
+    }
+    if (fmtCards[1]) {
+      if (content.format_card_2_price != null) fmtCards[1].querySelector('.format-card__price').textContent = content.format_card_2_price;
+      if (content.format_card_2_text != null) fmtCards[1].querySelector('p').textContent = content.format_card_2_text;
+    }
+    if (fmtCards[2]) {
+      if (content.format_card_3_price != null) fmtCards[2].querySelector('.format-card__price').textContent = content.format_card_3_price;
+      if (content.format_card_3_text != null) fmtCards[2].querySelector('p').textContent = content.format_card_3_text;
+    }
+
+    setHtml('#booking .section__title', content.booking_title_html);
+    setText('#booking .cta-row__info > p', content.booking_text);
+    if (Array.isArray(content.booking_principles)) {
+      const ul = document.querySelector('.cta-principles');
+      if (ul) ul.innerHTML = content.booking_principles.map(t => `<li>${escapeHtml(t)}</li>`).join('');
+    }
+
+    setText('.footer__name', content.footer_name);
+    setText('.footer__master', content.footer_master);
+    setText('.footer__spec', content.footer_spec);
+    setText('.footer__contacts-title', content.footer_contacts_title);
+    setText('[data-cms="footer_address"]', content.footer_address);
+    setText('[data-cms="footer_entrance"]', content.footer_entrance);
+    setText('[data-cms="footer_hours"]', content.footer_hours);
+    setText('.footer__legal-note', content.footer_legal_note);
+    const phoneLink = document.querySelector('.footer__contact-item a[href^="tel:"]');
+    if (phoneLink) {
+      if (content.footer_phone) phoneLink.href = 'tel:' + String(content.footer_phone).replace(/\s/g, '');
+      if (content.footer_phone_label) phoneLink.textContent = content.footer_phone_label;
+    }
+    const vkLink = document.querySelector('.footer__contact-item a[href*="vk.com"]');
+    if (vkLink) {
+      if (content.footer_vk_url) vkLink.href = content.footer_vk_url;
+      if (content.footer_vk) vkLink.textContent = content.footer_vk;
+    }
+    const bookLink = document.querySelector('.footer__contact-item a[href*="mst.link"]');
+    if (bookLink) {
+      if (content.footer_booking_url) bookLink.href = content.footer_booking_url;
+      if (content.footer_booking_label) bookLink.textContent = content.footer_booking_label;
+    }
+    const siteLink = document.querySelector('.footer__contact-item a[href*="StudiaMai"]');
+    if (siteLink) {
+      if (content.footer_site_url) siteLink.href = content.footer_site_url;
+      if (content.footer_site_label) siteLink.textContent = content.footer_site_label;
+    }
   }
 
   function applyImages(images) {
