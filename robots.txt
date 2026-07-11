@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+
+Sitemap: https://natali202605.github.io/StudiaMai/sitemap.xml
