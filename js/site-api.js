@@ -152,9 +152,7 @@
     if (freeCards[1] && content.consultation_free_2 != null) freeCards[1].textContent = content.consultation_free_2;
 
     setText('.master .section__eyebrow', content.master_eyebrow);
-    setHtml('.master .section__title', content.master_title_html);
-    setText('.master__info p:nth-of-type(1)', content.master_p1);
-    setText('.master__info p:nth-of-type(2)', content.master_p2);
+    setHtml('.master .master__title', content.master_title_html);
     setText('.master__highlight', content.master_highlight);
 
     const approachSec = document.querySelector('.approach-grid')?.closest('.section');
