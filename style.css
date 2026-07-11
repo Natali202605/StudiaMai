@@ -442,7 +442,14 @@ ul {
   width: 100%;
   height: auto;
   max-width: 100%;
-  image-rendering: -webkit-optimize-contrast;
+}
+
+.brand-title-img--header {
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.18));
+}
+
+.brand-title-img--hero {
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.24)) drop-shadow(0 12px 24px rgba(0, 0, 0, 0.16));
 }
 
 .hero__site-name {
