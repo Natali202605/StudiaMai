@@ -370,10 +370,10 @@
           <div class="service-card__body">
           <div class="service-card__header">
             <span class="service-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3c-4 2-7 6-7 10a7 7 0 0 0 14 0c0-4-3-8-7-10z"/><circle cx="12" cy="13" r="2.5"/></svg></span>
-            <h3 class="service-card__title">Брови / <span class="accent">услуги Броволога</span></h3>
+            <h3 class="service-card__title" data-service-title="brows">Брови / <span class="accent">услуги Броволога</span></h3>
           </div>
           <div class="service-card__prices">
-            <ul class="price-list">
+            <ul class="price-list" data-service-prices="brows">
               <li class="price-item">
                 <div class="price-item__row"><span class="price-item__name">SMART-коррекция бровей</span><span class="price-item__price">от 1 500 ₽</span></div>
                 <span class="price-item__time">1 час</span>
@@ -439,10 +439,10 @@
           <div class="service-card__body">
           <div class="service-card__header">
             <span class="service-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22V12M12 12C12 7 7 4 4 4c0 4 3 8 8 8M12 12c0-5 5-8 8-8 0 4-3 8-8 8"/></svg></span>
-            <h3 class="service-card__title"><span class="accent">Косметологические</span> процедуры</h3>
+            <h3 class="service-card__title" data-service-title="cosmetology"><span class="accent">Косметологические</span> процедуры</h3>
           </div>
           <div class="service-card__prices">
-            <ul class="price-list">
+            <ul class="price-list" data-service-prices="cosmetology">
               <li class="price-list__subtitle">Уход / маски</li>
               <li class="price-item">
                 <div class="price-item__row"><span class="price-item__name">Уходовые процедуры для лица</span><span class="price-item__price">от 1 000 ₽ до 2 000 ₽</span></div>
@@ -523,10 +523,10 @@
           <div class="service-card__body">
           <div class="service-card__header">
             <span class="service-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3z"/></svg></span>
-            <h3 class="service-card__title">Массажи <span class="accent">лица</span></h3>
+            <h3 class="service-card__title" data-service-title="massage">Массажи <span class="accent">лица</span></h3>
           </div>
           <div class="service-card__prices">
-            <ul class="price-list">
+            <ul class="price-list" data-service-prices="massage">
               <li class="price-item">
                 <div class="price-item__row"><span class="price-item__name">Классический массаж лица</span><span class="price-item__price">от 1 000 ₽</span></div>
                 <span class="price-item__time">1 час</span>
@@ -565,7 +565,7 @@
           <div class="service-card__body">
           <div class="service-card__header">
             <span class="service-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 20c0-5 2-9 5-11 3 2 5 6 5 11"/><path d="M12 20c0-5 2-9 5-11"/><path d="M17 20c0-4 1-7 3-9"/></svg></span>
-            <h3 class="service-card__title">Лечение и уход за волосами / <span class="accent">Услуги Трихолога</span></h3>
+            <h3 class="service-card__title" data-service-title="trichology">Лечение и уход за волосами / <span class="accent">Услуги Трихолога</span></h3>
           </div>
           <p class="service-card__desc" data-service-desc="trichology" hidden></p>
           <div class="service-card__prices service-card__prices--pending">
@@ -583,11 +583,11 @@
           <div class="service-card__body">
           <div class="service-card__header">
             <span class="service-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 21s-7-4.5-9-9a5.5 5.5 0 0 1 9-4 5.5 5.5 0 0 1 9 4c-2 4.5-9 9-9 9z"/></svg></span>
-            <h3 class="service-card__title"><span class="accent">Женская</span> депиляция</h3>
+            <h3 class="service-card__title" data-service-title="depilation"><span class="accent">Женская</span> депиляция</h3>
           </div>
-          <p class="service-card__desc">Комфортное удаление нежелательных волос с учётом чувствительности кожи.</p>
+          <p class="service-card__desc" data-service-desc="depilation">Комфортное удаление нежелательных волос с учётом чувствительности кожи.</p>
           <div class="service-card__prices">
-            <ul class="price-list">
+            <ul class="price-list" data-service-prices="depilation">
               <li class="price-item">
                 <div class="price-item__row"><span class="price-item__name">Область над верхней губой</span><span class="price-item__price">от 300 ₽</span></div>
                 <span class="price-item__time">15 мин</span>
@@ -665,12 +665,12 @@
       <!-- Ритуалы ухода и обертывание -->
       <div class="rituals">
         <div class="rituals__media">
-          <img src="images/ruki.jpg" alt="Ритуалы ухода и обертывание — уход за руками" class="rituals__image service-card__image" loading="lazy" decoding="async" fetchpriority="low">
+          <img src="images/ruki.jpg" alt="Ритуалы ухода и обертывание — уход за руками" class="rituals__image service-card__image" data-cms-img="service_rituals" loading="lazy" decoding="async" fetchpriority="low">
         </div>
         <div class="rituals__body">
-          <h3 class="rituals__title">Ритуалы <span class="accent">ухода</span> и обертывание</h3>
+          <h3 class="rituals__title" data-service-title="rituals">Ритуалы <span class="accent">ухода</span> и обертывание</h3>
           <div class="rituals__prices">
-            <ul class="price-list">
+            <ul class="price-list" data-service-prices="rituals">
               <li class="price-item">
                 <div class="price-item__row"><span class="price-item__name">Парафиновая ванночка кистей рук «Бархатные ручки»</span><span class="price-item__price">от 1 000 ₽</span></div>
                 <span class="price-item__time">1 час</span>
@@ -1084,7 +1084,7 @@
   </div>
 
   <script src="js/config.js"></script>
-  <script src="js/site-api.js?v=cms3"></script>
+  <script src="js/site-api.js?v=cms4"></script>
   <script>
     const burger = document.querySelector('.burger');
     const nav = document.querySelector('.nav');

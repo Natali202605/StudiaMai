@@ -704,6 +704,55 @@ body {
   .admin__service-item__grid { grid-template-columns: 1fr; }
 }
 
+.admin__form--cms {
+  gap: 12px;
+}
+
+.admin__cms-group {
+  border: 1px solid rgba(16, 185, 129, 0.18);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.55);
+  overflow: hidden;
+}
+
+.admin__cms-group__title {
+  padding: 14px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.admin__cms-group__title::-webkit-details-marker {
+  display: none;
+}
+
+.admin__cms-group__body {
+  padding: 0 16px 16px;
+  display: grid;
+  gap: 12px;
+}
+
+.admin__field-hint {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--adm-muted);
+}
+
+.admin__list-editor {
+  display: grid;
+  gap: 12px;
+}
+
+.admin__list-item {
+  padding: 12px;
+  border: 1px dashed rgba(16, 185, 129, 0.25);
+  border-radius: 10px;
+  display: grid;
+  gap: 8px;
+}
+
 @media (max-width: 768px) {
   body {
     background-attachment: scroll;

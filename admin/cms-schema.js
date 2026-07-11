@@ -11,6 +11,21 @@
       rituals: { title: 'Ритуалы ухода', hint: 'Блок под карточками услуг' }
     },
 
+    IMAGE_LABELS: {
+      logo: 'Логотип',
+      hero_logo: 'Логотип в шапке главной',
+      hero_studio: 'Фото студии на главной',
+      service_brows: 'Услуга: брови и ресницы',
+      service_cosmetology: 'Услуга: косметология',
+      service_massage: 'Услуга: массаж',
+      service_trichology: 'Услуга: трихология',
+      service_depilation: 'Услуга: депиляция',
+      service_rituals: 'Ритуалы ухода',
+      master_portrait: 'Портрет мастера',
+      master_card: 'Визитка мастера',
+      master_certificates: 'Сертификаты'
+    },
+
     CONTENT_GROUPS: [
       {
         id: 'hero',

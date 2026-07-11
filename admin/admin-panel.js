@@ -1,36 +1,6 @@
 (function () {
   'use strict';
 
-  var CMS_LABELS = {
-    hero_text: 'Текст на главном экране',
-    hero_subtext: 'Подзаголовок на главном экране',
-    master_role: 'Специализация мастера',
-    footer_address: 'Адрес',
-    footer_entrance: 'Как пройти',
-    footer_hours: 'Часы работы'
-  };
-
-  var IMAGE_LABELS = {
-    logo: 'Логотип',
-    hero_logo: 'Логотип в шапке главной',
-    hero_studio: 'Фото студии на главной',
-    service_brows: 'Услуга: брови и ресницы',
-    service_cosmetology: 'Услуга: косметология',
-    service_massage: 'Услуга: массаж',
-    service_trichology: 'Услуга: трихология',
-    service_depilation: 'Услуга: депиляция',
-    master_portrait: 'Портрет мастера',
-    master_card: 'Визитка мастера',
-    master_certificates: 'Сертификаты'
-  };
-
-  var SERVICE_LABELS = {
-    trichology: {
-      title: 'Трихология — лечение и уход за волосами',
-      hint: 'Карточка «Услуги Трихолога» на сайте. Позиции отображаются в том же стиле, что и остальные услуги.'
-    }
-  };
-
   var STATUS_LABELS = {
     new: 'Новая',
     done: 'Обработана',
@@ -97,6 +67,189 @@
     } catch (e) { return iso; }
   }
 
+  function getSchema() {
+    return window.StudiaMaiCmsSchema || {};
+  }
+
+  function getImageLabels() {
+    var labels = getSchema().IMAGE_LABELS || {};
+    return Object.keys(labels).length ? labels : {
+      logo: 'Логотип',
+      hero_logo: 'Логотип в шапке главной',
+      hero_studio: 'Фото студии на главной'
+    };
+  }
+
+  function getServiceMeta() {
+    return getSchema().SERVICE_META || {};
+  }
+
+  function getServiceKeys() {
+    var keys = Object.keys(getServiceMeta());
+    if (keys.length) return keys;
+    var fromBase = Object.keys(baseServices || {});
+    return fromBase.length ? fromBase : ['trichology'];
+  }
+
+  function getContentGroups() {
+    return getSchema().CONTENT_GROUPS || [];
+  }
+
+  function renderFaqEditor(key, items) {
+    items = Array.isArray(items) ? items : [];
+    var html = '<div class="admin__list-editor" data-list-editor="faq" data-key="' + key + '">';
+    var i;
+    for (i = 0; i < items.length; i++) {
+      html += '<div class="admin__list-item" data-list-index="' + i + '">';
+      html += '<label class="admin__field admin__field--compact"><span>Вопрос</span>';
+      html += '<input type="text" data-faq-q value="' + escapeHtml(items[i].q || '') + '"></label>';
+      html += '<label class="admin__field admin__field--compact"><span>Ответ</span>';
+      html += '<textarea data-faq-a rows="2">' + escapeHtml(items[i].a || '') + '</textarea></label>';
+      html += '<button type="button" class="admin-btn admin-btn--ghost admin-btn--small" onclick="return studiaMaiRemoveListItem(this)">Удалить</button>';
+      html += '</div>';
+    }
+    html += '<button type="button" class="admin-btn admin-btn--ghost admin-btn--small" onclick="return studiaMaiAddFaqItem(\'' + key + '\')">+ Вопрос</button>';
+    html += '</div>';
+    return html;
+  }
+
+  function renderReviewsEditor(key, items) {
+    items = Array.isArray(items) ? items : [];
+    var html = '<div class="admin__list-editor" data-list-editor="reviews" data-key="' + key + '">';
+    var i;
+    for (i = 0; i < items.length; i++) {
+      var stars = Math.min(5, Math.max(1, Number(items[i].stars) || 5));
+      html += '<div class="admin__list-item" data-list-index="' + i + '">';
+      html += '<label class="admin__field admin__field--compact"><span>Автор</span>';
+      html += '<input type="text" data-review-author value="' + escapeHtml(items[i].author || '') + '"></label>';
+      html += '<label class="admin__field admin__field--compact"><span>Текст отзыва</span>';
+      html += '<textarea data-review-text rows="3">' + escapeHtml(items[i].text || '') + '</textarea></label>';
+      html += '<label class="admin__field admin__field--compact admin__field--inline"><span>Звёзды</span>';
+      html += '<select data-review-stars>';
+      var s;
+      for (s = 1; s <= 5; s++) {
+        html += '<option value="' + s + '"' + (s === stars ? ' selected' : '') + '>' + s + '</option>';
+      }
+      html += '</select></label>';
+      html += '<button type="button" class="admin-btn admin-btn--ghost admin-btn--small" onclick="return studiaMaiRemoveListItem(this)">Удалить</button>';
+      html += '</div>';
+    }
+    html += '<button type="button" class="admin-btn admin-btn--ghost admin-btn--small" onclick="return studiaMaiAddReviewItem(\'' + key + '\')">+ Отзыв</button>';
+    html += '</div>';
+    return html;
+  }
+
+  function renderContentField(field, content) {
+    var val = content[field.key];
+    var html = '<label class="admin__field" data-field-key="' + field.key + '"><span>' + escapeHtml(field.label) + '</span>';
+
+    if (field.faq) {
+      html += renderFaqEditor(field.key, val);
+    } else if (field.reviews) {
+      html += renderReviewsEditor(field.key, val);
+    } else if (field.list || field.listHtml) {
+      var lines = Array.isArray(val) ? val.join('\n') : (val || '');
+      html += '<textarea name="' + field.key + '" rows="5" placeholder="Каждый пункт с новой строки">' + escapeHtml(lines) + '</textarea>';
+      if (field.listHtml) html += '<span class="admin__field-hint">Можно использовать HTML, например &lt;span class="accent"&gt;слово&lt;/span&gt;</span>';
+    } else if (field.textarea || (field.html && field.rows > 2)) {
+      html += '<textarea name="' + field.key + '" rows="' + (field.rows || 4) + '">' + escapeHtml(val || '') + '</textarea>';
+      if (field.html) html += '<span class="admin__field-hint">Можно использовать HTML с классом accent для выделения</span>';
+    } else if (field.html) {
+      html += '<input type="text" name="' + field.key + '" value="' + escapeHtml(val || '') + '">';
+      html += '<span class="admin__field-hint">Можно использовать HTML с классом accent для выделения</span>';
+    } else {
+      html += '<input type="text" name="' + field.key + '" value="' + escapeHtml(val || '') + '">';
+    }
+
+    html += '</label>';
+    return html;
+  }
+
+  function readFaqFromDom(key) {
+    var box = document.querySelector('[data-list-editor="faq"][data-key="' + key + '"]');
+    if (!box) return [];
+    var items = [];
+    var rows = box.querySelectorAll('.admin__list-item');
+    var i;
+    for (i = 0; i < rows.length; i++) {
+      var q = (rows[i].querySelector('[data-faq-q]') || {}).value || '';
+      var a = (rows[i].querySelector('[data-faq-a]') || {}).value || '';
+      q = q.trim();
+      a = a.trim();
+      if (q || a) items.push({ q: q, a: a });
+    }
+    return items;
+  }
+
+  function readReviewsFromDom(key) {
+    var box = document.querySelector('[data-list-editor="reviews"][data-key="' + key + '"]');
+    if (!box) return [];
+    var items = [];
+    var rows = box.querySelectorAll('.admin__list-item');
+    var i;
+    for (i = 0; i < rows.length; i++) {
+      var author = (rows[i].querySelector('[data-review-author]') || {}).value || '';
+      var text = (rows[i].querySelector('[data-review-text]') || {}).value || '';
+      var stars = Number((rows[i].querySelector('[data-review-stars]') || {}).value) || 5;
+      author = author.trim();
+      text = text.trim();
+      if (text || author) items.push({ text: text, author: author, stars: stars });
+    }
+    return items;
+  }
+
+  function readContentFromForm() {
+    var content = getContentState();
+    var groups = getContentGroups();
+    var g;
+    for (g = 0; g < groups.length; g++) {
+      var fields = groups[g].fields || [];
+      var f;
+      for (f = 0; f < fields.length; f++) {
+        var field = fields[f];
+        if (field.faq) {
+          content[field.key] = readFaqFromDom(field.key);
+          continue;
+        }
+        if (field.reviews) {
+          content[field.key] = readReviewsFromDom(field.key);
+          continue;
+        }
+        var input = document.querySelector('[name="' + field.key + '"]');
+        if (!input) continue;
+        var raw = input.value;
+        if (field.list || field.listHtml) {
+          content[field.key] = raw.split('\n').map(function (line) { return line.trim(); }).filter(Boolean);
+        } else {
+          content[field.key] = raw;
+        }
+      }
+    }
+    return content;
+  }
+
+  window.studiaMaiRemoveListItem = function (btn) {
+    var item = btn && btn.closest('.admin__list-item');
+    if (item) item.parentNode.removeChild(item);
+    return false;
+  };
+
+  window.studiaMaiAddFaqItem = function (key) {
+    var content = readContentFromForm();
+    if (!Array.isArray(content[key])) content[key] = [];
+    content[key].push({ q: '', a: '' });
+    renderContentForm(content);
+    return false;
+  };
+
+  window.studiaMaiAddReviewItem = function (key) {
+    var content = readContentFromForm();
+    if (!Array.isArray(content[key])) content[key] = [];
+    content[key].push({ text: '', author: '', stars: 5 });
+    renderContentForm(content);
+    return false;
+  };
+
   function getContentState() {
     return merge(baseContent, readJson(window.StudiaMaiSite ? window.StudiaMaiSite.STORAGE_CONTENT : 'studia_mai_cms_content'));
   }
@@ -136,13 +289,15 @@
   function getServicesState() {
     var stored = readJson(window.StudiaMaiSite ? window.StudiaMaiSite.STORAGE_SERVICES : 'studia_mai_cms_services') || {};
     var out = {};
-    var key;
-    for (key in SERVICE_LABELS) {
-      if (!Object.prototype.hasOwnProperty.call(SERVICE_LABELS, key)) continue;
-      var base = baseServices[key] || { desc: '', items: [] };
+    var keys = getServiceKeys();
+    var i;
+    for (i = 0; i < keys.length; i++) {
+      var key = keys[i];
+      var base = baseServices[key] || { title_html: '', desc: '', items: [] };
       var over = stored[key];
       var items = over && Array.isArray(over.items) ? over.items : (base.items || []);
       out[key] = {
+        title_html: over && over.title_html != null ? over.title_html : (base.title_html || ''),
         desc: over && over.desc != null ? over.desc : (base.desc || ''),
         items: items.map(normalizeServiceItem).filter(Boolean)
       };
@@ -159,16 +314,19 @@
 
   function readServicesFromDom() {
     var services = getServicesState();
-    var key;
-    for (key in SERVICE_LABELS) {
-      if (!Object.prototype.hasOwnProperty.call(SERVICE_LABELS, key)) continue;
+    var keys = getServiceKeys();
+    var i;
+    for (i = 0; i < keys.length; i++) {
+      var key = keys[i];
+      var titleEl = getEl('serviceTitle_' + key);
+      if (titleEl) services[key].title_html = titleEl.value.trim();
       var descEl = getEl('serviceDesc_' + key);
       if (descEl) services[key].desc = descEl.value.trim();
       var rows = document.querySelectorAll('[data-service-row="' + key + '"]');
       var items = [];
-      var i;
-      for (i = 0; i < rows.length; i++) {
-        var row = rows[i];
+      var j;
+      for (j = 0; j < rows.length; j++) {
+        var row = rows[j];
         var rowType = row.getAttribute('data-row-type');
         if (rowType === 'subtitle') {
           var textInput = row.querySelector('[data-field="text"]');
@@ -241,22 +399,27 @@
     var box = getEl('servicesEditor');
     if (!box) return;
     services = services || getServicesState();
+    var metaMap = getServiceMeta();
     var html = '';
-    var key;
-    for (key in SERVICE_LABELS) {
-      if (!Object.prototype.hasOwnProperty.call(SERVICE_LABELS, key)) continue;
-      var meta = SERVICE_LABELS[key];
-      var data = services[key] || { desc: '', items: [] };
+    var keys = getServiceKeys();
+    var i;
+    for (i = 0; i < keys.length; i++) {
+      var key = keys[i];
+      var meta = metaMap[key] || { title: key, hint: '' };
+      var data = services[key] || { title_html: '', desc: '', items: [] };
       html += '<div class="admin__service-card" data-service-key="' + key + '">';
       html += '<h4 class="admin__service-card__title">' + escapeHtml(meta.title) + '</h4>';
       if (meta.hint) html += '<p class="admin__msg admin__msg--compact">' + escapeHtml(meta.hint) + '</p>';
+      html += '<label class="admin__field"><span>Заголовок карточки (HTML)</span>';
+      html += '<input type="text" id="serviceTitle_' + key + '" value="' + escapeHtml(data.title_html || '') + '" placeholder="Например: Брови / &lt;span class=&quot;accent&quot;&gt;услуги Броволога&lt;/span&gt;">';
+      html += '</label>';
       html += '<label class="admin__field"><span>Краткое описание карточки (необязательно)</span>';
-      html += '<textarea id="serviceDesc_' + key + '" rows="2" placeholder="Появится под заголовком карточки, как у депиляции">' + escapeHtml(data.desc || '') + '</textarea>';
+      html += '<textarea id="serviceDesc_' + key + '" rows="2" placeholder="Появится под заголовком карточки">' + escapeHtml(data.desc || '') + '</textarea>';
       html += '</label>';
       html += '<div class="admin__service-list">';
-      var i;
-      for (i = 0; i < data.items.length; i++) {
-        html += renderServiceItemRow(key, i, data.items[i], data.items.length);
+      var j;
+      for (j = 0; j < data.items.length; j++) {
+        html += renderServiceItemRow(key, j, data.items[j], data.items.length);
       }
       if (!data.items.length) {
         html += '<p class="admin__msg admin__msg--compact">Пока нет позиций. Добавьте услугу или раздел.</p>';
@@ -544,37 +707,46 @@
     return false;
   };
 
-  function renderContentForm() {
+  function renderContentForm(content) {
     var form = getEl('contentForm');
     if (!form) return;
-    var content = getContentState();
+    content = content || getContentState();
+    var groups = getContentGroups();
     var html = '';
-    var key;
-    for (key in CMS_LABELS) {
-      if (!Object.prototype.hasOwnProperty.call(CMS_LABELS, key)) continue;
-      var val = content[key] || '';
-      html += '<label class="admin__field"><span>' + CMS_LABELS[key] + '</span>';
-      if (val.length > 90) {
-        html += '<textarea name="' + key + '" rows="3">' + escapeHtml(val) + '</textarea>';
-      } else {
-        html += '<input type="text" name="' + key + '" value="' + escapeHtml(val) + '">';
+    var g;
+    for (g = 0; g < groups.length; g++) {
+      var group = groups[g];
+      html += '<details class="admin__cms-group" open>';
+      html += '<summary class="admin__cms-group__title">' + escapeHtml(group.title) + '</summary>';
+      html += '<div class="admin__cms-group__body">';
+      var fields = group.fields || [];
+      var f;
+      for (f = 0; f < fields.length; f++) {
+        html += renderContentField(fields[f], content);
       }
-      html += '</label>';
+      html += '</div></details>';
+    }
+    if (!html) {
+      html = '<p class="admin__msg">Схема CMS не загружена. Проверьте подключение cms-schema.js</p>';
     }
     form.innerHTML = html;
   }
 
   window.studiaMaiSaveContent = function () {
-    var form = getEl('contentForm');
-    if (!form) return false;
-    var content = getContentState();
-    var inputs = form.querySelectorAll('[name]');
-    var i;
-    for (i = 0; i < inputs.length; i++) {
-      content[inputs[i].name] = inputs[i].value;
-    }
+    var content = readContentFromForm();
     saveContentState(content);
-    showMsg('contentMsg', 'Тексты сохранены и применены на сайте (в этом браузере). Для всех посетителей — экспортируйте JSON и обновите сайт.', true);
+    showMsg('contentMsg', 'Тексты сохранены и применены на сайте (в этом браузере). Для всех посетителей — скачайте content.json и обновите сайт.', true);
+    return false;
+  };
+
+  window.studiaMaiExportContent = function () {
+    var blob = new Blob([JSON.stringify(getContentState(), null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'content.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    showMsg('contentMsg', 'Файл content.json скачан', true);
     return false;
   };
 
@@ -590,16 +762,17 @@
     var grid = getEl('photosGrid');
     if (!grid) return;
     var images = getImagesState();
+    var labels = getImageLabels();
     var html = '';
     var key;
-    for (key in IMAGE_LABELS) {
-      if (!Object.prototype.hasOwnProperty.call(IMAGE_LABELS, key)) continue;
+    for (key in labels) {
+      if (!Object.prototype.hasOwnProperty.call(labels, key)) continue;
       var src = images[key] || baseImages[key] || '';
       if (src === '__removed__') src = '';
       var preview = src ? (src.indexOf('data:') === 0 || src.indexOf('http') === 0 ? src : '../' + src) : '';
       html += '<div class="admin__photo-card" data-photo-key="' + key + '">';
-      html += '<img src="' + escapeHtml(preview) + '" alt="' + escapeHtml(IMAGE_LABELS[key]) + '">';
-      html += '<span>' + IMAGE_LABELS[key] + '</span>';
+      html += '<img src="' + escapeHtml(preview) + '" alt="' + escapeHtml(labels[key]) + '">';
+      html += '<span>' + labels[key] + '</span>';
       html += '<input type="text" class="admin__photo-path" data-key="' + key + '" value="' + escapeHtml(src) + '" placeholder="images/photo.jpg">';
       html += '<label class="admin-btn admin-btn--ghost admin-btn--block admin__photo-upload">';
       html += 'Загрузить файл<input type="file" accept="image/*" hidden onchange="studiaMaiUploadPhoto(\'' + key + '\', this)">';

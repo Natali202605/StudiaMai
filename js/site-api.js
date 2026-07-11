@@ -360,6 +360,12 @@
   function applyServices(services) {
     if (!services) return;
 
+    document.querySelectorAll('[data-service-title]').forEach((el) => {
+      const key = el.dataset.serviceTitle;
+      const titleHtml = services[key]?.title_html;
+      if (titleHtml) el.innerHTML = titleHtml;
+    });
+
     document.querySelectorAll('[data-service-prices]').forEach((ul) => {
       const key = ul.dataset.servicePrices;
       const data = services[key];
