@@ -1360,30 +1360,55 @@ ul {
 }
 
 .master__role {
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.1em;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--color-accent);
-  margin-bottom: 24px;
+  color: var(--color-accent-dark);
+  margin-bottom: 18px;
 }
 
-.master__info p {
-  margin-bottom: 18px;
-  font-size: 17px;
-  line-height: 1.75;
-  color: var(--color-text-light);
+.master__info .section__eyebrow {
+  margin-bottom: 12px;
+}
+
+.master__info .section__title {
+  font-family: var(--font-sans);
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  line-height: 1.3;
+  margin-bottom: 14px;
+  color: var(--color-text);
+}
+
+.master__info .section__title .accent {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.master__info p:not(.master__highlight) {
+  margin-bottom: 16px;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.72;
+  letter-spacing: 0.01em;
+  color: var(--color-text);
+  font-weight: 400;
 }
 
 .master__highlight {
-  font-family: var(--font-serif);
-  font-size: 22px;
-  font-style: italic;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 500;
   color: var(--color-text) !important;
-  padding-left: 24px;
-  border-left: 3px solid var(--color-accent);
-  margin-top: 28px;
-  line-height: 1.5;
+  padding-left: 18px;
+  border-left: 2px solid rgba(0, 168, 120, 0.55);
+  margin-top: 20px;
+  line-height: 1.68;
+  letter-spacing: 0.01em;
 }
 
 /* ============================================
@@ -4249,6 +4274,21 @@ html.review-modal-open body {
 @media (max-width: 992px) {
   .section__title {
     font-size: clamp(30px, 6vw, 42px);
+  }
+
+  .master__info .section__title {
+    font-size: clamp(22px, 5.2vw, 28px);
+    letter-spacing: 0.025em;
+  }
+
+  .master__info p:not(.master__highlight) {
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .master__highlight {
+    font-size: 14px;
+    margin-top: 18px;
   }
 
   .section-row__body p {
