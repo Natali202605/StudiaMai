@@ -587,7 +587,6 @@ ul {
   top: -8%;
   right: -6%;
   background: radial-gradient(circle, rgba(168, 196, 184, 0.45) 0%, transparent 70%);
-  animation: hero-accent-float 20s ease-in-out infinite alternate;
 }
 
 .hero__accent--beige {
@@ -596,7 +595,16 @@ ul {
   bottom: 5%;
   left: -4%;
   background: radial-gradient(circle, rgba(220, 203, 195, 0.4) 0%, transparent 70%);
-  animation: hero-accent-float-alt 24s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero__accent--mint {
+    animation: hero-accent-float 20s ease-in-out infinite alternate;
+  }
+
+  .hero__accent--beige {
+    animation: hero-accent-float-alt 24s ease-in-out infinite alternate;
+  }
 }
 
 @keyframes hero-accent-float {
@@ -905,7 +913,8 @@ ul {
   background:
     radial-gradient(ellipse at 18% 24%, rgba(255, 255, 255, 0.14) 0%, transparent 55%),
     radial-gradient(ellipse at 82% 76%, rgba(0, 235, 190, 0.20) 0%, transparent 50%);
-  animation: section-bg-shimmer 26s ease-in-out infinite alternate;
+  opacity: 0.4;
+  transform: translate3d(-1%, 1%, 0) scale(1.03);
 }
 
 @keyframes section-bg-drift {
@@ -1224,8 +1233,6 @@ ul {
   border: 1px solid rgba(0, 200, 158, 0.40);
   border-radius: var(--radius-xl);
   padding: 36px 40px;
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
   box-shadow: var(--shadow-float-card-accent), inset 0 1px 0 rgba(255, 255, 255, 0.22);
   color: #000000;
 }
@@ -1269,8 +1276,6 @@ ul {
   padding: 24px 28px;
   display: flex;
   align-items: center;
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
   gap: 18px;
   box-shadow: var(--shadow-float-card-accent), inset 0 1px 0 rgba(255, 255, 255, 0.2);
   color: #000000;
@@ -2101,6 +2106,7 @@ ul {
   background: var(--card-gradient-warm);
   border: var(--border-mint);
   box-shadow: var(--shadow-float-card), var(--neon-emerald-sm), var(--shadow-inner);
+  --review-slide-width: 100%;
 }
 
 .reviews-slider__track {
@@ -2145,11 +2151,11 @@ ul {
 }
 
 .review-card {
-  flex: 0 0 100%;
+  flex: 0 0 var(--review-slide-width, 100%);
   flex-shrink: 0;
-  width: 100%;
-  max-width: 100%;
-  min-width: 100%;
+  width: var(--review-slide-width, 100%);
+  max-width: var(--review-slide-width, 100%);
+  min-width: var(--review-slide-width, 100%);
   background: var(--card-gradient-warm);
   border: none;
   border-radius: var(--radius-xl);
@@ -2408,8 +2414,10 @@ ul {
 .review-modal__dialog {
   position: relative;
   width: min(100%, 520px);
-  max-height: calc(100vh - 48px);
+  max-height: calc(100dvh - 48px - env(safe-area-inset-bottom, 0px));
   overflow-y: auto;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
   padding: clamp(28px, 5vw, 40px);
   border-radius: var(--radius-xl);
   border: var(--border-mint);
@@ -2526,7 +2534,6 @@ html.review-modal-open {
 
 html.review-modal-open body {
   overflow: hidden;
-  touch-action: none;
 }
 
 /* ============================================
@@ -2631,7 +2638,6 @@ html.review-modal-open body {
   border: 1px solid rgba(0, 200, 158, 0.42);
   border-radius: var(--radius-xl);
   padding: clamp(32px, 5vw, 44px);
-  backdrop-filter: blur(16px);
   box-shadow: var(--shadow-float-card-accent), inset 0 1px 0 rgba(255, 255, 255, 0.26);
   position: relative;
   color: #000000;
@@ -3493,23 +3499,6 @@ html.review-modal-open body {
     display: none;
   }
 
-  .section {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 480px;
-  }
-
-  #hero,
-  #services,
-  #reviews,
-  .rituals {
-    content-visibility: visible;
-  }
-
-  .hero,
-  .header {
-    content-visibility: visible;
-  }
-
   .section::before,
   .section--accent::before,
   .section--cta::before {
@@ -3739,7 +3728,7 @@ html.review-modal-open body {
   }
 
   .review-modal__dialog {
-    max-height: calc(100vh - 32px);
+    max-height: calc(100dvh - 32px - env(safe-area-inset-bottom, 0px));
     padding: 24px 20px 28px;
   }
 
@@ -4151,30 +4140,13 @@ html.review-modal-open body {
   box-shadow: 0 0 8px rgba(0, 212, 168, 0.4);
 }
 
-/* Полупрозрачные карточки — blur только на десктопе (на мобильных тормозит) */
+/* Полупрозрачные карточки — blur только на ключевых блоках (на мобильных отключён) */
 @media (min-width: 769px) {
-  .checklist li,
-  .audience-list,
-  .master__info,
-  .approach-card,
-  .approach-principles,
-  .approach-item,
-  .service-card,
-  .benefits-list li,
-  .benefit-card,
-  .faq-item,
-  .format-card,
-  .rituals,
-  .price-list--inline .price-item,
   .hero__top,
   .hero__body,
   .hero__stats,
-  .booking-form,
-  .consultation-block__steps,
-  .free-card,
   .footer__card,
-  .footer__logo-wrap,
-  .reviews-slider__btn {
+  .footer__logo-wrap {
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
   }

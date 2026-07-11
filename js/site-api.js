@@ -7,6 +7,7 @@
   const STORAGE_CONFIG = 'studia_mai_site_config';
   const STORAGE_BOOKINGS = 'studia_mai_bookings_local';
   const DEFAULT_ADMIN_EMAIL = 'brow_studia_may@mail.ru';
+  const DATA_CACHE_VERSION = 'cms5';
 
   function storageGet(key) {
     try { return localStorage.getItem(key); } catch { return null; }
@@ -35,7 +36,7 @@
 
   async function fetchDataJson(file) {
     try {
-      const res = await fetch(`${DATA_BASE}/${file}?v=${Date.now()}`);
+      const res = await fetch(`${DATA_BASE}/${file}?v=${DATA_CACHE_VERSION}`);
       if (!res.ok) return null;
       return await res.json();
     } catch {
@@ -66,8 +67,12 @@
     if (fromApi?.content) {
       return { content: fromApi.content, images: fromApi.images || {} };
     }
-    const content = mergeObjects(await fetchDataJson('content.json'), readStorageJson(STORAGE_CONTENT));
-    const images = mergeObjects(await fetchDataJson('images.json'), readStorageJson(STORAGE_IMAGES));
+    const [contentFile, imagesFile] = await Promise.all([
+      fetchDataJson('content.json'),
+      fetchDataJson('images.json')
+    ]);
+    const content = mergeObjects(contentFile, readStorageJson(STORAGE_CONTENT));
+    const images = mergeObjects(imagesFile, readStorageJson(STORAGE_IMAGES));
     return { content, images };
   }
 
@@ -113,12 +118,6 @@
       if (ul) ul.innerHTML = content.about_checklist.map(t => `<li>${escapeHtml(t)}</li>`).join('');
     }
 
-    const audSec = document.querySelector('.audience-list')?.closest('.section');
-    if (audSec) {
-      setText('.section__eyebrow', content.audience_eyebrow, audSec);
-      setHtml('.section__title', content.audience_title_html, audSec);
-      setText('.section__lead', content.audience_lead, audSec);
-    }
     function setTextIn(root, sel, text) {
       if (text == null || text === '' || !root) return;
       const el = root.querySelector(sel);
@@ -129,6 +128,7 @@
       const el = root.querySelector(sel);
       if (el) el.innerHTML = html;
     }
+    const audSec = document.querySelector('.audience-list')?.closest('.section');
     if (audSec) {
       setTextIn(audSec, '.section__eyebrow', content.audience_eyebrow);
       setHtmlIn(audSec, '.section__title', content.audience_title_html);
@@ -163,8 +163,8 @@
       setHtmlIn(approachSec, '.section__title', content.approach_title_html);
       setHtmlIn(approachSec, '.section__subtitle', content.approach_subtitle_html);
       setTextIn(approachSec, '.section__lead', content.approach_lead);
+      setHtmlIn(approachSec, '.approach-card__title', content.approach_card_title_html);
     }
-    setHtml('.approach-card__title', content.approach_card_title_html);
     if (Array.isArray(content.approach_grid)) {
       const grid = document.querySelector('.approach-grid');
       if (grid) {
@@ -226,10 +226,16 @@
     if (Array.isArray(content.reviews)) {
       const track = document.getElementById('reviewsTrack');
       if (track) {
+        const userCards = [...track.querySelectorAll('.review-card[data-review-id]')];
         track.innerHTML = content.reviews.map((r) => {
           const stars = '★'.repeat(Math.min(5, Math.max(1, Number(r.stars) || 5)));
           return `<div class="review-card"><span class="review-card__quote" aria-hidden="true">"</span><div class="review-card__stars">${stars}</div><p class="review-card__text">${escapeHtml(r.text || '')}</p><span class="review-card__author">${escapeHtml(r.author || '')}</span></div>`;
         }).join('');
+        if (userCards.length) {
+          const fragment = document.createDocumentFragment();
+          userCards.forEach((card) => fragment.appendChild(card));
+          track.insertBefore(fragment, track.firstChild);
+        }
       }
     }
 
@@ -402,11 +408,14 @@
   }
 
   async function loadCms() {
-    const data = await loadContentData();
-    const services = await loadServicesData();
+    const [data, services] = await Promise.all([
+      loadContentData(),
+      loadServicesData()
+    ]);
     applyContent(data.content);
     applyImages(data.images);
     applyServices(services);
+    document.dispatchEvent(new CustomEvent('studia-mai-cms-applied'));
   }
 
   function getFormData(form) {

@@ -1081,7 +1081,7 @@
   </div>
 
   <script src="js/config.js"></script>
-  <script src="js/site-api.js?v=cms4"></script>
+  <script src="js/site-api.js?v=cms5"></script>
   <script>
     const burger = document.querySelector('.burger');
     const nav = document.querySelector('.nav');
@@ -1206,10 +1206,6 @@
         });
         revealObs.observe(el);
       });
-
-      setTimeout(() => {
-        revealEls.forEach(el => el.classList.add('is-visible'));
-      }, 2800);
     }
 
     prefersReducedMotion.addEventListener('change', () => {
@@ -1338,19 +1334,6 @@
         if (width === reviewSlideWidth) return reviewSlideWidth;
         reviewSlideWidth = width;
         viewport?.style.setProperty('--review-slide-width', `${width}px`);
-        if (!isMobile()) {
-          reviewCards.forEach(card => {
-            card.style.flexBasis = `${reviewSlideWidth}px`;
-            card.style.width = `${reviewSlideWidth}px`;
-            card.style.minWidth = `${reviewSlideWidth}px`;
-          });
-        } else {
-          reviewCards.forEach(card => {
-            card.style.flexBasis = '';
-            card.style.width = '';
-            card.style.minWidth = '';
-          });
-        }
         return reviewSlideWidth;
       }
 
@@ -1421,6 +1404,18 @@
       }
 
       reviewSliderApi = { addReviewCard, goToReview, syncReviewSlider };
+      window.reviewSliderApi = reviewSliderApi;
+
+      document.addEventListener('studia-mai-cms-applied', () => {
+        sanitizeReviewCards();
+        reviewSlideWidth = 0;
+        refreshReviewCards();
+        syncReviewSlider();
+        updateReviewCounter();
+        if (progressBar && reviewCards.length) {
+          progressBar.style.width = `${((reviewIndex + 1) / reviewCards.length) * 100}%`;
+        }
+      });
 
       sanitizeReviewCards();
       prependUserReviews(loadStoredReviews());

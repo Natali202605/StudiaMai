@@ -111,7 +111,7 @@ function validateIndex() {
     fail(`index.html: geo.position "${geoPosition}" не совпадает с ${GEO.lat};${GEO.lon}`);
   }
 
-  const icbm = getMeta(html, 'geo.position') ? getMeta(html, 'ICBM') : null;
+  const icbm = getMeta(html, 'ICBM');
   if (icbm && !icbm.includes(String(GEO.lat)) && !icbm.includes(String(GEO.lon))) {
     warn('index.html: ICBM может быть указан в неверном формате');
   }
