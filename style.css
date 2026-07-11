@@ -3089,6 +3089,63 @@ html.review-modal-open body {
   letter-spacing: 0.04em;
 }
 
+@media (min-width: 993px) {
+  .footer {
+    color: rgba(255, 255, 255, 0.96);
+  }
+
+  .footer__name {
+    color: #ffffff;
+    font-weight: 500;
+  }
+
+  .footer__master {
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .footer__spec {
+    color: rgba(237, 228, 222, 0.96);
+  }
+
+  .footer__contacts-title {
+    font-weight: 600;
+  }
+
+  .footer__contact-item {
+    color: rgba(255, 255, 255, 0.94);
+  }
+
+  .footer__contact-item a,
+  .footer__contacts a {
+    color: #eafff8;
+    font-weight: 500;
+  }
+
+  .footer__contact-icon {
+    color: var(--color-mint-light);
+    background: rgba(168, 255, 234, 0.2);
+    border-color: rgba(168, 255, 234, 0.38);
+  }
+
+  .footer__hours {
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 600;
+  }
+
+  .footer__legal a {
+    color: rgba(200, 255, 240, 0.98);
+    font-weight: 600;
+  }
+
+  .footer__legal-note {
+    color: rgba(255, 255, 255, 0.76);
+  }
+
+  .footer__bottom p {
+    color: rgba(255, 255, 255, 0.78);
+  }
+}
+
 /* ============================================
    Правовые страницы
    ============================================ */
