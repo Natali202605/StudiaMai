@@ -7,7 +7,7 @@
   const STORAGE_CONFIG = 'studia_mai_site_config';
   const STORAGE_BOOKINGS = 'studia_mai_bookings_local';
   const DEFAULT_ADMIN_EMAIL = 'brow_studia_may@mail.ru';
-  const DATA_CACHE_VERSION = 'cms8';
+  const DATA_CACHE_VERSION = 'cms10';
 
   function storageGet(key) {
     try { return localStorage.getItem(key); } catch { return null; }
@@ -276,7 +276,7 @@
       if (content.footer_phone) phoneLink.href = 'tel:' + String(content.footer_phone).replace(/\s/g, '');
       if (content.footer_phone_label) phoneLink.textContent = content.footer_phone_label;
     }
-    const vkLink = document.querySelector('.footer__contact-item a[href*="vk.com"]');
+    const vkLink = document.querySelector('.footer__contact-item a[href*="vk.ru"], .footer__contact-item a[href*="vk.com"]');
     if (vkLink) {
       if (content.footer_vk_url) vkLink.href = content.footer_vk_url;
       if (content.footer_vk) vkLink.textContent = content.footer_vk;

@@ -1279,6 +1279,8 @@ ul {
   gap: 18px;
   box-shadow: var(--shadow-float-card-accent), inset 0 1px 0 rgba(255, 255, 255, 0.2);
   color: #000000;
+  text-decoration: none;
+  cursor: pointer;
   transition: var(--transition);
 }
 
@@ -1286,6 +1288,7 @@ ul {
   background: rgba(0, 132, 98, 0.40);
   box-shadow: var(--shadow-float-card-accent-hover), inset 0 1px 0 rgba(255, 255, 255, 0.28);
   transform: translateY(-4px);
+  color: #000000;
 }
 
 .free-card__label {
@@ -1366,6 +1369,10 @@ ul {
   text-transform: uppercase;
   color: var(--color-accent-dark);
   margin-bottom: 18px;
+  line-height: 1.55;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: normal;
 }
 
 .master__info .section__eyebrow {
@@ -2583,6 +2590,14 @@ html.review-modal-open body {
   border-radius: var(--radius-xl);
   transition: var(--transition);
   box-shadow: var(--shadow-sm);
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  cursor: default;
+}
+
+a.format-card {
+  cursor: pointer;
 }
 
 .format-card:nth-child(1) { background: var(--card-gradient-mint); }
@@ -2593,6 +2608,7 @@ html.review-modal-open body {
   border-color: var(--color-emerald-bright);
   box-shadow: var(--shadow-float-card-hover), var(--neon-emerald-strong), var(--shadow-hover);
   transform: translateY(-4px);
+  color: inherit;
 }
 
 .format-card__price {
@@ -4427,8 +4443,11 @@ html.review-modal-open body {
 
 .master__info .master__role {
   font-size: 10px !important;
-  letter-spacing: 0.16em !important;
+  letter-spacing: 0.12em !important;
   margin-bottom: 14px !important;
+  line-height: 1.55 !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
 }
 
 .master__info .master__highlight {

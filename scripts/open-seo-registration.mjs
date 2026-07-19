@@ -56,7 +56,7 @@ console.log('Адрес: г. Пермь, ул. Ласьвинская, 32');
 console.log('Уточнение: Вход с крыльца РЕНО, 2-й этаж');
 console.log('Телефон: +7 902 473-78-00');
 console.log('Сайт: https://natali202605.github.io/StudiaMai/');
-console.log('ВКонтакте: https://vk.com/id838426893');
+console.log('ВКонтакте: https://vk.ru/brow_studia_may');
 console.log('Запись: https://mst.link/bolotova_galina');
 console.log('Координаты: 58.003946, 55.941012');
 console.log('Часы: пн 11:00–20:00 · вт 10:00–20:00 · ср 12:00–20:00 · чт выходной · пт 12:00–20:00 · сб 15:00–20:00 · вс выходной');
