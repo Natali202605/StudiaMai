@@ -14,6 +14,7 @@
     IMAGE_LABELS: {
       logo: 'Логотип',
       hero_logo: 'Логотип в шапке главной',
+      brand_title: 'Надпись «Студия Май» (картинка)',
       hero_studio: 'Фото студии на главной',
       service_brows: 'Услуга: брови и ресницы',
       service_cosmetology: 'Услуга: косметология',
@@ -28,6 +29,27 @@
 
     CONTENT_GROUPS: [
       {
+        id: 'meta',
+        title: 'SEO и название сайта',
+        fields: [
+          { key: 'meta_title', label: 'Заголовок вкладки браузера' },
+          { key: 'meta_description', label: 'Описание сайта (meta description)', textarea: true },
+          { key: 'brand_city', label: 'Город под логотипом' }
+        ]
+      },
+      {
+        id: 'nav',
+        title: 'Меню навигации',
+        fields: [
+          { key: 'nav_about', label: 'Пункт «О нас»' },
+          { key: 'nav_consultation', label: 'Пункт «Консультация»' },
+          { key: 'nav_services', label: 'Пункт «Услуги»' },
+          { key: 'nav_reviews', label: 'Пункт «Отзывы»' },
+          { key: 'nav_contacts', label: 'Пункт «Контакты»' },
+          { key: 'nav_staff', label: 'Пункт входа для сотрудников' }
+        ]
+      },
+      {
         id: 'hero',
         title: 'Главный экран',
         fields: [
@@ -37,7 +59,21 @@
           { key: 'hero_stat_rating', label: 'Рейтинг (число)' },
           { key: 'hero_stat_rating_label', label: 'Подпись к рейтингу' },
           { key: 'hero_stat_reviews', label: 'Количество отзывов' },
-          { key: 'hero_stat_reviews_label', label: 'Подпись к отзывам' }
+          { key: 'hero_stat_reviews_label', label: 'Подпись к отзывам' },
+          { key: 'hero_cta_book', label: 'Кнопка «Записаться»' },
+          { key: 'hero_cta_consult', label: 'Кнопка «Бесплатная консультация»' },
+          { key: 'hero_cta_book_consult', label: 'Кнопка «Записаться на консультацию»' },
+          { key: 'hero_cta_services', label: 'Кнопка «Смотреть услуги»' }
+        ]
+      },
+      {
+        id: 'links',
+        title: 'Ссылки записи и карты',
+        fields: [
+          { key: 'booking_url', label: 'Ссылка онлайн-записи (все кнопки «Записаться»)' },
+          { key: 'consultation_cta_label', label: 'Кнопка «Получить рекомендации»' },
+          { key: 'footer_map_url', label: 'Ссылка на карту (2ГИС / Яндекс)' },
+          { key: 'footer_cta_label', label: 'Кнопка «Записаться» в подвале' }
         ]
       },
       {

@@ -3,5 +3,8 @@
   "notificationEmail": "brow_studia_may@mail.ru",
   "telegramBotToken": "",
   "telegramChatId": "",
-  "bookingsApiUrl": ""
+  "bookingsApiUrl": "",
+  "githubOwner": "Natali202605",
+  "githubRepo": "StudiaMai",
+  "githubBranch": "main"
 }

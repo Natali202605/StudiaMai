@@ -458,11 +458,16 @@
 
       <section class="admin__panel" data-panel="edit">
         <h2>Редактирование сайта</h2>
-        <p class="admin__msg">Здесь можно изменить все тексты, прайс-листы, фото и контакты. Изменения сразу видны в этом браузере.</p>
+        <p class="admin__msg">Здесь можно изменить тексты, меню, ссылки записи, карту, прайс, фото и контакты. После «Сохранить» изменения публикуются на сайт для всех посетителей (нужен токен в «Настройках»).</p>
+        <p class="admin__msg" id="publishAllMsg" hidden></p>
+        <div class="admin__toolbar">
+          <button type="button" class="admin-btn admin-btn--primary" onclick="return studiaMaiPublishAll()">Сохранить и опубликовать всё</button>
+          <a href="../" target="_blank" rel="noopener" class="admin-btn admin-btn--ghost">Открыть сайт</a>
+        </div>
 
         <div class="admin__edit-block">
           <h3 class="admin__subtitle">Тексты всех разделов</h3>
-          <p class="admin__msg admin__msg--compact">Главный экран, о студии, мастер, услуги, отзывы, контакты и другие блоки. Раскройте нужный раздел.</p>
+          <p class="admin__msg admin__msg--compact">SEO, меню, главный экран, ссылки записи и карты, о студии, мастер, услуги, отзывы, контакты и другие блоки.</p>
           <div class="admin__form admin__form--cms" id="contentForm"></div>
           <p class="admin__msg" id="contentMsg" hidden></p>
           <div class="admin__toolbar">
@@ -486,7 +491,7 @@
 
         <div class="admin__edit-block">
           <h3 class="admin__subtitle">Фото</h3>
-          <p class="admin__msg admin__msg--compact">Логотип, услуги, портрет мастера и другие изображения. Можно указать путь к файлу или загрузить новое (до 2 МБ).</p>
+          <p class="admin__msg admin__msg--compact">Логотип, надпись бренда, услуги, портрет мастера и другие изображения. Можно указать путь или загрузить файл (до 2 МБ) — при публикации файл попадёт в репозиторий.</p>
           <div class="admin__photos" id="photosGrid"></div>
           <p class="admin__msg" id="photosMsg" hidden></p>
           <div class="admin__toolbar">
@@ -496,6 +501,7 @@
         </div>
 
         <div class="admin__toolbar">
+          <button type="button" class="admin-btn admin-btn--primary" onclick="return studiaMaiPublishAll()">Сохранить и опубликовать всё</button>
           <a href="../" target="_blank" rel="noopener" class="admin-btn admin-btn--ghost">Посмотреть сайт после правок</a>
           <button type="button" class="admin-btn admin-btn--ghost" onclick="return studiaMaiExportData()">Экспорт всех данных</button>
         </div>
@@ -537,7 +543,45 @@
       </section>
 
       <section class="admin__panel" data-panel="settings">
-        <h2>Настройки входа</h2>
+        <h2>Настройки</h2>
+
+        <div class="admin__edit-block">
+          <h3 class="admin__subtitle">Публикация на сайт (без разработчика)</h3>
+          <p class="admin__msg admin__msg--compact">Сайт размещён на GitHub Pages. Чтобы правки из админки сразу появлялись у всех посетителей, один раз создайте токен GitHub и сохраните его здесь.</p>
+          <ol class="admin__notify-help">
+            <li>Откройте <a href="https://github.com/settings/tokens?type=beta" target="_blank" rel="noopener">GitHub → Settings → Fine-grained tokens</a></li>
+            <li>Создайте токен с доступом к репозиторию <strong>Natali202605/StudiaMai</strong> и правом <strong>Contents: Read and write</strong></li>
+            <li>Вставьте токен ниже и нажмите «Сохранить настройки публикации»</li>
+            <li>После этого кнопки «Сохранить» в разделе «Редактировать» публикуют изменения на сайт автоматически</li>
+          </ol>
+          <p class="admin__msg" id="publishReadyStatus" hidden></p>
+          <div class="admin__form" id="publishSettingsForm">
+            <label class="admin__field">
+              <span>Владелец репозитория</span>
+              <input type="text" id="githubOwner" value="Natali202605" autocomplete="off">
+            </label>
+            <label class="admin__field">
+              <span>Репозиторий</span>
+              <input type="text" id="githubRepo" value="StudiaMai" autocomplete="off">
+            </label>
+            <label class="admin__field">
+              <span>Ветка</span>
+              <input type="text" id="githubBranch" value="main" autocomplete="off">
+            </label>
+            <label class="admin__field">
+              <span>GitHub-токен (хранится только в этом браузере)</span>
+              <input type="password" id="githubToken" autocomplete="off" placeholder="github_pat_... или ghp_...">
+            </label>
+          </div>
+          <p class="admin__msg" id="publishSettingsMsg" hidden></p>
+          <div class="admin__toolbar">
+            <button type="button" class="admin-btn admin-btn--primary" onclick="return studiaMaiSavePublishSettings()">Сохранить настройки публикации</button>
+            <button type="button" class="admin-btn admin-btn--ghost" onclick="return studiaMaiTestPublish()">Проверить доступ</button>
+          </div>
+        </div>
+
+        <div class="admin__edit-block">
+          <h3 class="admin__subtitle">Настройки входа</h3>
         <div class="admin__form" id="passwordForm">
           <label class="admin__field">
             <span>Новый логин</span>
@@ -560,11 +604,13 @@
           <p class="admin__msg" id="passwordMsg" hidden></p>
           <button type="button" class="admin-btn admin-btn--primary" onclick="return studiaMaiSaveSettings()">Сохранить настройки входа</button>
         </div>
+        </div>
       </section>
     </main>
   </div>
-  <script src="../js/site-api.js?v=cms4"></script>
-  <script src="cms-schema.js?v=1"></script>
-  <script src="admin-panel.js?v=5"></script>
+  <script src="../js/site-api.js?v=cms12"></script>
+  <script src="cms-schema.js?v=2"></script>
+  <script src="github-publish.js?v=1"></script>
+  <script src="admin-panel.js?v=6"></script>
 </body>
 </html>

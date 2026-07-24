@@ -57,6 +57,46 @@
     el.hidden = false;
   }
 
+  function getGithub() {
+    return window.StudiaMaiGithubPublish || null;
+  }
+
+  function publishStatusLabel(prefix, result) {
+    return prefix + ' Опубликовано на сайте для всех посетителей (обновление GitHub Pages — обычно 1–2 минуты).';
+  }
+
+  async function publishToSite(payload, msgId, okLocalText) {
+    var gh = getGithub();
+    if (!gh || !gh.isConfigured()) {
+      showMsg(msgId, okLocalText + ' Чтобы изменения видели все посетители без разработчика: откройте «Настройки» → укажите GitHub-токен → сохраните настройки публикации.', false);
+      return false;
+    }
+    showMsg(msgId, okLocalText + ' Публикация на сайт…', true);
+    try {
+      var result = await gh.publish(payload);
+      if (result.images) {
+        saveImagesState(result.images);
+        renderPhotosGrid();
+      }
+      showMsg(msgId, publishStatusLabel(okLocalText, result), true);
+      return true;
+    } catch (err) {
+      showMsg(msgId, okLocalText + ' Локально сохранено, но публикация не удалась: ' + (err && err.message ? err.message : err), false);
+      return false;
+    }
+  }
+
+  function syncBookingUrl(content) {
+    if (content.booking_url && !content.footer_booking_url) {
+      content.footer_booking_url = content.booking_url;
+    }
+    if (content.footer_booking_url && !content.booking_url) {
+      content.booking_url = content.footer_booking_url;
+    }
+    if (content.booking_url) content.footer_booking_url = content.booking_url;
+    return content;
+  }
+
   function formatDate(iso) {
     if (!iso) return '—';
     try {
@@ -318,11 +358,13 @@
     var i;
     for (i = 0; i < keys.length; i++) {
       var key = keys[i];
+      if (!services[key]) services[key] = { title_html: '', desc: '', items: [] };
       var titleEl = getEl('serviceTitle_' + key);
-      if (titleEl) services[key].title_html = titleEl.value.trim();
       var descEl = getEl('serviceDesc_' + key);
-      if (descEl) services[key].desc = descEl.value.trim();
       var rows = document.querySelectorAll('[data-service-row="' + key + '"]');
+      if (!titleEl && !descEl && !rows.length) continue;
+      if (titleEl) services[key].title_html = titleEl.value.trim();
+      if (descEl) services[key].desc = descEl.value.trim();
       var items = [];
       var j;
       for (j = 0; j < rows.length; j++) {
@@ -469,7 +511,7 @@
     var services = readServicesFromDom();
     saveServicesState(services);
     renderServicesEditor(services);
-    showMsg('servicesMsg', 'Прайс сохранён и применён на сайте (в этом браузере). Для всех посетителей — экспортируйте services.json и обновите сайт.', true);
+    publishToSite({ services: services, message: 'CMS: обновить прайс' }, 'servicesMsg', 'Прайс сохранён.');
     return false;
   };
 
@@ -733,9 +775,9 @@
   }
 
   window.studiaMaiSaveContent = function () {
-    var content = readContentFromForm();
+    var content = syncBookingUrl(readContentFromForm());
     saveContentState(content);
-    showMsg('contentMsg', 'Тексты сохранены и применены на сайте (в этом браузере). Для всех посетителей — скачайте content.json и обновите сайт.', true);
+    publishToSite({ content: content, message: 'CMS: обновить тексты сайта' }, 'contentMsg', 'Тексты сохранены.');
     return false;
   };
 
@@ -797,7 +839,7 @@
       images[key] = reader.result;
       saveImagesState(images);
       renderPhotosGrid();
-      showMsg('photosMsg', 'Фото загружено и применено на сайте (в этом браузере)', true);
+      publishToSite({ images: images, message: 'CMS: загрузить фото ' + key }, 'photosMsg', 'Фото загружено.');
     };
     reader.readAsDataURL(file);
     return false;
@@ -824,7 +866,7 @@
     }
     saveImagesState(images);
     renderPhotosGrid();
-    showMsg('photosMsg', 'Пути к фото сохранены', true);
+    publishToSite({ images: images, message: 'CMS: обновить фото' }, 'photosMsg', 'Фото сохранены.');
     return false;
   };
 
@@ -884,7 +926,7 @@
     config.bookingsApiUrl = getEl('notifyBookingsApi') ? getEl('notifyBookingsApi').value.trim() : '';
     saveConfigState(config);
     if (!silent) {
-      showMsg('notifyMsg', 'Настройки уведомлений сохранены', true);
+      publishToSite({ config: config, message: 'CMS: обновить настройки уведомлений' }, 'notifyMsg', 'Настройки уведомлений сохранены.');
     } else {
       showMsg('notifyMsg', 'Сохранено', true);
       var msg = getEl('notifyMsg');
@@ -896,6 +938,94 @@
     }
     return false;
   };
+
+  window.studiaMaiPublishAll = function () {
+    var content = syncBookingUrl(readContentFromForm());
+    saveContentState(content);
+    var services = readServicesFromDom();
+    saveServicesState(services);
+    var images = getImagesState();
+    var inputs = document.querySelectorAll('.admin__photo-path');
+    var i;
+    for (i = 0; i < inputs.length; i++) {
+      var key = inputs[i].getAttribute('data-key');
+      var val = inputs[i].value.trim();
+      if (val) images[key] = val;
+      else delete images[key];
+    }
+    saveImagesState(images);
+    var config = getConfigState();
+    saveConfigState(config);
+    publishToSite({
+      content: content,
+      services: services,
+      images: images,
+      config: config,
+      message: 'CMS: полная публикация сайта'
+    }, 'publishAllMsg', 'Все изменения сохранены.');
+    return false;
+  };
+
+  window.studiaMaiSavePublishSettings = function () {
+    var config = getConfigState();
+    config.githubOwner = getEl('githubOwner') ? getEl('githubOwner').value.trim() : '';
+    config.githubRepo = getEl('githubRepo') ? getEl('githubRepo').value.trim() : '';
+    config.githubBranch = getEl('githubBranch') ? getEl('githubBranch').value.trim() || 'main' : 'main';
+    saveConfigState(config);
+    var tokenEl = getEl('githubToken');
+    var gh = getGithub();
+    if (gh && tokenEl) {
+      var tokenVal = tokenEl.value.trim();
+      if (tokenVal && tokenVal !== '********') gh.setToken(tokenVal);
+    }
+    showMsg('publishSettingsMsg', 'Настройки публикации сохранены в этом браузере. Токен не публикуется на сайт.', true);
+    renderPublishSettings();
+    return false;
+  };
+
+  window.studiaMaiTestPublish = function () {
+    var gh = getGithub();
+    if (!gh) {
+      showMsg('publishSettingsMsg', 'Модуль публикации не загружен', false);
+      return false;
+    }
+    showMsg('publishSettingsMsg', 'Проверка доступа…', true);
+    gh.testConnection().then(function (info) {
+      showMsg('publishSettingsMsg', 'Доступ есть: ' + info.full_name + ' (ветка по умолчанию: ' + (info.default_branch || '—') + ')', true);
+    }).catch(function (err) {
+      showMsg('publishSettingsMsg', err && err.message ? err.message : String(err), false);
+    });
+    return false;
+  };
+
+  function renderPublishSettings() {
+    var gh = getGithub();
+    var defaults = gh && gh.DEFAULTS ? gh.DEFAULTS : { githubOwner: 'Natali202605', githubRepo: 'StudiaMai', githubBranch: 'main' };
+    var config = getConfigState();
+    var owner = getEl('githubOwner');
+    var repo = getEl('githubRepo');
+    var branch = getEl('githubBranch');
+    var token = getEl('githubToken');
+    var status = getEl('publishReadyStatus');
+    if (owner) owner.value = config.githubOwner || defaults.githubOwner || '';
+    if (repo) repo.value = config.githubRepo || defaults.githubRepo || '';
+    if (branch) branch.value = config.githubBranch || defaults.githubBranch || 'main';
+    if (token) {
+      var hasToken = gh && gh.getToken && gh.getToken();
+      token.value = hasToken ? '********' : '';
+      token.placeholder = hasToken ? 'Токен сохранён — введите новый, чтобы заменить' : 'github_pat_... или ghp_...';
+    }
+    if (status) {
+      if (gh && gh.isConfigured()) {
+        status.textContent = 'Публикация готова: сохранение в админке сразу обновляет сайт для всех.';
+        status.className = 'admin__msg admin__msg--ok';
+      } else {
+        status.textContent = 'Публикация не настроена: нужен GitHub Personal Access Token с правом Contents: Read and write.';
+        status.className = 'admin__msg';
+      }
+      status.hidden = false;
+    }
+  }
 
   window.studiaMaiExportData = function () {
     var payload = {
@@ -927,11 +1057,15 @@
       baseServices = results[2] || {};
       baseConfig = results[3] || {};
       if (!baseConfig.notificationEmail) baseConfig.notificationEmail = DEFAULT_NOTIFY_EMAIL;
+      if (!baseConfig.githubOwner) baseConfig.githubOwner = 'Natali202605';
+      if (!baseConfig.githubRepo) baseConfig.githubRepo = 'StudiaMai';
+      if (!baseConfig.githubBranch) baseConfig.githubBranch = 'main';
       saveConfigState(merge(baseConfig, readJson(window.StudiaMaiSite ? window.StudiaMaiSite.STORAGE_CONFIG : 'studia_mai_site_config') || {}));
       renderContentForm();
       renderServicesEditor();
       renderPhotosGrid();
       renderNotifyForm();
+      renderPublishSettings();
       return loadBookings();
     });
   };

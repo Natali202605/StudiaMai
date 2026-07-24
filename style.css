@@ -1297,7 +1297,7 @@ ul {
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
+  text-transform: none;
   padding: 8px 16px;
   border-radius: 100px;
   white-space: nowrap;
@@ -2568,8 +2568,14 @@ html.review-modal-open {
   height: 100%;
 }
 
-html.review-modal-open body {
+html.review-modal-open body,
+body.review-modal-open {
   overflow: hidden;
+  position: fixed;
+  width: 100%;
+  left: 0;
+  right: 0;
+  overscroll-behavior: none;
 }
 
 /* ============================================
@@ -4068,7 +4074,19 @@ a.format-card {
   .btn--ghost-light:hover,
   .reviews-slider__btn:hover {
     transform: none;
-    box-shadow: inherit;
+  }
+
+  .checklist li:hover,
+  .audience-list li:hover,
+  .approach-item:hover,
+  .free-card:hover,
+  .service-card:hover,
+  .benefits-list li:hover,
+  .benefit-card:hover,
+  .faq-item:hover,
+  .format-card:hover,
+  .review-card:hover {
+    box-shadow: var(--shadow-sm);
   }
 
   .service-card:hover::before {
@@ -4466,5 +4484,94 @@ a.format-card {
   .master__info .master__text,
   .master__info .master__highlight {
     font-size: 13px !important;
+  }
+
+  /* Компактная шапка: бургер до планшетной ширины, без горизонтального переполнения */
+  .nav {
+    display: none;
+    position: fixed;
+    top: 88px;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    max-height: calc(100dvh - 88px - env(safe-area-inset-bottom, 0px));
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    background: rgba(250, 246, 240, 0.98);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 24px 28px calc(32px + env(safe-area-inset-bottom, 0px));
+    gap: 4px;
+    border-bottom: 1px solid rgba(168, 196, 184, 0.3);
+    box-shadow: 0 12px 40px rgba(141, 155, 132, 0.18);
+  }
+
+  .nav__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(168, 196, 184, 0.28);
+  }
+
+  .nav__actions .btn {
+    width: 100%;
+    justify-content: center;
+    white-space: normal;
+  }
+
+  .nav__link::after {
+    display: none;
+  }
+
+  .nav__link {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 8px 0;
+    font-size: 15px;
+    touch-action: manipulation;
+  }
+
+  .nav__link--staff {
+    display: flex;
+  }
+
+  .nav--open {
+    display: flex;
+    touch-action: pan-y;
+  }
+
+  .header__actions {
+    display: none;
+  }
+
+  .burger {
+    display: flex;
+  }
+
+  .btn {
+    white-space: normal;
+  }
+
+  .price-item__row {
+    flex-wrap: wrap;
+    gap: 6px 12px;
+  }
+
+  .price-item__price {
+    white-space: normal;
+  }
+
+  .free-card {
+    flex-wrap: wrap;
+  }
+
+  .free-card__label {
+    white-space: normal;
   }
 }

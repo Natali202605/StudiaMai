@@ -7,7 +7,9 @@
   const STORAGE_CONFIG = 'studia_mai_site_config';
   const STORAGE_BOOKINGS = 'studia_mai_bookings_local';
   const DEFAULT_ADMIN_EMAIL = 'brow_studia_may@mail.ru';
-  const DATA_CACHE_VERSION = 'cms10';
+  const DATA_CACHE_VERSION = 'cms12';
+  let cacheBust = DATA_CACHE_VERSION;
+  const IS_ADMIN = /\/admin(?:\/|$)/i.test(location.pathname || '');
 
   function storageGet(key) {
     try { return localStorage.getItem(key); } catch { return null; }
@@ -34,14 +36,37 @@
     }
   }
 
+  async function resolveCacheBust() {
+    try {
+      const res = await fetch(`${DATA_BASE}/version.json`, { cache: 'no-store' });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.v != null) {
+          cacheBust = String(data.v);
+          return cacheBust;
+        }
+      }
+    } catch { /* ignore */ }
+    cacheBust = DATA_CACHE_VERSION;
+    return cacheBust;
+  }
+
   async function fetchDataJson(file) {
     try {
-      const res = await fetch(`${DATA_BASE}/${file}?v=${DATA_CACHE_VERSION}`);
+      const res = await fetch(`${DATA_BASE}/${file}?v=${cacheBust}`);
       if (!res.ok) return null;
       return await res.json();
     } catch {
       return null;
     }
+  }
+
+  function bookingHref(url) {
+    const raw = String(url || '').trim();
+    if (!raw) return '';
+    if (/vk\.ru\/away\.php/i.test(raw)) return raw;
+    if (!/mst\.link/i.test(raw)) return raw;
+    return 'https://vk.ru/away.php?to=' + encodeURIComponent(raw) + '&utf=1';
   }
 
   function mergeObjects(base, override) {
@@ -56,7 +81,7 @@
 
   async function loadSiteConfig() {
     const fromFile = await fetchDataJson('config.json');
-    const fromStorage = readStorageJson(STORAGE_CONFIG);
+    const fromStorage = IS_ADMIN ? readStorageJson(STORAGE_CONFIG) : null;
     const merged = mergeObjects(fromFile || {}, fromStorage || {});
     if (!merged.notificationEmail) merged.notificationEmail = DEFAULT_ADMIN_EMAIL;
     return merged;
@@ -71,9 +96,13 @@
       fetchDataJson('content.json'),
       fetchDataJson('images.json')
     ]);
-    const content = mergeObjects(contentFile, readStorageJson(STORAGE_CONTENT));
-    const images = mergeObjects(imagesFile, readStorageJson(STORAGE_IMAGES));
-    return { content, images };
+    if (IS_ADMIN) {
+      return {
+        content: mergeObjects(contentFile, readStorageJson(STORAGE_CONTENT)),
+        images: mergeObjects(imagesFile, readStorageJson(STORAGE_IMAGES))
+      };
+    }
+    return { content: contentFile || {}, images: imagesFile || {} };
   }
 
   function applyContent(content) {
@@ -101,6 +130,79 @@
       if (!el) return;
       if (href) el.href = href;
       if (text != null && text !== '') el.textContent = text;
+    }
+
+    if (content.meta_title) document.title = content.meta_title;
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc && content.meta_description) metaDesc.setAttribute('content', content.meta_description);
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle && content.meta_title) ogTitle.setAttribute('content', content.meta_title);
+    const ogDesc = document.querySelector('meta[property="og:description"]');
+    if (ogDesc && content.meta_description) ogDesc.setAttribute('content', content.meta_description);
+    const twTitle = document.querySelector('meta[name="twitter:title"]');
+    if (twTitle && content.meta_title) twTitle.setAttribute('content', content.meta_title);
+    const twDesc = document.querySelector('meta[name="twitter:description"]');
+    if (twDesc && content.meta_description) twDesc.setAttribute('content', content.meta_description);
+
+    setText('.logo__sub', content.brand_city);
+    setText('.nav__link[href="#about"]', content.nav_about);
+    setText('.nav__link[href="#consultation"]', content.nav_consultation);
+    setText('.nav__link[href="#services"]', content.nav_services);
+    setText('.nav__link[href="#reviews"]', content.nav_reviews);
+    setText('.nav__link[href="#contacts"]', content.nav_contacts);
+    setText('.nav__link--staff', content.nav_staff);
+    setText('.header__admin', content.nav_staff);
+
+    const bookUrl = content.booking_url || content.footer_booking_url || '';
+    const bookHref = bookingHref(bookUrl) || bookUrl;
+    if (bookHref) {
+      document.querySelectorAll('[data-cms-booking]').forEach((el) => {
+        el.href = bookHref;
+      });
+    }
+    if (content.hero_cta_book != null) {
+      document.querySelectorAll('[data-cms-cta="book"]').forEach((el) => {
+        const icon = el.querySelector('.btn__icon');
+        el.textContent = content.hero_cta_book;
+        if (icon) el.insertBefore(icon, el.firstChild);
+      });
+    }
+    if (content.hero_cta_consult != null) {
+      document.querySelectorAll('[data-cms-cta="consult"]').forEach((el) => {
+        el.textContent = content.hero_cta_consult;
+      });
+    }
+    if (content.hero_cta_book_consult != null) {
+      document.querySelectorAll('[data-cms-cta="book_consult"]').forEach((el) => {
+        const icon = el.querySelector('.btn__icon');
+        const label = content.hero_cta_book_consult;
+        if (icon) {
+          el.innerHTML = '';
+          el.appendChild(icon);
+          el.appendChild(document.createTextNode(' ' + label));
+        } else {
+          el.textContent = label;
+        }
+      });
+    }
+    if (content.hero_cta_services != null) {
+      document.querySelectorAll('[data-cms-cta="services"]').forEach((el) => {
+        el.textContent = content.hero_cta_services;
+      });
+    }
+    if (content.consultation_cta_label != null) {
+      document.querySelectorAll('[data-cms-cta="recommendations"]').forEach((el) => {
+        el.textContent = content.consultation_cta_label;
+      });
+    }
+    if (content.footer_cta_label != null) {
+      document.querySelectorAll('[data-cms-cta="footer_book"]').forEach((el) => {
+        el.textContent = content.footer_cta_label;
+      });
+    }
+    if (content.footer_map_url) {
+      const mapLink = document.querySelector('[data-cms-map]');
+      if (mapLink) mapLink.href = content.footer_map_url;
     }
 
     setHtml('.hero__title--slogan', content.hero_slogan_html);
@@ -150,6 +252,9 @@
     const freeCards = document.querySelectorAll('.free-card p');
     if (freeCards[0] && content.consultation_free_1 != null) freeCards[0].textContent = content.consultation_free_1;
     if (freeCards[1] && content.consultation_free_2 != null) freeCards[1].textContent = content.consultation_free_2;
+    const freeLabels = document.querySelectorAll('.free-card__label');
+    if (freeLabels[0] && content.format_card_1_price != null) freeLabels[0].textContent = content.format_card_1_price;
+    if (freeLabels[1] && content.format_card_2_price != null) freeLabels[1].textContent = content.format_card_2_price;
 
     setText('.master .section__eyebrow', content.master_eyebrow);
     setHtml('.master .master__title', content.master_title_html);
@@ -252,8 +357,9 @@
       if (content.format_card_2_text != null) fmtCards[1].querySelector('p').textContent = content.format_card_2_text;
     }
     if (fmtCards[2]) {
+      const hoursText = content.format_card_3_text != null ? content.format_card_3_text : content.footer_hours;
       if (content.format_card_3_price != null) fmtCards[2].querySelector('.format-card__price').textContent = content.format_card_3_price;
-      if (content.format_card_3_text != null) fmtCards[2].querySelector('p').textContent = content.format_card_3_text;
+      if (hoursText != null) fmtCards[2].querySelector('p').textContent = hoursText;
     }
 
     setHtml('#booking .section__title', content.booking_title_html);
@@ -276,17 +382,24 @@
       if (content.footer_phone) phoneLink.href = 'tel:' + String(content.footer_phone).replace(/\s/g, '');
       if (content.footer_phone_label) phoneLink.textContent = content.footer_phone_label;
     }
+    const bookingPhone = document.getElementById('bookingPhone');
+    if (bookingPhone && content.footer_phone) {
+      bookingPhone.href = 'tel:' + String(content.footer_phone).replace(/\s/g, '');
+      bookingPhone.dataset.phone = content.footer_phone;
+      bookingPhone.textContent = content.footer_phone;
+    }
     const vkLink = document.querySelector('.footer__contact-item a[href*="vk.ru"], .footer__contact-item a[href*="vk.com"]');
     if (vkLink) {
       if (content.footer_vk_url) vkLink.href = content.footer_vk_url;
       if (content.footer_vk) vkLink.textContent = content.footer_vk;
     }
-    const bookLink = document.querySelector('.footer__contact-item a[href*="mst.link"]');
+    const bookLink = document.querySelector('.footer__contact-item a[href*="mst.link"], .footer__contact-item a[data-cms-footer-booking]');
     if (bookLink) {
-      if (content.footer_booking_url) bookLink.href = content.footer_booking_url;
+      const footerBook = content.footer_booking_url || bookUrl;
+      if (footerBook) bookLink.href = bookingHref(footerBook) || footerBook;
       if (content.footer_booking_label) bookLink.textContent = content.footer_booking_label;
     }
-    const siteLink = document.querySelector('.footer__contact-item a[href*="StudiaMai"]');
+    const siteLink = document.querySelector('.footer__contact-item a[href*="StudiaMai"], .footer__contact-item a[data-cms-footer-site]');
     if (siteLink) {
       if (content.footer_site_url) siteLink.href = content.footer_site_url;
       if (content.footer_site_label) siteLink.textContent = content.footer_site_label;
@@ -401,11 +514,14 @@
 
   async function loadServicesData() {
     const fromFile = await fetchDataJson('services.json');
-    const fromStorage = readStorageJson(STORAGE_SERVICES);
-    return mergeObjects(fromFile || {}, fromStorage || {});
+    if (IS_ADMIN) {
+      return mergeObjects(fromFile || {}, readStorageJson(STORAGE_SERVICES) || {});
+    }
+    return fromFile || {};
   }
 
   async function loadCms() {
+    await resolveCacheBust();
     const [data, services] = await Promise.all([
       loadContentData(),
       loadServicesData()
@@ -521,8 +637,12 @@
     return res.ok;
   }
 
+  let bookingSubmitting = false;
+
   async function submitBooking(form, msgEl) {
+    if (bookingSubmitting) return;
     const data = getFormData(form);
+    const submitBtn = form.querySelector('[type="submit"], #submitBooking');
 
     if (!data.name || !data.phone) {
       showFormMessage(msgEl, 'Заполните имя и телефон', false);
@@ -533,62 +653,69 @@
       return;
     }
 
-    const url = apiUrl('/api/bookings');
-    if (url) {
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      const json = await res.json().catch(() => ({}));
-      if (res.ok) {
-        showFormMessage(msgEl, 'Заявка на запись отправлена! Мы свяжемся для подтверждения.', true);
+    bookingSubmitting = true;
+    if (submitBtn) submitBtn.disabled = true;
+
+    try {
+      const url = apiUrl('/api/bookings');
+      if (url) {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const json = await res.json().catch(() => ({}));
+        if (res.ok) {
+          showFormMessage(msgEl, 'Заявка на запись отправлена! Мы свяжемся для подтверждения.', true);
+          form.reset();
+          return;
+        }
+        showFormMessage(msgEl, json.error || 'Не удалось отправить заявку', false);
+        return;
+      }
+
+      const booking = {
+        id: `b${Date.now()}`,
+        ...data,
+        createdAt: new Date().toISOString(),
+        status: 'new',
+        source: 'site'
+      };
+
+      const config = await loadSiteConfig();
+      let delivered = false;
+
+      try {
+        if (await notifyEmail(config, 'Новая заявка — Студия «Май»', formatBookingMessage(booking))) {
+          delivered = true;
+        }
+      } catch { /* ignore */ }
+
+      try {
+        if (await notifyWeb3Forms(config, booking)) delivered = true;
+      } catch { /* ignore */ }
+
+      try {
+        if (await notifyTelegram(config, booking)) delivered = true;
+      } catch { /* ignore */ }
+
+      try {
+        if (await saveBookingRemote(config, booking)) delivered = true;
+      } catch { /* ignore */ }
+
+      appendLocalBooking(booking);
+
+      if (delivered) {
+        showFormMessage(msgEl, 'Заявка отправлена! Мы свяжемся с вами в ближайшее время.', true);
         form.reset();
         return;
       }
-      showFormMessage(msgEl, json.error || 'Не удалось отправить заявку', false);
-      return;
+
+      showFormMessage(msgEl, 'Заявка сохранена локально. Не удалось отправить уведомление — попробуйте ещё раз или позвоните нам.', false);
+    } finally {
+      bookingSubmitting = false;
+      if (submitBtn) submitBtn.disabled = false;
     }
-
-    const booking = {
-      id: `b${Date.now()}`,
-      ...data,
-      createdAt: new Date().toISOString(),
-      status: 'new',
-      source: 'site'
-    };
-
-    const config = await loadSiteConfig();
-    let delivered = false;
-
-    try {
-      if (await notifyEmail(config, 'Новая заявка — Студия «Май»', formatBookingMessage(booking))) {
-        delivered = true;
-      }
-    } catch { /* ignore */ }
-
-    try {
-      if (await notifyWeb3Forms(config, booking)) delivered = true;
-    } catch { /* ignore */ }
-
-    try {
-      if (await notifyTelegram(config, booking)) delivered = true;
-    } catch { /* ignore */ }
-
-    try {
-      if (await saveBookingRemote(config, booking)) delivered = true;
-    } catch { /* ignore */ }
-
-    appendLocalBooking(booking);
-
-    if (delivered || config.notificationEmail || config.web3formsAccessKey || config.telegramBotToken || config.bookingsApiUrl) {
-      showFormMessage(msgEl, 'Заявка отправлена! Мы свяжемся с вами в ближайшее время.', true);
-      form.reset();
-      return;
-    }
-
-    showFormMessage(msgEl, 'Заявка сохранена. Администратор увидит её в панели управления.', true);
-    form.reset();
   }
 
   window.StudiaMaiSite = {
@@ -617,11 +744,6 @@
     if (!form) return;
 
     form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      submitBooking(form, msgEl);
-    });
-
-    document.getElementById('submitBooking')?.addEventListener('click', (e) => {
       e.preventDefault();
       submitBooking(form, msgEl);
     });
