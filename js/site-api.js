@@ -7,7 +7,7 @@
   const STORAGE_CONFIG = 'studia_mai_site_config';
   const STORAGE_BOOKINGS = 'studia_mai_bookings_local';
   const DEFAULT_ADMIN_EMAIL = 'brow_studia_may@mail.ru';
-  const DATA_CACHE_VERSION = 'cms12';
+  const DATA_CACHE_VERSION = 'cms13';
   let cacheBust = DATA_CACHE_VERSION;
   const IS_ADMIN = /\/admin(?:\/|$)/i.test(location.pathname || '');
 
@@ -210,7 +210,13 @@
     const heroLabels = document.querySelectorAll('.hero__stats .hero__stat-label');
     if (heroValues[0] && content.hero_stat_rating != null) heroValues[0].textContent = content.hero_stat_rating;
     if (heroLabels[0] && content.hero_stat_rating_label != null) heroLabels[0].textContent = content.hero_stat_rating_label;
-    if (heroValues[1] && content.hero_stat_reviews != null) heroValues[1].textContent = content.hero_stat_reviews;
+    if (heroValues[1]) {
+      if (Array.isArray(content.reviews)) {
+        heroValues[1].textContent = String(content.reviews.length);
+      } else if (content.hero_stat_reviews != null) {
+        heroValues[1].textContent = content.hero_stat_reviews;
+      }
+    }
     if (heroLabels[1] && content.hero_stat_reviews_label != null) heroLabels[1].textContent = content.hero_stat_reviews_label;
 
     setText('#about .section__eyebrow', content.about_eyebrow);
@@ -253,8 +259,8 @@
     if (freeCards[0] && content.consultation_free_1 != null) freeCards[0].textContent = content.consultation_free_1;
     if (freeCards[1] && content.consultation_free_2 != null) freeCards[1].textContent = content.consultation_free_2;
     const freeLabels = document.querySelectorAll('.free-card__label');
-    if (freeLabels[0] && content.format_card_1_price != null) freeLabels[0].textContent = content.format_card_1_price;
-    if (freeLabels[1] && content.format_card_2_price != null) freeLabels[1].textContent = content.format_card_2_price;
+    if (freeLabels[0] && content.consultation_free_label_1 != null) freeLabels[0].textContent = content.consultation_free_label_1;
+    if (freeLabels[1] && content.consultation_free_label_2 != null) freeLabels[1].textContent = content.consultation_free_label_2;
 
     setText('.master .section__eyebrow', content.master_eyebrow);
     setHtml('.master .master__title', content.master_title_html);
@@ -338,6 +344,10 @@
           const fragment = document.createDocumentFragment();
           userCards.forEach((card) => fragment.appendChild(card));
           track.insertBefore(fragment, track.firstChild);
+        }
+        const heroReviewValue = document.querySelector('[data-reviews-count]') || heroValues[1];
+        if (heroReviewValue) {
+          heroReviewValue.textContent = String(track.querySelectorAll('.review-card').length);
         }
       }
     }

@@ -850,7 +850,7 @@
     images[key] = '__removed__';
     saveImagesState(images);
     renderPhotosGrid();
-    showMsg('photosMsg', 'Фото скрыто на сайте', true);
+    publishToSite({ images: images, message: 'CMS: убрать фото ' + key }, 'photosMsg', 'Фото скрыто.');
     return false;
   };
 

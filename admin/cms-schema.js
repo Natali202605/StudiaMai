@@ -6,7 +6,7 @@
       brows: { title: 'Брови / услуги Броволога', hint: 'Карточка бровей и ресниц' },
       cosmetology: { title: 'Косметологические процедуры', hint: 'Уход, маски, пилинги, мезотерапия' },
       massage: { title: 'Массажи лица', hint: 'Все виды массажа лица' },
-      trichology: { title: 'Трихология', hint: 'Лечение и уход за волосами' },
+      trichology: { title: 'Трихология', hint: 'Восстановление и уход за волосами' },
       depilation: { title: 'Женская депиляция', hint: 'Депиляция и комплексы' },
       rituals: { title: 'Ритуалы ухода', hint: 'Блок под карточками услуг' }
     },
@@ -61,7 +61,7 @@
           { key: 'hero_stat_reviews', label: 'Количество отзывов' },
           { key: 'hero_stat_reviews_label', label: 'Подпись к отзывам' },
           { key: 'hero_cta_book', label: 'Кнопка «Записаться»' },
-          { key: 'hero_cta_consult', label: 'Кнопка «Бесплатная консультация»' },
+          { key: 'hero_cta_consult', label: 'Кнопка «БЕЗплатная консультация»' },
           { key: 'hero_cta_book_consult', label: 'Кнопка «Записаться на консультацию»' },
           { key: 'hero_cta_services', label: 'Кнопка «Смотреть услуги»' }
         ]
@@ -104,7 +104,9 @@
           { key: 'consultation_quote_html', label: 'Цитата', html: true, textarea: true },
           { key: 'consultation_steps_title', label: 'Заголовок списка' },
           { key: 'consultation_steps', label: 'Пункты консультации (каждый с новой строки)', list: true },
+          { key: 'consultation_free_label_1', label: 'Метка на карточке 1 (например БЕЗплатно)' },
           { key: 'consultation_free_1', label: 'Бесплатная услуга 1' },
+          { key: 'consultation_free_label_2', label: 'Метка на карточке 2 (например БЕЗплатно)' },
           { key: 'consultation_free_2', label: 'Бесплатная услуга 2' }
         ]
       },
