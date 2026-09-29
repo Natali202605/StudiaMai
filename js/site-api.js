@@ -7,7 +7,7 @@
   const STORAGE_CONFIG = 'studia_mai_site_config';
   const STORAGE_BOOKINGS = 'studia_mai_bookings_local';
   const DEFAULT_ADMIN_EMAIL = 'brow_studia_may@mail.ru';
-  const DATA_CACHE_VERSION = 'cms13';
+  const DATA_CACHE_VERSION = 'cms14';
   let cacheBust = DATA_CACHE_VERSION;
   const IS_ADMIN = /\/admin(?:\/|$)/i.test(location.pathname || '');
 
@@ -359,17 +359,23 @@
     }
     const fmtCards = document.querySelectorAll('.format-card');
     if (fmtCards[0]) {
-      if (content.format_card_1_price != null) fmtCards[0].querySelector('.format-card__price').textContent = content.format_card_1_price;
-      if (content.format_card_1_text != null) fmtCards[0].querySelector('p').textContent = content.format_card_1_text;
+      const priceEl = fmtCards[0].querySelector('.format-card__price');
+      const textEl = fmtCards[0].querySelector('p');
+      if (priceEl && content.format_card_1_price != null) priceEl.textContent = content.format_card_1_price;
+      if (textEl && content.format_card_1_text != null) textEl.textContent = content.format_card_1_text;
     }
     if (fmtCards[1]) {
-      if (content.format_card_2_price != null) fmtCards[1].querySelector('.format-card__price').textContent = content.format_card_2_price;
-      if (content.format_card_2_text != null) fmtCards[1].querySelector('p').textContent = content.format_card_2_text;
+      const priceEl = fmtCards[1].querySelector('.format-card__price');
+      const textEl = fmtCards[1].querySelector('p');
+      if (priceEl && content.format_card_2_price != null) priceEl.textContent = content.format_card_2_price;
+      if (textEl && content.format_card_2_text != null) textEl.textContent = content.format_card_2_text;
     }
     if (fmtCards[2]) {
       const hoursText = content.format_card_3_text != null ? content.format_card_3_text : content.footer_hours;
-      if (content.format_card_3_price != null) fmtCards[2].querySelector('.format-card__price').textContent = content.format_card_3_price;
-      if (hoursText != null) fmtCards[2].querySelector('p').textContent = hoursText;
+      const priceEl = fmtCards[2].querySelector('.format-card__price');
+      const textEl = fmtCards[2].querySelector('p');
+      if (priceEl && content.format_card_3_price != null) priceEl.textContent = content.format_card_3_price;
+      if (textEl && hoursText != null) textEl.textContent = hoursText;
     }
 
     setHtml('#booking .section__title', content.booking_title_html);
@@ -452,7 +458,7 @@
 
     let priceClass = 'price-item__price';
     const price = item.price || '';
-    if (/^(от\s*)?0\s*₽|бесплатн/i.test(price)) priceClass += ' price-free';
+    if (/^(от\s*)?0\s*₽|бе[сз]платн/i.test(price)) priceClass += ' price-free';
 
     let html = '<li class="price-item">';
     html += '<div class="price-item__row">';
@@ -485,19 +491,21 @@
   }
 
   function applyServices(services) {
-    if (!services) return;
+    if (!services || typeof services !== 'object') return;
 
     document.querySelectorAll('[data-service-title]').forEach((el) => {
       const key = el.dataset.serviceTitle;
+      if (!Object.prototype.hasOwnProperty.call(services, key)) return;
       const titleHtml = services[key]?.title_html;
       if (titleHtml) el.innerHTML = titleHtml;
     });
 
     document.querySelectorAll('[data-service-prices]').forEach((ul) => {
       const key = ul.dataset.servicePrices;
+      if (!Object.prototype.hasOwnProperty.call(services, key)) return;
       const data = services[key];
       const items = normalizeServiceItems(data?.items);
-      const pricesWrap = ul.closest('.service-card__prices');
+      const pricesWrap = ul.closest('.service-card__prices, .rituals__prices');
 
       if (!items.length) {
         ul.innerHTML = '';
@@ -511,6 +519,7 @@
 
     document.querySelectorAll('[data-service-desc]').forEach((el) => {
       const key = el.dataset.serviceDesc;
+      if (!Object.prototype.hasOwnProperty.call(services, key)) return;
       const desc = services[key]?.desc;
       if (desc) {
         el.textContent = desc;
@@ -527,7 +536,7 @@
     if (IS_ADMIN) {
       return mergeObjects(fromFile || {}, readStorageJson(STORAGE_SERVICES) || {});
     }
-    return fromFile || {};
+    return fromFile;
   }
 
   async function loadCms() {
@@ -538,7 +547,7 @@
     ]);
     applyContent(data.content);
     applyImages(data.images);
-    applyServices(services);
+    if (services) applyServices(services);
     document.dispatchEvent(new CustomEvent('studia-mai-cms-applied'));
   }
 

@@ -87,7 +87,6 @@
       if (temp && username === temp.username && password === temp.password) return true;
       var creds = studiaMaiLoadCreds();
       if (username === creds.username && password === creds.password) return true;
-      if (username === STUDIA_MAI_USER && password === STUDIA_MAI_PASS) return true;
       return false;
     }
 
@@ -608,7 +607,7 @@
       </section>
     </main>
   </div>
-  <script src="../js/site-api.js?v=cms13"></script>
+  <script src="../js/site-api.js?v=cms14"></script>
   <script src="cms-schema.js?v=3"></script>
   <script src="github-publish.js?v=1"></script>
   <script src="admin-panel.js?v=7"></script>
