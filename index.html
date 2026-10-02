@@ -110,7 +110,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet"></noscript>
-  <link rel="stylesheet" href="style.css?v=sync3">
+  <link rel="stylesheet" href="style.css?v=sync4">
 </head>
 <body>
 
@@ -988,7 +988,15 @@
         </a>
         <div class="format-card">
           <span class="format-card__price">По записи</span>
-          <p>пн 11–20 · вт 10–20 · ср 12–20 · чт выходной · пт 12–20 · сб 15–20 · вс выходной</p>
+          <ul class="hours-list" aria-label="Режим работы">
+            <li><span class="hours-list__day">пн</span><span class="hours-list__time">11–20</span></li>
+            <li><span class="hours-list__day">вт</span><span class="hours-list__time">10–20</span></li>
+            <li><span class="hours-list__day">ср</span><span class="hours-list__time">12–20</span></li>
+            <li><span class="hours-list__day">чт</span><span class="hours-list__time is-off">выходной</span></li>
+            <li><span class="hours-list__day">пт</span><span class="hours-list__time">12–20</span></li>
+            <li><span class="hours-list__day">сб</span><span class="hours-list__time">15–20</span></li>
+            <li><span class="hours-list__day">вс</span><span class="hours-list__time is-off">выходной</span></li>
+          </ul>
         </div>
       </div>
         </div>
@@ -1058,8 +1066,16 @@
           <p class="footer__contact-item"><span class="footer__contact-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg></span><a href="https://natali202605.github.io/StudiaMai/" target="_blank" rel="noopener" data-cms-footer-site>Сайт: natali202605.github.io/StudiaMai</a></p>
         </div>
         <a href="https://vk.ru/away.php?to=https%3A%2F%2Fmst.link%2Fbolotova_galina&utf=1" target="_blank" rel="noopener" class="btn btn--light btn--small footer__cta" data-cms-booking data-cms-cta="footer_book">Записаться</a>
-        <p class="footer__hours" data-cms="footer_hours">пн 11:00–20:00 · вт 10:00–20:00 · ср 12:00–20:00 · чт выходной · пт 12:00–20:00 · сб 15:00–20:00 · вс выходной</p>
       </div>
+      <ul class="footer__hours hours-list" data-cms="footer_hours" aria-label="Режим работы">
+        <li><span class="hours-list__day">пн</span><span class="hours-list__time">11:00–20:00</span></li>
+        <li><span class="hours-list__day">вт</span><span class="hours-list__time">10:00–20:00</span></li>
+        <li><span class="hours-list__day">ср</span><span class="hours-list__time">12:00–20:00</span></li>
+        <li><span class="hours-list__day">чт</span><span class="hours-list__time is-off">выходной</span></li>
+        <li><span class="hours-list__day">пт</span><span class="hours-list__time">12:00–20:00</span></li>
+        <li><span class="hours-list__day">сб</span><span class="hours-list__time">15:00–20:00</span></li>
+        <li><span class="hours-list__day">вс</span><span class="hours-list__time is-off">выходной</span></li>
+      </ul>
     </div>
     <div class="footer__bottom">
       <div class="container">
@@ -1093,7 +1109,7 @@
   </div>
 
   <script src="js/config.js"></script>
-  <script src="js/site-api.js?v=cms15"></script>
+  <script src="js/site-api.js?v=cms16"></script>
   <script>
     const burger = document.querySelector('.burger');
     const nav = document.querySelector('.nav');

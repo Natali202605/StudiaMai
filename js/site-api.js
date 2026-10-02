@@ -105,13 +105,28 @@
     return { content: contentFile || {}, images: imagesFile || {} };
   }
 
+  function fillHoursList(el, text) {
+    const rows = String(text || '')
+      .split(/[·•|\n]+/)
+      .map((part) => part.trim())
+      .filter(Boolean)
+      .map((part) => {
+        const match = part.match(/^(\S+)\s+(.+)$/);
+        return match ? { day: match[1], time: match[2] } : { day: '', time: part };
+      });
+    el.innerHTML = rows.map((row) => {
+      const off = /выходн/i.test(row.time) ? ' is-off' : '';
+      return `<li><span class="hours-list__day">${escapeHtml(row.day)}</span><span class="hours-list__time${off}">${escapeHtml(row.time)}</span></li>`;
+    }).join('');
+  }
+
   function applyContent(content) {
     if (!content) return;
     document.querySelectorAll('[data-cms]').forEach(el => {
       const key = el.dataset.cms;
       if (content[key] != null && content[key] !== '') {
         if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.value = content[key];
-        else el.textContent = content[key];
+        else if (el.tagName !== 'UL') el.textContent = content[key];
       }
     });
 
@@ -373,9 +388,11 @@
     if (fmtCards[2]) {
       const hoursText = content.format_card_3_text != null ? content.format_card_3_text : content.footer_hours;
       const priceEl = fmtCards[2].querySelector('.format-card__price');
+      const hoursEl = fmtCards[2].querySelector('.hours-list');
       const textEl = fmtCards[2].querySelector('p');
       if (priceEl && content.format_card_3_price != null) priceEl.textContent = content.format_card_3_price;
-      if (textEl && hoursText != null) textEl.textContent = hoursText;
+      if (hoursEl && hoursText != null) fillHoursList(hoursEl, hoursText);
+      else if (textEl && hoursText != null) textEl.textContent = hoursText;
     }
 
     setHtml('#booking .section__title', content.booking_title_html);
@@ -391,7 +408,12 @@
     setText('.footer__contacts-title', content.footer_contacts_title);
     setText('[data-cms="footer_address"]', content.footer_address);
     setText('[data-cms="footer_entrance"]', content.footer_entrance);
-    setText('[data-cms="footer_hours"]', content.footer_hours);
+    const footerHours = document.querySelector('[data-cms="footer_hours"]');
+    if (footerHours && footerHours.tagName === 'UL' && content.footer_hours != null) {
+      fillHoursList(footerHours, content.footer_hours);
+    } else {
+      setText('[data-cms="footer_hours"]', content.footer_hours);
+    }
     setText('.footer__legal-note', content.footer_legal_note);
     const phoneLink = document.querySelector('.footer__contact-item a[href^="tel:"]');
     if (phoneLink) {
