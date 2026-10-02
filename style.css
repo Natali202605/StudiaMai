@@ -90,7 +90,7 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
   scroll-padding-top: 92px;
   overflow-x: clip;
 }
@@ -161,33 +161,13 @@ ul {
    Анимации появления
    ============================================ */
 
-.reveal {
-  opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
-              transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.reveal.is-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.reveal--delay {
-  transition-delay: 0.12s;
-}
-
-.reveal-item {
-  opacity: 0;
-  transform: translateY(18px);
-  transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
-              transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
-  transition-delay: var(--reveal-delay, 0s);
-}
-
+.reveal,
+.reveal.is-visible,
+.reveal-item,
 .reveal.is-visible .reveal-item {
   opacity: 1;
-  transform: translateY(0);
+  transform: none;
+  transition: none;
 }
 
 /* ============================================
@@ -564,11 +544,11 @@ ul {
 .hero__bg {
   position: absolute;
   inset: 0;
-  background-image: var(--bg-section-image);
+  background-image: url('images/bg-section-soft.png');
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
-  filter: var(--bg-section-filter);
+  filter: none;
   z-index: 0;
   overflow: hidden;
 }
@@ -578,7 +558,7 @@ ul {
   border-radius: 50%;
   filter: blur(60px);
   pointer-events: none;
-  opacity: 0.55;
+  opacity: 0.3;
 }
 
 .hero__accent--mint {
@@ -597,14 +577,9 @@ ul {
   background: radial-gradient(circle, rgba(220, 203, 195, 0.4) 0%, transparent 70%);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .hero__accent--mint {
-    animation: hero-accent-float 20s ease-in-out infinite alternate;
-  }
-
-  .hero__accent--beige {
-    animation: hero-accent-float-alt 24s ease-in-out infinite alternate;
-  }
+.hero__accent--mint,
+.hero__accent--beige {
+  animation: none;
 }
 
 @keyframes hero-accent-float {
@@ -837,11 +812,11 @@ ul {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background-image: var(--bg-section-image);
+  background-image: url('images/bg-section-soft.png');
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
-  filter: var(--bg-section-filter);
+  filter: none;
   pointer-events: none;
 }
 
@@ -2938,11 +2913,11 @@ a.format-card {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background-image: var(--bg-section-image);
+  background-image: url('images/bg-section-soft.png');
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
-  filter: var(--bg-section-filter);
+  filter: none;
   pointer-events: none;
 }
 
@@ -3537,6 +3512,7 @@ a.format-card {
   .hero__bg {
     filter: none;
     opacity: 0.48;
+    background-image: var(--bg-section-image);
     background-size: cover;
     background-attachment: scroll;
   }
