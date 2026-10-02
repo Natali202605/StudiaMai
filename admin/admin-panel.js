@@ -308,8 +308,13 @@
   }
 
   function saveImagesState(images) {
-    storageSet(window.StudiaMaiSite ? window.StudiaMaiSite.STORAGE_IMAGES : 'studia_mai_cms_images', JSON.stringify(images));
+    var ok = storageSet(window.StudiaMaiSite ? window.StudiaMaiSite.STORAGE_IMAGES : 'studia_mai_cms_images', JSON.stringify(images));
+    if (!ok) {
+      showMsg('photosMsg', 'Фото слишком большое для браузера. Выберите другой файл.', false);
+      return false;
+    }
     if (window.StudiaMaiSite) window.StudiaMaiSite.applyImages(images);
+    return true;
   }
 
   function normalizeServiceItem(item) {
@@ -800,6 +805,71 @@
     return false;
   };
 
+  function getImageFit(key) {
+    var fits = getSchema().IMAGE_FIT || {};
+    return fits[key] === 'contain' ? 'contain' : 'cover';
+  }
+
+  function previewSrc(src) {
+    if (!src || src === '__removed__') return '';
+    if (src.indexOf('data:') === 0 || src.indexOf('http') === 0 || src.indexOf('../') === 0) return src;
+    return '../' + src;
+  }
+
+  function preparePhotoDataUrl(file, key) {
+    var fit = getImageFit(key);
+    var maxEdge = key === 'brand_title' ? 1600 : (fit === 'contain' ? 900 : 1600);
+    var keepPng = fit === 'contain' && /png|webp|gif/i.test(file.type || '');
+    return new Promise(function (resolve, reject) {
+      var url = URL.createObjectURL(file);
+      var img = new Image();
+      img.onload = function () {
+        URL.revokeObjectURL(url);
+        var width = img.naturalWidth || img.width;
+        var height = img.naturalHeight || img.height;
+        if (!width || !height) {
+          reject(new Error('Пустое изображение'));
+          return;
+        }
+        var scale = Math.min(1, maxEdge / Math.max(width, height));
+        var canvas = document.createElement('canvas');
+        var ctx = canvas.getContext('2d');
+        function draw(nextScale) {
+          canvas.width = Math.max(1, Math.round(width * nextScale));
+          canvas.height = Math.max(1, Math.round(height * nextScale));
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          if (!keepPng) {
+            ctx.fillStyle = '#f4f1ec';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+          }
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        }
+        draw(scale);
+        if (keepPng) {
+          var png = canvas.toDataURL('image/png');
+          if (png.length > 1200000 && scale > 0.35) {
+            draw(scale * 0.72);
+            png = canvas.toDataURL('image/png');
+          }
+          resolve(png);
+          return;
+        }
+        var quality = 0.86;
+        var jpeg = canvas.toDataURL('image/jpeg', quality);
+        while (jpeg.length > 700000 && quality > 0.62) {
+          quality -= 0.08;
+          jpeg = canvas.toDataURL('image/jpeg', quality);
+        }
+        resolve(jpeg);
+      };
+      img.onerror = function () {
+        URL.revokeObjectURL(url);
+        reject(new Error('Формат не открывается в браузере. Сохраните фото как JPG или PNG.'));
+      };
+      img.src = url;
+    });
+  }
+
   function renderPhotosGrid() {
     var grid = getEl('photosGrid');
     if (!grid) return;
@@ -809,17 +879,30 @@
     var key;
     for (key in labels) {
       if (!Object.prototype.hasOwnProperty.call(labels, key)) continue;
-      var src = images[key] || baseImages[key] || '';
-      if (src === '__removed__') src = '';
-      var preview = src ? (src.indexOf('data:') === 0 || src.indexOf('http') === 0 ? src : '../' + src) : '';
+      var src = images[key] || '';
+      var removed = src === '__removed__';
+      var preview = removed ? '' : previewSrc(src || baseImages[key] || '');
+      var fit = getImageFit(key);
+      var pathValue = (!src || src.indexOf('data:') === 0 || removed) ? '' : src;
+      var changed = src && src !== baseImages[key];
       html += '<div class="admin__photo-card" data-photo-key="' + key + '">';
-      html += '<img src="' + escapeHtml(preview) + '" alt="' + escapeHtml(labels[key]) + '">';
+      if (preview) {
+        html += '<img class="is-' + fit + '" src="' + escapeHtml(preview) + '" alt="' + escapeHtml(labels[key]) + '">';
+      } else {
+        html += '<div class="admin__photo-empty">Нет фото</div>';
+      }
       html += '<span>' + labels[key] + '</span>';
-      html += '<input type="text" class="admin__photo-path" data-key="' + key + '" value="' + escapeHtml(src) + '" placeholder="images/photo.jpg">';
+      html += '<input type="text" class="admin__photo-path" data-key="' + key + '" value="' + escapeHtml(pathValue) + '" placeholder="' + (src && src.indexOf('data:') === 0 ? 'Фото загружено' : 'images/photo.jpg') + '">';
       html += '<label class="admin-btn admin-btn--ghost admin-btn--block admin__photo-upload">';
-      html += 'Загрузить файл<input type="file" accept="image/*" hidden onchange="studiaMaiUploadPhoto(\'' + key + '\', this)">';
+      html += (preview ? 'Заменить фото' : 'Добавить фото');
+      html += '<input type="file" accept="image/jpeg,image/png,image/webp,image/gif" hidden onchange="studiaMaiUploadPhoto(\'' + key + '\', this)">';
       html += '</label>';
-      html += '<button type="button" class="admin-btn admin-btn--ghost admin-btn--block" onclick="return studiaMaiRemovePhoto(\'' + key + '\')">Убрать фото</button>';
+      if (preview) {
+        html += '<button type="button" class="admin-btn admin-btn--ghost admin-btn--block" onclick="return studiaMaiRemovePhoto(\'' + key + '\')">Удалить фото</button>';
+      }
+      if (changed) {
+        html += '<button type="button" class="admin-btn admin-btn--ghost admin-btn--block" onclick="return studiaMaiRestorePhoto(\'' + key + '\')">Вернуть исходное</button>';
+      }
       html += '</div>';
     }
     grid.innerHTML = html;
@@ -828,29 +911,46 @@
   window.studiaMaiUploadPhoto = function (key, input) {
     var file = input && input.files && input.files[0];
     if (!file) return false;
-    if (file.size > 2 * 1024 * 1024) {
-      showMsg('photosMsg', 'Файл больше 2 МБ. Сожмите изображение или укажите путь к файлу в папке images/.', false);
+    if (!/^image\//i.test(file.type || '')) {
+      showMsg('photosMsg', 'Нужен файл изображения JPG, PNG, WEBP или GIF.', false);
       input.value = '';
       return false;
     }
-    var reader = new FileReader();
-    reader.onload = function () {
+    showMsg('photosMsg', 'Фото подготавливается и встаёт в своё окно…', true);
+    preparePhotoDataUrl(file, key).then(function (dataUrl) {
       var images = getImagesState();
-      images[key] = reader.result;
-      saveImagesState(images);
+      images[key] = dataUrl;
+      if (!saveImagesState(images)) {
+        input.value = '';
+        return;
+      }
       renderPhotosGrid();
-      publishToSite({ images: images, message: 'CMS: загрузить фото ' + key }, 'photosMsg', 'Фото загружено.');
-    };
-    reader.readAsDataURL(file);
+      publishToSite({ images: images, message: 'CMS: обновить фото ' + key }, 'photosMsg', 'Фото сохранено.');
+    }).catch(function (err) {
+      showMsg('photosMsg', err && err.message ? err.message : 'Не удалось обработать фото', false);
+    });
+    input.value = '';
     return false;
   };
 
   window.studiaMaiRemovePhoto = function (key) {
     var images = getImagesState();
     images[key] = '__removed__';
-    saveImagesState(images);
+    if (!saveImagesState(images)) return false;
     renderPhotosGrid();
-    publishToSite({ images: images, message: 'CMS: убрать фото ' + key }, 'photosMsg', 'Фото скрыто.');
+    publishToSite({ images: images, message: 'CMS: убрать фото ' + key }, 'photosMsg', 'Фото удалено. Окно блока сохранено.');
+    return false;
+  };
+
+  window.studiaMaiRestorePhoto = function (key) {
+    var storageKey = window.StudiaMaiSite ? window.StudiaMaiSite.STORAGE_IMAGES : 'studia_mai_cms_images';
+    var stored = readJson(storageKey) || {};
+    delete stored[key];
+    storageSet(storageKey, JSON.stringify(stored));
+    var images = getImagesState();
+    renderPhotosGrid();
+    if (window.StudiaMaiSite) window.StudiaMaiSite.applyImages(images);
+    publishToSite({ images: images, message: 'CMS: вернуть фото ' + key }, 'photosMsg', 'Исходное фото возвращено.');
     return false;
   };
 
@@ -862,9 +962,8 @@
       var key = inputs[i].getAttribute('data-key');
       var val = inputs[i].value.trim();
       if (val) images[key] = val;
-      else delete images[key];
     }
-    saveImagesState(images);
+    if (!saveImagesState(images)) return false;
     renderPhotosGrid();
     publishToSite({ images: images, message: 'CMS: обновить фото' }, 'photosMsg', 'Фото сохранены.');
     return false;

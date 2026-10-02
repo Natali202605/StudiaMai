@@ -12,19 +12,35 @@
     },
 
     IMAGE_LABELS: {
-      logo: 'Логотип',
-      hero_logo: 'Логотип в шапке главной',
-      brand_title: 'Надпись «Студия Май» (картинка)',
+      logo: 'Логотип — шапка и подвал',
+      hero_logo: 'Логотип — круг на главном экране',
+      brand_title: 'Надпись «Студия Май»',
       hero_studio: 'Фото студии на главной',
-      service_brows: 'Услуга: брови и ресницы',
-      service_cosmetology: 'Услуга: косметология',
-      service_massage: 'Услуга: массаж',
-      service_trichology: 'Услуга: трихология',
-      service_depilation: 'Услуга: депиляция',
-      service_rituals: 'Ритуалы ухода',
+      service_brows: 'Окно фото: брови и ресницы',
+      service_cosmetology: 'Окно фото: косметология',
+      service_massage: 'Окно фото: массаж',
+      service_trichology: 'Окно фото: трихология',
+      service_depilation: 'Окно фото: депиляция',
+      service_rituals: 'Окно фото: ритуалы ухода',
       master_portrait: 'Портрет мастера',
       master_card: 'Визитка мастера',
       master_certificates: 'Сертификаты'
+    },
+
+    IMAGE_FIT: {
+      logo: 'contain',
+      hero_logo: 'contain',
+      brand_title: 'contain',
+      hero_studio: 'cover',
+      service_brows: 'cover',
+      service_cosmetology: 'cover',
+      service_massage: 'cover',
+      service_trichology: 'cover',
+      service_depilation: 'cover',
+      service_rituals: 'cover',
+      master_portrait: 'cover',
+      master_card: 'cover',
+      master_certificates: 'cover'
     },
 
     CONTENT_GROUPS: [

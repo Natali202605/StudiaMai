@@ -1627,6 +1627,38 @@ ul {
   object-fit: cover;
 }
 
+img[data-cms-img].is-cms-empty {
+  object-fit: cover;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.62), rgba(168, 196, 184, 0.34));
+}
+
+.service-card__media:has(img.is-cms-empty),
+.rituals__media:has(img.is-cms-empty),
+.hero__body-media:has(img.is-cms-empty),
+.master__portrait-wrap:has(img.is-cms-empty) {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(168, 196, 184, 0.28));
+}
+
+.hero__body-media:has(img.is-cms-empty),
+.master__portrait-wrap:has(img.is-cms-empty) {
+  min-height: 320px;
+}
+
+.brand-title-wrap:has(img.is-cms-empty) {
+  position: relative;
+  aspect-ratio: 2799 / 794;
+}
+
+.brand-title-wrap:has(img.is-cms-empty) .brand-title-composite {
+  position: absolute;
+  inset: 0;
+}
+
+.brand-title-img.is-cms-empty {
+  width: 100%;
+  height: 100%;
+}
+
 .service-card__header {
   display: flex;
   align-items: center;

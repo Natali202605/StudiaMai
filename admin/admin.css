@@ -427,13 +427,33 @@ body {
   box-shadow: var(--adm-shadow-float-hover), var(--adm-shadow-glow-hover), var(--adm-shadow-inner);
 }
 
-.admin__photo-card img {
+.admin__photo-card img,
+.admin__photo-empty {
   width: 100%;
   aspect-ratio: 4/3;
   object-fit: cover;
   border-radius: 12px;
   margin-bottom: 12px;
-  background: #f0f0f0;
+  background: #f4f1ec;
+}
+
+.admin__photo-card img.is-contain {
+  object-fit: contain;
+  background:
+    linear-gradient(45deg, rgba(168, 196, 184, 0.28) 25%, transparent 25%, transparent 75%, rgba(168, 196, 184, 0.28) 75%),
+    linear-gradient(45deg, rgba(168, 196, 184, 0.28) 25%, transparent 25%, transparent 75%, rgba(168, 196, 184, 0.28) 75%),
+    #f7f4ef;
+  background-size: 16px 16px;
+  background-position: 0 0, 8px 8px;
+}
+
+.admin__photo-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed rgba(16, 185, 129, 0.45);
+  color: var(--adm-muted);
+  font-size: 13px;
 }
 
 .admin__photo-card span {

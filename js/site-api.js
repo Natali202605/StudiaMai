@@ -422,18 +422,22 @@
     }
   }
 
+  const EMPTY_PHOTO = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+
   function applyImages(images) {
     if (!images) return;
     document.querySelectorAll('[data-cms-img]').forEach(el => {
       const key = el.dataset.cmsImg;
+      el.style.display = '';
       if (images[key] === '__removed__') {
-        el.style.display = 'none';
+        el.classList.add('is-cms-empty');
+        if (el.getAttribute('src') !== EMPTY_PHOTO) el.src = EMPTY_PHOTO;
         return;
       }
-      el.style.display = '';
+      el.classList.remove('is-cms-empty');
       if (images[key]) {
         const src = images[key].startsWith('/') && API ? API + images[key] : images[key];
-        el.src = src;
+        if (el.getAttribute('src') !== src) el.src = src;
       }
     });
   }
