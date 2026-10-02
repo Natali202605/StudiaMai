@@ -108,9 +108,11 @@
   <title>Студия красоты «Май» — Красота, в которой комфортно оставаться собой</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet"></noscript>
-  <link rel="stylesheet" href="style.css?v=sync4">
+  <link rel="preload" as="image" href="images/bg-section-soft.png">
+  <link rel="preload" as="image" href="images/hero-studio.png">
+  <link rel="preload" as="image" href="images/logo.png">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=sync5">
 </head>
 <body>
 
@@ -297,7 +299,7 @@
     <div class="container master reveal">
       <div class="master__row">
         <div class="master__portrait-wrap">
-          <img src="images/galina-portret.png" alt="Галина Болотова — Броволог, мастер восстановления бровей" class="master__portrait" data-cms-img="master_portrait" loading="lazy" decoding="async">
+          <img src="images/galina-portret.png" alt="Галина Болотова — Броволог, мастер восстановления бровей" class="master__portrait" data-cms-img="master_portrait" decoding="async">
         </div>
         <div class="master__info">
           <p class="section__eyebrow section__eyebrow--left">Мастер</p>
@@ -309,8 +311,8 @@
         </div>
       </div>
       <div class="master__credentials">
-        <img src="images/galina-bolotova.png" alt="Галина Болотова — визитная карточка BROVOLOG" data-cms-img="master_card" loading="lazy" decoding="async">
-        <img src="images/sertifikaty.png" alt="Профессиональные сертификаты Галины Болотовой" class="master__certificates" data-cms-img="master_certificates" loading="lazy" decoding="async">
+        <img src="images/galina-bolotova.png" alt="Галина Болотова — визитная карточка BROVOLOG" data-cms-img="master_card" decoding="async">
+        <img src="images/sertifikaty.png" alt="Профессиональные сертификаты Галины Болотовой" class="master__certificates" data-cms-img="master_certificates" decoding="async">
       </div>
     </div>
   </section>
@@ -363,7 +365,7 @@
         <!-- Брови / услуги Броволога -->
         <div class="service-card">
           <div class="service-card__media">
-            <img src="images/browi-resnitsy.jpg" alt="Ухоженные брови и ресницы — результат работы мастера" class="service-card__image" data-cms-img="service_brows" loading="lazy" decoding="async" fetchpriority="low">
+            <img src="images/browi-resnitsy.jpg" alt="Ухоженные брови и ресницы — результат работы мастера" class="service-card__image" data-cms-img="service_brows" decoding="async">
           </div>
           <div class="service-card__body">
           <div class="service-card__header">
@@ -428,7 +430,7 @@
         <!-- Косметологические процедуры -->
         <div class="service-card">
           <div class="service-card__media">
-            <img src="images/kosmetologiya.png" alt="Рабочее место косметолога — студия красоты Май" class="service-card__image" data-cms-img="service_cosmetology" loading="lazy" decoding="async" fetchpriority="low">
+            <img src="images/kosmetologiya.png" alt="Рабочее место косметолога — студия красоты Май" class="service-card__image" data-cms-img="service_cosmetology" decoding="async">
           </div>
           <div class="service-card__body">
           <div class="service-card__header">
@@ -512,7 +514,7 @@
         <!-- Массажи лица -->
         <div class="service-card">
           <div class="service-card__media">
-            <img src="images/massazh.jpg" alt="Профессиональный массаж лица" class="service-card__image" data-cms-img="service_massage" loading="lazy" decoding="async" fetchpriority="low">
+            <img src="images/massazh.jpg" alt="Профессиональный массаж лица" class="service-card__image" data-cms-img="service_massage" decoding="async">
           </div>
           <div class="service-card__body">
           <div class="service-card__header">
@@ -555,7 +557,7 @@
         <!-- Восстановление и уход за волосами / Услуги Трихолога -->
         <div class="service-card">
           <div class="service-card__media">
-            <img src="images/volosy.jpg" alt="Восстановление и уход за волосами — студия красоты Май" class="service-card__image" data-cms-img="service_trichology" loading="lazy" decoding="async" fetchpriority="low">
+            <img src="images/volosy.jpg" alt="Восстановление и уход за волосами — студия красоты Май" class="service-card__image" data-cms-img="service_trichology" decoding="async">
           </div>
           <div class="service-card__body">
           <div class="service-card__header">
@@ -588,7 +590,7 @@
         <!-- Женская депиляция -->
         <div class="service-card">
           <div class="service-card__media">
-            <img src="images/nogi.jpg" alt="Женская депиляция — ухоженная кожа" class="service-card__image" data-cms-img="service_depilation" loading="lazy" decoding="async" fetchpriority="low">
+            <img src="images/nogi.jpg" alt="Женская депиляция — ухоженная кожа" class="service-card__image" data-cms-img="service_depilation" decoding="async">
           </div>
           <div class="service-card__body">
           <div class="service-card__header">
@@ -673,7 +675,7 @@
       <!-- Ритуалы ухода и обертывание -->
       <div class="rituals">
         <div class="rituals__media">
-          <img src="images/ruki.jpg" alt="Ритуалы ухода и обертывание — уход за руками" class="rituals__image service-card__image" data-cms-img="service_rituals" loading="lazy" decoding="async" fetchpriority="low">
+          <img src="images/ruki.jpg" alt="Ритуалы ухода и обертывание — уход за руками" class="rituals__image service-card__image" data-cms-img="service_rituals" decoding="async">
         </div>
         <div class="rituals__body">
           <h3 class="rituals__title" data-service-title="rituals">Ритуалы <span class="accent">ухода</span> и обертывание</h3>
@@ -1049,7 +1051,7 @@
     <div class="container footer__inner reveal">
       <div class="footer__brand">
         <div class="footer__logo-wrap">
-          <img src="images/logo.png" alt="Логотип студии красоты Май" class="footer__logo" data-cms-img="logo" loading="lazy" decoding="async">
+          <img src="images/logo.png" alt="Логотип студии красоты Май" class="footer__logo" data-cms-img="logo" decoding="async">
         </div>
         <p class="footer__name">Студия красоты «Май»</p>
         <p class="footer__master">Галина Болотова</p>
@@ -1201,7 +1203,7 @@
         e.preventDefault();
         setMenuOpen(false);
         target.scrollIntoView({
-          behavior: (prefersReducedMotion.matches || isMobile()) ? 'auto' : 'smooth',
+          behavior: 'auto',
           block: 'start'
         });
       });
@@ -1728,7 +1730,7 @@
         setTimeout(() => { notice.hidden = true; }, 5000);
       }
       document.getElementById('reviews')?.scrollIntoView({
-        behavior: (prefersReducedMotion.matches || isMobile()) ? 'auto' : 'smooth',
+        behavior: 'auto',
         block: 'start'
       });
     });
