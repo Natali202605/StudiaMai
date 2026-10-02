@@ -117,8 +117,8 @@ const content = {
   approach_eyebrow: 'Философия',
   approach_title_html: '<span class="accent">Наш</span> подход',
   approach_subtitle_html: 'Никаких <span class="accent">универсальных</span> решений',
-  approach_lead: 'Каждый человек приходит со своей историей. Поэтому вместо стандартных схем мы смотрим на человека целиком:',
-  approach_card_title_html: 'Для нас важно <span class="accent">всё</span>:',
+  approach_lead: 'Каждый человек приходит со своей историей. Поэтому вместо стандартных схем решение подбирается персонально.',
+  approach_card_title_html: 'Имеет значение <span class="accent">всё</span>:',
   approach_grid: ['особенности лица', 'состояние кожи', 'направление роста волосков', 'образ жизни', 'пожелания клиента'],
   approach_principles_title_html: 'Мы всегда <span class="accent">объясняем</span>, что <span class="accent">делаем</span> и <span class="accent">зачем</span>.',
   approach_principles_list_html: [
