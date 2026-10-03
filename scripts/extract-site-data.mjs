@@ -47,7 +47,7 @@ for (const [key, start, end] of serviceBlocks) {
   const block = extractBetween(html, start, end);
   const titleHtml = block.match(/class="service-card__title"|class="rituals__title"[^>]*>([\s\S]*?)<\/h3>/)?.[1]?.trim()
     || block.match(/rituals__title">([\s\S]*?)<\/h3>/)?.[1]?.trim() || '';
-  const descMatch = block.match(/<p class="service-card__desc">([\s\S]*?)<\/p>/);
+  const descMatch = block.match(/<p class="service-card__desc"[^>]*>([\s\S]*?)<\/p>/);
   const ulMatch = block.match(/<ul class="price-list"[^>]*>([\s\S]*?)<\/ul>/);
   services[key] = {
     title_html: titleHtml.replace(/class="rituals__title"/, '').replace(/^[^>]*>/, '') || titleHtml,
@@ -77,13 +77,15 @@ const content = {
   hero_stat_reviews_label: 'отзывов клиентов',
   about_eyebrow: 'О студии',
   about_title_html: 'Что можно <span class="accent">решить</span> в «Май»',
+  about_lead: 'Флагманское направление студии — трихология: уход за кожей головы и волосами.',
   about_checklist: [
     'Восстановить форму перещипанных бровей',
     'Сделать взгляд более открытым и выразительным',
     'Подобрать уход за кожей лица',
     'Улучшить качество кожи без агрессивных процедур',
     'Избавиться от нежелательных волос комфортным способом',
-    'Получить понятный план ухода без лишних назначений'
+    'Получить понятный план ухода без лишних назначений',
+    'Улучшить состояние кожи головы и волос'
   ],
   audience_eyebrow: 'Аудитория',
   audience_title_html: 'Для кого <span class="accent">наша студия</span>',
@@ -111,7 +113,7 @@ const content = {
   master_eyebrow: 'Мастер',
   master_title_html: 'Галина <span class="accent">Болотова</span>',
   master_role: 'Специалист с медицинским образованием, броволог, Brow-мастер, ламинирование ресниц, депиляция, трихология',
-  master_p1: 'Работа Галины строится на внимательности и уважении к индивидуальности каждого клиента.',
+  master_p1: 'Галина Болотова — трихолог-эстетист с медицинским образованием. Работа Галины строится на внимательности и уважении к индивидуальности каждого клиента.',
   master_p2: 'Особое направление — восстановление бровей после многолетнего выщипывания, работа со сложным ростом волосков, подбор формы без шаблонов и трендов «для всех».',
   master_highlight: 'В работе важно не просто выполнить процедуру, а помочь человеку почувствовать уверенность в своем отражении.',
   approach_eyebrow: 'Философия',

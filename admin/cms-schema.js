@@ -98,6 +98,7 @@
         fields: [
           { key: 'about_eyebrow', label: 'Подзаголовок секции' },
           { key: 'about_title_html', label: 'Заголовок', html: true },
+          { key: 'about_lead', label: 'Вводная фраза', textarea: true },
           { key: 'about_checklist', label: 'Список пунктов (каждый с новой строки)', list: true }
         ]
       },
