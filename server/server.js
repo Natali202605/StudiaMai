@@ -20,7 +20,7 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'mai2026';
 
 const DEFAULT_PROCEDURES = [
   { id: 'p1', category: 'Брови / Броволог', name: 'SMART-коррекция бровей', price: 'от 1 500 ₽', duration: '1 час' },
-  { id: 'p2', category: 'Брови / Броволог', name: 'Моделирование и восстановление бровей', price: 'от 2 000 ₽', duration: '1 час 30 мин' },
+  { id: 'p2', category: 'Брови / Броволог', name: 'Моделирование и SMART коррекция бровей', price: 'от 2 000 ₽', duration: '1 час 30 мин' },
   { id: 'p3', category: 'Брови / Броволог', name: 'Ламинирование ресниц', price: 'от 1 700 ₽', duration: '1 час 30 мин' },
   { id: 'p4', category: 'Брови / Броволог', name: 'КОМБО «Брови + Ресницы»', price: 'от 3 200 ₽', duration: '2 часа 30 мин' },
   { id: 'p5', category: 'Косметология', name: 'Консультация косметолога', price: 'от 0 ₽', duration: '30 мин' },
