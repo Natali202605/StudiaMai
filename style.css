@@ -548,7 +548,7 @@ ul {
 .hero__bg {
   position: absolute;
   inset: 0;
-  background-image: url('images/bg-section-soft.png');
+  background-image: url('images/bg-section-soft.jpg');
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -813,7 +813,7 @@ ul {
 
 .section:not(.section--accent):not(.section--cta) {
   isolation: auto;
-  background-image: url('images/bg-section-soft.png');
+  background-image: url('images/bg-section-soft.jpg');
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -829,7 +829,7 @@ ul {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background-image: url('images/bg-section-soft.png');
+  background-image: url('images/bg-section-soft.jpg');
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -3031,7 +3031,7 @@ a.format-card {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background-image: url('images/bg-section-soft.png');
+  background-image: url('images/bg-section-soft.jpg');
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
