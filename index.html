@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
@@ -112,7 +112,7 @@
   <link rel="preload" as="image" href="images/hero-studio.png">
   <link rel="preload" as="image" href="images/logo.png">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=sync9">
+  <link rel="stylesheet" href="style.css?v=sync10">
 </head>
 <body>
 
@@ -568,7 +568,16 @@
             <span class="service-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 20c0-5 2-9 5-11 3 2 5 6 5 11"/><path d="M12 20c0-5 2-9 5-11"/><path d="M17 20c0-4 1-7 3-9"/></svg></span>
             <h3 class="service-card__title" data-service-title="trichology">Восстановление и уход за волосами / <span class="accent">Услуги Трихолога</span></h3>
           </div>
-          <p class="service-card__desc" data-service-desc="trichology" hidden></p>
+          <div class="service-card__desc service-card__desc--points" data-service-desc="trichology">
+            <p class="service-card__desc-lead">Наша зона компетенции:</p>
+            <ul class="service-card__points">
+              <li>Консультации с проведением трихоскопии</li>
+              <li>Подбор шампуней, кондиционеров, масок, тоников, сывороток под тип кожи головы</li>
+              <li>Косметические лосьоны для роста волос</li>
+              <li>Пилинги, масла, термозащита</li>
+              <li>Проведение массажа, косметических процедур для улучшения состояния кожи головы</li>
+            </ul>
+          </div>
           <div class="service-card__prices">
             <ul class="price-list" data-service-prices="trichology">
               <li class="price-item">
@@ -1115,7 +1124,7 @@
   </div>
 
   <script src="js/config.js"></script>
-  <script src="js/site-api.js?v=cms16"></script>
+  <script src="js/site-api.js?v=cms17"></script>
   <script>
     const burger = document.querySelector('.burger');
     const nav = document.querySelector('.nav');

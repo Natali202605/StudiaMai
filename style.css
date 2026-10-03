@@ -1708,6 +1708,40 @@ img[data-cms-img].is-cms-empty {
   padding: 0 32px;
 }
 
+.service-card__desc--points {
+  margin-bottom: 28px;
+}
+
+.service-card__desc-lead {
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--color-text);
+}
+
+.service-card__points {
+  display: grid;
+  gap: 9px;
+}
+
+.service-card__points li {
+  position: relative;
+  padding-left: 16px;
+  line-height: 1.55;
+}
+
+.service-card__points li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+
 .service-details,
 .service-card__prices {
   margin-top: 8px;

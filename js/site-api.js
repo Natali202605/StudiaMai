@@ -464,6 +464,19 @@
     });
   }
 
+  function fillServiceDesc(el, desc) {
+    const lines = String(desc).split(/\n+/).map((line) => line.trim()).filter(Boolean);
+    if (lines.length < 2) {
+      el.classList.remove('service-card__desc--points');
+      el.textContent = desc;
+      return;
+    }
+    const lead = lines[0];
+    const items = lines.slice(1).map((line) => line.replace(/^[*•—–-]\s*/, '').replace(/\.$/, ''));
+    el.classList.add('service-card__desc--points');
+    el.innerHTML = `<p class="service-card__desc-lead">${escapeHtml(lead)}</p><ul class="service-card__points">${items.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`;
+  }
+
   function escapeHtml(str) {
     return String(str || '')
       .replace(/&/g, '&amp;')
@@ -548,10 +561,11 @@
       if (!Object.prototype.hasOwnProperty.call(services, key)) return;
       const desc = services[key]?.desc;
       if (desc) {
-        el.textContent = desc;
+        fillServiceDesc(el, desc);
         el.hidden = false;
       } else {
         el.textContent = '';
+        el.classList.remove('service-card__desc--points');
         el.hidden = true;
       }
     });

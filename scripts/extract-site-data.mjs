@@ -47,11 +47,20 @@ for (const [key, start, end] of serviceBlocks) {
   const block = extractBetween(html, start, end);
   const titleHtml = block.match(/class="service-card__title"|class="rituals__title"[^>]*>([\s\S]*?)<\/h3>/)?.[1]?.trim()
     || block.match(/rituals__title">([\s\S]*?)<\/h3>/)?.[1]?.trim() || '';
-  const descMatch = block.match(/<p class="service-card__desc"[^>]*>([\s\S]*?)<\/p>/);
+  const descMatch = block.match(/<(p|div) class="service-card__desc[^"]*"[^>]*>([\s\S]*?)<\/\1>/);
+  let descText = '';
+  if (descMatch) {
+    const inner = descMatch[2];
+    const lead = inner.match(/class="service-card__desc-lead">([\s\S]*?)<\/p>/);
+    const points = [...inner.matchAll(/<li>([\s\S]*?)<\/li>/g)].map((m) => m[1].trim()).filter(Boolean);
+    descText = lead && points.length
+      ? `${lead[1].trim()}\n${points.join('\n')}`
+      : inner.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  }
   const ulMatch = block.match(/<ul class="price-list"[^>]*>([\s\S]*?)<\/ul>/);
   services[key] = {
     title_html: titleHtml.replace(/class="rituals__title"/, '').replace(/^[^>]*>/, '') || titleHtml,
-    desc: descMatch ? descMatch[1].trim() : '',
+    desc: descText,
     items: ulMatch ? parsePriceList(ulMatch[1]) : []
   };
   if (key === 'rituals') {
