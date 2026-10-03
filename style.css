@@ -4662,3 +4662,118 @@ a.format-card {
     white-space: normal;
   }
 }
+
+/* Меню в шапке одной строкой, как на компьютере */
+@media (max-width: 992px) {
+  html {
+    scroll-padding-top: 148px;
+  }
+
+  [id] {
+    scroll-margin-top: 148px;
+  }
+
+  .header__inner {
+    height: auto;
+    min-height: 72px;
+    flex-wrap: wrap;
+    align-items: center;
+    row-gap: 4px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .logo {
+    order: 1;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .header__actions {
+    display: flex;
+    order: 2;
+    gap: 8px;
+  }
+
+  .burger,
+  .nav-backdrop,
+  .nav-backdrop:not([hidden]) {
+    display: none;
+  }
+
+  .nav,
+  .nav--open,
+  body.menu-open .nav {
+    display: flex;
+    position: static;
+    order: 3;
+    flex: 1 0 100%;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    background: transparent;
+    box-shadow: none;
+    border: 0;
+    padding: 2px 0 0;
+    gap: clamp(12px, 2.4vw, 28px);
+    touch-action: pan-x;
+    scrollbar-width: none;
+  }
+
+  .nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav__actions {
+    display: none;
+  }
+
+  .nav__link,
+  .nav__link--staff {
+    display: inline-block;
+    flex: 0 0 auto;
+    min-height: 0;
+    padding: 6px 0 8px;
+    font-size: clamp(11px, 2.7vw, 13px);
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    touch-action: manipulation;
+  }
+
+  .nav__link--staff {
+    display: none;
+  }
+
+  .nav__link::after {
+    display: block;
+  }
+
+  .hero {
+    padding-top: 148px;
+  }
+}
+
+@media (max-width: 600px) {
+  .brand-title-wrap--header {
+    width: clamp(92px, 28vw, 140px);
+  }
+
+  .header__actions .btn--small {
+    padding: 8px 12px;
+  }
+
+  .header__admin {
+    display: none;
+  }
+
+  .nav__link--staff {
+    display: inline-block;
+  }
+}
