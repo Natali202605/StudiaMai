@@ -1088,12 +1088,9 @@ ul {
   max-width: var(--text-measure);
 }
 
-.section-row__head .section__lead--left,
-.section-row__body > .section__lead--left {
+.section-row__head .section__lead--left {
   font-size: clamp(15px, 1.8vw, 17px);
   line-height: var(--line-body);
-  margin-bottom: 0;
-  max-width: 42rem;
 }
 
 /* ============================================
@@ -1709,7 +1706,6 @@ img[data-cms-img].is-cms-empty {
   color: var(--color-text-light);
   margin-bottom: 16px;
   padding: 0 32px;
-  white-space: pre-line;
 }
 
 .service-details,

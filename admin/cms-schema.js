@@ -98,7 +98,6 @@
         fields: [
           { key: 'about_eyebrow', label: 'Подзаголовок секции' },
           { key: 'about_title_html', label: 'Заголовок', html: true },
-          { key: 'about_lead', label: 'Вводная фраза', textarea: true },
           { key: 'about_checklist', label: 'Список пунктов (каждый с новой строки)', list: true }
         ]
       },
@@ -136,7 +135,8 @@
           { key: 'master_role', label: 'Специализация' },
           { key: 'master_p1', label: 'Абзац 1', textarea: true },
           { key: 'master_p2', label: 'Абзац 2', textarea: true },
-          { key: 'master_highlight', label: 'Выделенная фраза', textarea: true }
+          { key: 'master_highlight', label: 'Выделенная фраза', textarea: true },
+          { key: 'master_p3', label: 'Текст в конце блока', textarea: true }
         ]
       },
       {
