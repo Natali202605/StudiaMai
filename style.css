@@ -824,6 +824,12 @@ ul {
   display: none;
 }
 
+.section--accent::after,
+.section--cta::after {
+  content: none;
+  display: none;
+}
+
 .section::after {
   content: '';
   position: absolute;
