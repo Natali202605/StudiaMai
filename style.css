@@ -446,6 +446,10 @@ ul {
 .nav {
   display: flex;
   gap: 36px;
+  padding: 8px 18px;
+  border-radius: 100px;
+  background: linear-gradient(90deg, rgba(168, 196, 184, 0.42), rgba(0, 212, 168, 0.18));
+  border: 1px solid rgba(168, 196, 184, 0.38);
 }
 
 .nav__link {
@@ -807,6 +811,19 @@ ul {
   isolation: isolate;
 }
 
+.section:not(.section--accent):not(.section--cta) {
+  isolation: auto;
+  background-image: url('images/bg-section-soft.png');
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.section:not(.section--accent):not(.section--cta)::after {
+  content: none;
+  display: none;
+}
+
 .section::after {
   content: '';
   position: absolute;
@@ -827,7 +844,6 @@ ul {
 
 .section:not(.section--accent):not(.section--cta) {
   background-color: transparent;
-  background-image: none;
 }
 
 .section--alt {
@@ -3559,7 +3575,6 @@ a.format-card {
 
   .service-card {
     flex-direction: column;
-    contain: layout style;
   }
 
   .service-card__media {
@@ -3648,16 +3663,9 @@ a.format-card {
     text-rendering: auto;
   }
 
-  .section::after,
-  .footer::after {
-    display: none;
-  }
-
   .hero__bg {
     filter: none;
     opacity: 0.48;
-    background-image: var(--bg-section-image);
-    background-size: cover;
     background-attachment: scroll;
   }
 
@@ -3706,11 +3714,9 @@ a.format-card {
   .reviews-slider__track {
     transition: transform 0.32s cubic-bezier(0.33, 1, 0.68, 1);
     touch-action: pan-y;
-    contain: layout style;
   }
 
   .reviews-slider .review-card {
-    contain: layout style paint;
     flex: 0 0 var(--review-slide-width, 100%);
     width: var(--review-slide-width, 100%);
     min-width: var(--review-slide-width, 100%);
@@ -4752,10 +4758,11 @@ a.format-card {
     overflow-y: hidden;
     overscroll-behavior-x: contain;
     -webkit-overflow-scrolling: touch;
-    background: transparent;
+    background: linear-gradient(90deg, rgba(168, 196, 184, 0.46), rgba(0, 212, 168, 0.2));
     box-shadow: none;
-    border: 0;
-    padding: 2px 0 0;
+    border: 1px solid rgba(168, 196, 184, 0.4);
+    border-radius: 14px;
+    padding: 6px 12px 4px;
     gap: clamp(12px, 2.4vw, 28px);
     touch-action: pan-x;
     scrollbar-width: none;
