@@ -130,6 +130,14 @@
       }
     });
 
+    const masterFlagship = document.querySelector('[data-cms="master_p3"]');
+    if (masterFlagship && content.master_p3) {
+      masterFlagship.innerHTML = escapeHtml(content.master_p3).replace(
+        /трихология/i,
+        '<span class="master__flagship">Трихология</span>'
+      );
+    }
+
     function setHtml(sel, html) {
       if (html == null || html === '') return;
       const el = document.querySelector(sel);

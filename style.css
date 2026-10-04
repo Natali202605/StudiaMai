@@ -4607,6 +4607,15 @@ a.format-card {
   font-weight: 400 !important;
 }
 
+.master__info .master__text .master__flagship {
+  color: var(--color-emerald-deep) !important;
+  -webkit-text-fill-color: var(--color-emerald-deep) !important;
+  font-weight: 600 !important;
+  font-size: 1.65em !important;
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+}
+
 .master__info .master__role {
   font-size: 10px !important;
   letter-spacing: 0.12em !important;
