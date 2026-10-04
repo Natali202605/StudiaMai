@@ -38,7 +38,7 @@ const DEFAULT_IMAGES = {
   hero_logo: 'images/logo.png',
   hero_studio: 'images/hero-studio.png',
   service_brows: 'images/browi-resnitsy.jpg',
-  service_cosmetology: 'images/kosmetika-uslugi.jpg',
+  service_cosmetology: 'images/procedury.jpg',
   service_massage: 'images/massazh.jpg',
   service_trichology: 'images/volosy.jpg',
   service_depilation: 'images/nogi.jpg',
