@@ -812,7 +812,6 @@ ul {
 }
 
 .section:not(.section--accent):not(.section--cta) {
-  isolation: auto;
   background-image: url('images/bg-section-soft.jpg');
   background-position: center;
   background-size: cover;

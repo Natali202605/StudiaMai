@@ -114,10 +114,15 @@
         const match = part.match(/^(\S+)\s+(.+)$/);
         return match ? { day: match[1], time: match[2] } : { day: '', time: part };
       });
-    el.innerHTML = rows.map((row) => {
+    const html = rows.map((row) => {
       const off = /выходн/i.test(row.time) ? ' is-off' : '';
       return `<li><span class="hours-list__day">${escapeHtml(row.day)}</span><span class="hours-list__time${off}">${escapeHtml(row.time)}</span></li>`;
     }).join('');
+    const probe = document.createElement('div');
+    probe.innerHTML = html;
+    const next = (probe.textContent || '').replace(/\s+/g, ' ').trim();
+    const current = (el.textContent || '').replace(/\s+/g, ' ').trim();
+    if (current !== next) el.innerHTML = html;
   }
 
   function applyContent(content) {
@@ -125,28 +130,44 @@
     document.querySelectorAll('[data-cms]').forEach(el => {
       const key = el.dataset.cms;
       if (content[key] != null && content[key] !== '') {
-        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.value = content[key];
-        else if (el.tagName !== 'UL') el.textContent = content[key];
+        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+          if (el.value !== content[key]) el.value = content[key];
+        } else if (el.tagName !== 'UL' && key !== 'master_p3' && el.textContent !== content[key]) {
+          el.textContent = content[key];
+        }
       }
     });
 
     const masterFlagship = document.querySelector('[data-cms="master_p3"]');
     if (masterFlagship && content.master_p3) {
-      masterFlagship.innerHTML = escapeHtml(content.master_p3).replace(
-        /трихология/i,
-        '<span class="master__flagship">Трихология</span>'
-      );
+      const desired = String(content.master_p3).replace(/трихология/ig, 'Трихология').replace(/\s+/g, ' ').trim();
+      const current = masterFlagship.textContent.replace(/\s+/g, ' ').trim();
+      if (current !== desired || !masterFlagship.querySelector('.master__flagship')) {
+        masterFlagship.innerHTML = escapeHtml(content.master_p3).replace(
+          /трихология/i,
+          '<span class="master__flagship">Трихология</span>'
+        );
+      }
     }
 
+    function plainText(value) {
+      return String(value || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    }
     function setHtml(sel, html) {
       if (html == null || html === '') return;
       const el = document.querySelector(sel);
-      if (el) el.innerHTML = html;
+      if (!el || plainText(el.textContent) === plainText(html)) return;
+      el.innerHTML = html;
     }
     function setText(sel, text) {
       if (text == null || text === '') return;
       const el = document.querySelector(sel);
-      if (el) el.textContent = text;
+      if (el && el.textContent !== text) el.textContent = text;
+    }
+    function replaceHtmlIfChanged(el, html) {
+      if (!el || html == null) return;
+      if (plainText(el.textContent) === plainText(html)) return;
+      el.innerHTML = html;
     }
     function setLink(sel, href, text) {
       const el = document.querySelector(sel);
@@ -185,6 +206,7 @@
     }
     if (content.hero_cta_book != null) {
       document.querySelectorAll('[data-cms-cta="book"]').forEach((el) => {
+        if (el.textContent.trim() === String(content.hero_cta_book).trim()) return;
         const icon = el.querySelector('.btn__icon');
         el.textContent = content.hero_cta_book;
         if (icon) el.insertBefore(icon, el.firstChild);
@@ -192,13 +214,14 @@
     }
     if (content.hero_cta_consult != null) {
       document.querySelectorAll('[data-cms-cta="consult"]').forEach((el) => {
-        el.textContent = content.hero_cta_consult;
+        if (el.textContent !== content.hero_cta_consult) el.textContent = content.hero_cta_consult;
       });
     }
     if (content.hero_cta_book_consult != null) {
       document.querySelectorAll('[data-cms-cta="book_consult"]').forEach((el) => {
-        const icon = el.querySelector('.btn__icon');
         const label = content.hero_cta_book_consult;
+        if (el.textContent.trim() === String(label).trim()) return;
+        const icon = el.querySelector('.btn__icon');
         if (icon) {
           el.innerHTML = '';
           el.appendChild(icon);
@@ -210,17 +233,17 @@
     }
     if (content.hero_cta_services != null) {
       document.querySelectorAll('[data-cms-cta="services"]').forEach((el) => {
-        el.textContent = content.hero_cta_services;
+        if (el.textContent !== content.hero_cta_services) el.textContent = content.hero_cta_services;
       });
     }
     if (content.consultation_cta_label != null) {
       document.querySelectorAll('[data-cms-cta="recommendations"]').forEach((el) => {
-        el.textContent = content.consultation_cta_label;
+        if (el.textContent !== content.consultation_cta_label) el.textContent = content.consultation_cta_label;
       });
     }
     if (content.footer_cta_label != null) {
       document.querySelectorAll('[data-cms-cta="footer_book"]').forEach((el) => {
-        el.textContent = content.footer_cta_label;
+        if (el.textContent !== content.footer_cta_label) el.textContent = content.footer_cta_label;
       });
     }
     if (content.footer_map_url) {
@@ -246,18 +269,17 @@
     setHtml('#about .section__title', content.about_title_html);
     if (Array.isArray(content.about_checklist)) {
       const ul = document.querySelector('#about .checklist');
-      if (ul) ul.innerHTML = content.about_checklist.map(t => `<li>${escapeHtml(t)}</li>`).join('');
+      if (ul) replaceHtmlIfChanged(ul, content.about_checklist.map(t => `<li>${escapeHtml(t)}</li>`).join(''));
     }
 
     function setTextIn(root, sel, text) {
       if (text == null || text === '' || !root) return;
       const el = root.querySelector(sel);
-      if (el) el.textContent = text;
+      if (el && el.textContent !== text) el.textContent = text;
     }
     function setHtmlIn(root, sel, html) {
       if (html == null || html === '' || !root) return;
-      const el = root.querySelector(sel);
-      if (el) el.innerHTML = html;
+      replaceHtmlIfChanged(root.querySelector(sel), html);
     }
     const audSec = document.querySelector('.audience-list')?.closest('.section');
     if (audSec) {
@@ -267,7 +289,7 @@
     }
     if (Array.isArray(content.audience_list)) {
       const ul = document.querySelector('.audience-list');
-      if (ul) ul.innerHTML = content.audience_list.map(t => `<li>${escapeHtml(t)}</li>`).join('');
+      if (ul) replaceHtmlIfChanged(ul, content.audience_list.map(t => `<li>${escapeHtml(t)}</li>`).join(''));
     }
 
     setText('#consultation .section__eyebrow', content.consultation_eyebrow);
@@ -276,7 +298,7 @@
     setText('.consultation-block__steps h3', content.consultation_steps_title);
     if (Array.isArray(content.consultation_steps)) {
       const ul = document.querySelector('.consultation-block__steps ul');
-      if (ul) ul.innerHTML = content.consultation_steps.map(t => `<li>${escapeHtml(t)}</li>`).join('');
+      if (ul) replaceHtmlIfChanged(ul, content.consultation_steps.map(t => `<li>${escapeHtml(t)}</li>`).join(''));
     }
     const freeCards = document.querySelectorAll('.free-card p');
     if (freeCards[0] && content.consultation_free_1 != null) freeCards[0].textContent = content.consultation_free_1;
@@ -300,18 +322,18 @@
     if (Array.isArray(content.approach_grid)) {
       const grid = document.querySelector('.approach-grid');
       if (grid) {
-        grid.innerHTML = content.approach_grid.map((t) => {
+        replaceHtmlIfChanged(grid, content.approach_grid.map((t) => {
           const parts = String(t).trim().split(/\s+/);
           const first = parts.shift() || '';
           const rest = parts.join(' ');
           return `<div class="approach-item"><span class="accent">${escapeHtml(first)}</span>${rest ? ' ' + escapeHtml(rest) : ''}</div>`;
-        }).join('');
+        }).join(''));
       }
     }
     setHtml('.approach-principles__title', content.approach_principles_title_html);
     if (Array.isArray(content.approach_principles_list_html)) {
       const ul = document.querySelector('.approach-principles ul');
-      if (ul) ul.innerHTML = content.approach_principles_list_html.map(h => `<li>${h}</li>`).join('');
+      if (ul) replaceHtmlIfChanged(ul, content.approach_principles_list_html.map(h => `<li>${h}</li>`).join(''));
     }
 
     setText('#services .section__eyebrow', content.services_eyebrow);
@@ -327,11 +349,11 @@
     if (Array.isArray(content.benefits_items)) {
       const ul = document.querySelector('.benefits-list');
       if (ul) {
-        ul.innerHTML = content.benefits_items.map((t, i) => {
+        replaceHtmlIfChanged(ul, content.benefits_items.map((t, i) => {
           const num = String(i + 1).padStart(2, '0');
           const featured = i === content.benefits_items.length - 1 ? ' benefit-card--featured' : '';
           return `<li class="benefit-card${featured}"><span class="benefit-card__num">${num}</span><span class="benefit-card__text">${escapeHtml(t)}</span></li>`;
-        }).join('');
+        }).join(''));
       }
     }
 
@@ -343,9 +365,9 @@
     if (Array.isArray(content.faq_items)) {
       const grid = document.querySelector('.faq-grid');
       if (grid) {
-        grid.innerHTML = content.faq_items.map(item => (
+        replaceHtmlIfChanged(grid, content.faq_items.map(item => (
           `<div class="faq-item"><h3>${escapeHtml(item.q || '')}</h3><p>${escapeHtml(item.a || '')}</p></div>`
-        )).join('');
+        )).join(''));
       }
     }
 
@@ -358,19 +380,27 @@
     if (Array.isArray(content.reviews)) {
       const track = document.getElementById('reviewsTrack');
       if (track) {
-        const userCards = [...track.querySelectorAll('.review-card[data-review-id]')];
-        track.innerHTML = content.reviews.map((r) => {
+        const html = content.reviews.map((r) => {
           const stars = '★'.repeat(Math.min(5, Math.max(1, Number(r.stars) || 5)));
           return `<div class="review-card"><span class="review-card__quote" aria-hidden="true">"</span><div class="review-card__stars">${stars}</div><p class="review-card__text">${escapeHtml(r.text || '')}</p><span class="review-card__author">${escapeHtml(r.author || '')}</span></div>`;
         }).join('');
-        if (userCards.length) {
-          const fragment = document.createDocumentFragment();
-          userCards.forEach((card) => fragment.appendChild(card));
-          track.insertBefore(fragment, track.firstChild);
-        }
-        const heroReviewValue = document.querySelector('[data-reviews-count]') || heroValues[1];
-        if (heroReviewValue) {
-          heroReviewValue.textContent = String(track.querySelectorAll('.review-card').length);
+        const staticCards = [...track.querySelectorAll('.review-card:not([data-review-id])')];
+        const current = staticCards.map((card) => plainText(card.textContent)).join('|');
+        const probe = document.createElement('div');
+        probe.innerHTML = html;
+        const next = [...probe.children].map((card) => plainText(card.textContent)).join('|');
+        if (current !== next) {
+          const userCards = [...track.querySelectorAll('.review-card[data-review-id]')];
+          track.innerHTML = html;
+          if (userCards.length) {
+            const fragment = document.createDocumentFragment();
+            userCards.forEach((card) => fragment.appendChild(card));
+            track.insertBefore(fragment, track.firstChild);
+          }
+          const heroReviewValue = document.querySelector('[data-reviews-count]') || heroValues[1];
+          if (heroReviewValue) {
+            heroReviewValue.textContent = String(track.querySelectorAll('.review-card').length);
+          }
         }
       }
     }
@@ -407,7 +437,7 @@
     setText('#booking .cta-row__info > p', content.booking_text);
     if (Array.isArray(content.booking_principles)) {
       const ul = document.querySelector('.cta-principles');
-      if (ul) ul.innerHTML = content.booking_principles.map(t => `<li>${escapeHtml(t)}</li>`).join('');
+      if (ul) replaceHtmlIfChanged(ul, content.booking_principles.map(t => `<li>${escapeHtml(t)}</li>`).join(''));
     }
 
     setText('.footer__name', content.footer_name);
@@ -476,13 +506,19 @@
     const lines = String(desc).split(/\n+/).map((line) => line.trim()).filter(Boolean);
     if (lines.length < 2) {
       el.classList.remove('service-card__desc--points');
-      el.textContent = desc;
+      if (el.textContent !== desc) el.textContent = desc;
       return;
     }
     const lead = lines[0];
     const items = lines.slice(1).map((line) => line.replace(/^[*•—–-]\s*/, '').replace(/\.$/, ''));
+    const html = `<p class="service-card__desc-lead">${escapeHtml(lead)}</p><ul class="service-card__points">${items.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`;
+    const probe = document.createElement('div');
+    probe.innerHTML = html;
+    const next = (probe.textContent || '').replace(/\s+/g, ' ').trim();
+    const current = (el.textContent || '').replace(/\s+/g, ' ').trim();
+    if (current === next && el.classList.contains('service-card__desc--points')) return;
     el.classList.add('service-card__desc--points');
-    el.innerHTML = `<p class="service-card__desc-lead">${escapeHtml(lead)}</p><ul class="service-card__points">${items.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`;
+    el.innerHTML = html;
   }
 
   function escapeHtml(str) {
@@ -544,7 +580,12 @@
       const key = el.dataset.serviceTitle;
       if (!Object.prototype.hasOwnProperty.call(services, key)) return;
       const titleHtml = services[key]?.title_html;
-      if (titleHtml) el.innerHTML = titleHtml;
+      if (!titleHtml) return;
+      const probe = document.createElement('div');
+      probe.innerHTML = titleHtml;
+      const next = (probe.textContent || '').replace(/\s+/g, ' ').trim();
+      const current = (el.textContent || '').replace(/\s+/g, ' ').trim();
+      if (current !== next) el.innerHTML = titleHtml;
     });
 
     document.querySelectorAll('[data-service-prices]').forEach((ul) => {
@@ -560,7 +601,12 @@
         return;
       }
 
-      ul.innerHTML = items.map(buildPriceItemHtml).filter(Boolean).join('');
+      const html = items.map(buildPriceItemHtml).filter(Boolean).join('');
+      const probe = document.createElement('div');
+      probe.innerHTML = html;
+      const next = (probe.textContent || '').replace(/\s+/g, ' ').trim();
+      const current = (ul.textContent || '').replace(/\s+/g, ' ').trim();
+      if (current !== next) ul.innerHTML = html;
       if (pricesWrap) pricesWrap.classList.remove('service-card__prices--pending');
     });
 
