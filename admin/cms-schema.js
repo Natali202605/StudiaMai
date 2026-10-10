@@ -27,6 +27,22 @@
       master_certificates: 'Сертификаты'
     },
 
+    IMAGE_ALTS: {
+      logo: 'Студия красоты Май',
+      hero_logo: 'Логотип студии красоты Май',
+      brand_title: 'Студия Май',
+      hero_studio: 'Рабочее место студии красоты «Май»',
+      service_brows: 'Ухоженные брови и ресницы — результат работы мастера',
+      service_cosmetology: 'Косметические средства для ухода — студия красоты Май',
+      service_massage: 'Профессиональный массаж лица',
+      service_trichology: 'Восстановление и уход за волосами — студия красоты Май',
+      service_depilation: 'Женская депиляция — ухоженная кожа',
+      service_rituals: 'Ритуалы ухода и обертывание — уход за руками',
+      master_portrait: 'Галина Болотова — Броволог, мастер восстановления бровей',
+      master_card: 'Галина Болотова — визитная карточка BROVOLOG',
+      master_certificates: 'Профессиональные сертификаты Галины Болотовой'
+    },
+
     IMAGE_FIT: {
       logo: 'contain',
       hero_logo: 'contain',
@@ -188,6 +204,14 @@
           { key: 'reviews_eyebrow', label: 'Подзаголовок' },
           { key: 'reviews_title_html', label: 'Заголовок', html: true },
           { key: 'reviews_lead', label: 'Описание' },
+          { key: 'reviews_add_label', label: 'Кнопка «Добавить отзыв»' },
+          { key: 'reviews_continue_label', label: 'Кнопка «Дополнить отзыв»' },
+          { key: 'reviews_success', label: 'Сообщение после публикации отзыва' },
+          { key: 'review_modal_title', label: 'Заголовок окна отзыва' },
+          { key: 'review_modal_lead', label: 'Текст окна отзыва' },
+          { key: 'review_author_ph', label: 'Поле имени в отзыве' },
+          { key: 'review_text_ph', label: 'Поле текста отзыва' },
+          { key: 'review_publish_label', label: 'Кнопка «Опубликовать»' },
           { key: 'reviews', label: 'Отзывы клиентов', reviews: true }
         ]
       },
@@ -211,7 +235,14 @@
         fields: [
           { key: 'booking_title_html', label: 'Заголовок', html: true },
           { key: 'booking_text', label: 'Текст', textarea: true },
-          { key: 'booking_principles', label: 'Принципы (каждый с новой строки)', list: true }
+          { key: 'booking_principles', label: 'Принципы (каждый с новой строки)', list: true },
+          { key: 'booking_name_ph', label: 'Поле «Имя»' },
+          { key: 'booking_surname_ph', label: 'Поле «Фамилия»' },
+          { key: 'booking_phone_ph', label: 'Поле «Телефон»' },
+          { key: 'booking_email_ph', label: 'Поле «Почта»' },
+          { key: 'booking_comment_ph', label: 'Поле «Комментарий»' },
+          { key: 'booking_phone_prefix', label: 'Текст перед телефоном' },
+          { key: 'booking_consent', label: 'Текст согласия на обработку данных' }
         ]
       },
       {
@@ -232,8 +263,12 @@
           { key: 'footer_booking_url', label: 'Онлайн-запись (ссылка)' },
           { key: 'footer_site_label', label: 'Сайт (текст)' },
           { key: 'footer_site_url', label: 'Сайт (ссылка)' },
-          { key: 'footer_hours', label: 'Часы работы' },
-          { key: 'footer_legal_note', label: 'Правовая сноска' }
+          { key: 'footer_hours', label: 'Часы работы', textarea: true, hint: 'Каждый день с новой строки или через « · ». Пример: пн 11:00–20:00' },
+          { key: 'footer_legal_note', label: 'Правовая сноска' },
+          { key: 'footer_privacy_label', label: 'Ссылка «Политика конфиденциальности»' },
+          { key: 'footer_consent_label', label: 'Ссылка «Согласие на обработку данных»' },
+          { key: 'footer_offer_label', label: 'Ссылка «Публичная оферта»' },
+          { key: 'footer_copyright', label: 'Строка копирайта' }
         ]
       }
     ]

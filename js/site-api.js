@@ -491,6 +491,69 @@
       if (content.footer_site_url) siteLink.href = content.footer_site_url;
       if (content.footer_site_label) siteLink.textContent = content.footer_site_label;
     }
+
+    function setPlaceholder(id, text) {
+      if (text == null || text === '') return;
+      const el = document.getElementById(id);
+      if (el && el.getAttribute('placeholder') !== text) el.setAttribute('placeholder', text);
+    }
+    setPlaceholder('bookingName', content.booking_name_ph);
+    setPlaceholder('bookingSurname', content.booking_surname_ph);
+    setPlaceholder('bookingPhoneField', content.booking_phone_ph);
+    setPlaceholder('bookingEmail', content.booking_email_ph);
+    setPlaceholder('bookingComment', content.booking_comment_ph);
+    setPlaceholder('reviewAuthor', content.review_author_ph);
+    setPlaceholder('reviewText', content.review_text_ph);
+
+    if (content.image_alts && typeof content.image_alts === 'object') {
+      document.querySelectorAll('[data-cms-img]').forEach((el) => {
+        const alt = content.image_alts[el.dataset.cmsImg];
+        if (alt && el.alt !== alt) el.alt = alt;
+      });
+    }
+
+    const ldScript = document.getElementById('siteJsonLd');
+    if (ldScript) {
+      try {
+        const data = JSON.parse(ldScript.textContent);
+        const graph = Array.isArray(data['@graph']) ? data['@graph'] : [];
+        const business = graph.find((node) => {
+          const type = node && node['@type'];
+          return type === 'BeautySalon' || (Array.isArray(type) && type.indexOf('BeautySalon') !== -1);
+        });
+        if (business) {
+          if (content.footer_name) business.name = content.footer_name;
+          if (content.meta_description) business.description = content.meta_description;
+          if (content.footer_phone) business.telephone = String(content.footer_phone).replace(/[^\d+]/g, '');
+          if (content.footer_address && business.address) business.address.streetAddress = content.footer_address;
+          if (content.brand_city && business.address) business.address.addressLocality = content.brand_city;
+          if (content.brand_city && business.areaServed) business.areaServed.name = content.brand_city;
+          if (content.footer_vk_url || content.booking_url) {
+            business.sameAs = [
+              content.footer_vk_url || (business.sameAs && business.sameAs[0]) || '',
+              content.booking_url || content.footer_booking_url || (business.sameAs && business.sameAs[1]) || ''
+            ].filter(Boolean);
+          }
+          if (business.aggregateRating) {
+            if (content.hero_stat_rating) business.aggregateRating.ratingValue = String(content.hero_stat_rating);
+            if (content.hero_stat_reviews) business.aggregateRating.reviewCount = String(content.hero_stat_reviews);
+          }
+          if (content.footer_master && business.employee) business.employee.name = content.footer_master;
+          if (content.master_role && business.employee) business.employee.jobTitle = content.master_role;
+        }
+        const website = graph.find((node) => node && node['@type'] === 'WebSite');
+        if (website) {
+          if (content.footer_name) website.name = content.footer_name;
+          if (content.meta_description) website.description = content.meta_description;
+        }
+        const webpage = graph.find((node) => node && node['@type'] === 'WebPage');
+        if (webpage) {
+          if (content.meta_title) webpage.name = content.meta_title;
+          if (content.meta_description) webpage.description = content.meta_description;
+        }
+        ldScript.textContent = JSON.stringify(data);
+      } catch { /* карточка сайта остаётся как в странице */ }
+    }
   }
 
   const EMPTY_PHOTO = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';

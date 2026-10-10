@@ -121,6 +121,10 @@
     };
   }
 
+  function getImageAltDefaults() {
+    return getSchema().IMAGE_ALTS || {};
+  }
+
   function getServiceMeta() {
     return getSchema().SERVICE_META || {};
   }
@@ -201,6 +205,8 @@
     } else {
       html += '<input type="text" name="' + field.key + '" value="' + escapeHtml(val || '') + '">';
     }
+
+    if (field.hint) html += '<span class="admin__field-hint">' + escapeHtml(field.hint) + '</span>';
 
     html += '</label>';
     return html;
@@ -893,6 +899,11 @@
         html += '<div class="admin__photo-empty">Нет фото</div>';
       }
       html += '<span>' + labels[key] + '</span>';
+      html += '<label class="admin__field admin__field--compact"><span>Подпись к фото</span>';
+      var altDefaults = getImageAltDefaults();
+      var savedAlts = (getContentState().image_alts) || {};
+      var altValue = savedAlts[key] || altDefaults[key] || '';
+      html += '<input type="text" data-alt-key="' + key + '" value="' + escapeHtml(altValue) + '"></label>';
       html += '<input type="text" class="admin__photo-path" data-key="' + key + '" value="' + escapeHtml(pathValue) + '" placeholder="' + (src && src.indexOf('data:') === 0 ? 'Фото загружено' : 'images/photo.jpg') + '">';
       html += '<label class="admin-btn admin-btn--ghost admin-btn--block admin__photo-upload">';
       html += (preview ? 'Заменить фото' : 'Добавить фото');
@@ -907,6 +918,27 @@
       html += '</div>';
     }
     grid.innerHTML = html;
+  }
+
+  function applyImageAltsToContent(content) {
+    var inputs = document.querySelectorAll('[data-alt-key]');
+    if (!inputs.length) return content;
+    var defaults = getImageAltDefaults();
+    var next = {};
+    var existing = content.image_alts && typeof content.image_alts === 'object' ? content.image_alts : {};
+    var key;
+    for (key in existing) {
+      if (Object.prototype.hasOwnProperty.call(existing, key) && existing[key]) next[key] = existing[key];
+    }
+    var i;
+    for (i = 0; i < inputs.length; i++) {
+      key = inputs[i].getAttribute('data-alt-key');
+      var val = inputs[i].value.trim();
+      if (!val || val === defaults[key]) delete next[key];
+      else next[key] = val;
+    }
+    content.image_alts = next;
+    return content;
   }
 
   window.studiaMaiUploadPhoto = function (key, input) {
@@ -925,8 +957,10 @@
         input.value = '';
         return;
       }
+      var content = applyImageAltsToContent(getContentState());
+      saveContentState(content);
       renderPhotosGrid();
-      publishToSite({ images: images, message: 'CMS: обновить фото ' + key }, 'photosMsg', 'Фото сохранено.');
+      publishToSite({ images: images, content: content, message: 'CMS: обновить фото ' + key }, 'photosMsg', 'Фото сохранено.');
     }).catch(function (err) {
       showMsg('photosMsg', err && err.message ? err.message : 'Не удалось обработать фото', false);
     });
@@ -965,8 +999,10 @@
       if (val) images[key] = val;
     }
     if (!saveImagesState(images)) return false;
+    var content = applyImageAltsToContent(getContentState());
+    saveContentState(content);
     renderPhotosGrid();
-    publishToSite({ images: images, message: 'CMS: обновить фото' }, 'photosMsg', 'Фото сохранены.');
+    publishToSite({ images: images, content: content, message: 'CMS: обновить фото' }, 'photosMsg', 'Фото сохранены.');
     return false;
   };
 
@@ -1119,15 +1155,17 @@
       var key = inputs[i].getAttribute('data-key');
       var val = inputs[i].value.trim();
       if (val) images[key] = val;
-      else delete images[key];
+      else if (String(images[key] || '').indexOf('data:') !== 0 && images[key] !== '__removed__') delete images[key];
     }
     saveImagesState(images);
     var config = getConfigState();
     saveConfigState(config);
     var theme = readThemeFromPicker();
     saveThemeState(theme);
+    var contentWithAlts = applyImageAltsToContent(content);
+    saveContentState(contentWithAlts);
     publishToSite({
-      content: content,
+      content: contentWithAlts,
       services: services,
       images: images,
       config: config,

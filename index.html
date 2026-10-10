@@ -26,7 +26,7 @@
   <meta name="theme-color" content="#00D4A8">
   <link rel="canonical" href="https://natali202605.github.io/StudiaMai/">
   <link rel="sitemap" type="application/xml" title="Sitemap" href="https://natali202605.github.io/StudiaMai/sitemap.xml">
-  <script type="application/ld+json">
+  <script type="application/ld+json" id="siteJsonLd">
   {
     "@context": "https://schema.org",
     "@graph": [
@@ -972,10 +972,10 @@
         </div>
         <div class="reviews-slider__actions">
           <div class="reviews-slider__actions-row">
-            <button type="button" class="btn btn--ghost reviews-write-btn" id="openReviewModalAdd">Добавить отзыв</button>
-            <button type="button" class="btn btn--ghost reviews-write-btn reviews-write-btn--continue" id="openReviewModalContinue" disabled>Дополнить отзыв</button>
+            <button type="button" class="btn btn--ghost reviews-write-btn" id="openReviewModalAdd" data-cms="reviews_add_label">Добавить отзыв</button>
+            <button type="button" class="btn btn--ghost reviews-write-btn reviews-write-btn--continue" id="openReviewModalContinue" data-cms="reviews_continue_label" disabled>Дополнить отзыв</button>
           </div>
-          <p class="reviews-write-notice" id="reviewSuccessNotice" hidden>Спасибо! Ваш отзыв опубликован.</p>
+          <p class="reviews-write-notice" id="reviewSuccessNotice" data-cms="reviews_success" hidden>Спасибо! Ваш отзыв опубликован.</p>
         </div>
       </div>
         </div>
@@ -1040,18 +1040,18 @@
         </div>
         <form class="contact-form" id="contactForm">
           <div class="contact-form__fields">
-            <input type="text" name="name" placeholder="Имя" autocomplete="given-name">
-            <input type="text" name="surname" placeholder="Фамилия" autocomplete="family-name">
-            <input type="tel" name="phone" placeholder="Номер телефона" autocomplete="tel">
-            <input type="email" name="email" placeholder="Адрес электронной почты" autocomplete="email">
+            <input type="text" id="bookingName" name="name" placeholder="Имя" autocomplete="given-name">
+            <input type="text" id="bookingSurname" name="surname" placeholder="Фамилия" autocomplete="family-name">
+            <input type="tel" id="bookingPhoneField" name="phone" placeholder="Номер телефона" autocomplete="tel">
+            <input type="email" id="bookingEmail" name="email" placeholder="Адрес электронной почты" autocomplete="email">
             <input type="text" name="comment" id="bookingComment" placeholder="Комментарий (необязательно)">
           </div>
           <p class="booking-form__message" id="bookingMessage" hidden></p>
           <button type="submit" id="submitBooking" class="btn btn--primary btn--wide" data-cms-cta="book">Записаться</button>
-          <p class="booking-form__phone">или позвоните: <a href="tel:+79024737800" id="bookingPhone" class="booking-form__phone-link" data-phone="+7 902 473-78-00" title="Нажмите, чтобы скопировать номер">+7 902 473-78-00</a></p>
+          <p class="booking-form__phone"><span data-cms="booking_phone_prefix">или позвоните:</span> <a href="tel:+79024737800" id="bookingPhone" class="booking-form__phone-link" data-phone="+7 902 473-78-00" title="Нажмите, чтобы скопировать номер">+7 902 473-78-00</a></p>
           <label class="booking-form__agree">
             <input type="checkbox" name="pd_consent">
-            <span>Даю согласие на обработку персональных данных</span>
+            <span data-cms="booking_consent">Даю согласие на обработку персональных данных</span>
           </label>
         </form>
       </div>
@@ -1095,12 +1095,12 @@
     <div class="footer__bottom">
       <div class="container">
         <nav class="footer__legal" aria-label="Правовая информация">
-          <a href="privacy.html">Политика конфиденциальности</a>
-          <a href="personal-data-consent.html">Согласие на обработку персональных данных</a>
-          <a href="public-offer.html">Публичная оферта</a>
+          <a href="privacy.html" data-cms="footer_privacy_label">Политика конфиденциальности</a>
+          <a href="personal-data-consent.html" data-cms="footer_consent_label">Согласие на обработку персональных данных</a>
+          <a href="public-offer.html" data-cms="footer_offer_label">Публичная оферта</a>
         </nav>
         <p class="footer__legal-note">Правовые документы действуют на территории Российской Федерации.</p>
-        <p>&copy; 2026 Студия красоты «Май». Все права защищены.</p>
+        <p class="footer__copy" data-cms="footer_copyright">&copy; 2026 Студия красоты «Май». Все права защищены.</p>
       </div>
     </div>
   </footer>
@@ -1111,20 +1111,20 @@
       <button type="button" class="review-modal__close" id="closeReviewModal" aria-label="Закрыть">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </button>
-      <h3 class="review-modal__title" id="reviewModalTitle">Добавить отзыв</h3>
-      <p class="review-modal__lead">Поделитесь впечатлениями о визите в студию «Май»</p>
+      <h3 class="review-modal__title" id="reviewModalTitle" data-cms="review_modal_title">Добавить отзыв</h3>
+      <p class="review-modal__lead" data-cms="review_modal_lead">Поделитесь впечатлениями о визите в студию «Май»</p>
       <form class="review-form" id="reviewForm">
         <input type="text" name="author" id="reviewAuthor" placeholder="Ваше имя и фамилия" autocomplete="name" required>
         <textarea name="text" id="reviewText" placeholder="Ваш отзыв" rows="5" required></textarea>
         <p class="review-form__autosave" id="reviewDraftStatus" hidden></p>
         <p class="review-form__message" id="reviewFormMessage" hidden></p>
-        <button type="button" class="btn btn--primary btn--wide" id="publishReview">Опубликовать</button>
+        <button type="button" class="btn btn--primary btn--wide" id="publishReview" data-cms="review_publish_label">Опубликовать</button>
       </form>
     </div>
   </div>
 
   <script src="js/config.js"></script>
-  <script src="js/site-api.js?v=cms20"></script>
+  <script src="js/site-api.js?v=cms21"></script>
   <script>
     const burger = document.querySelector('.burger');
     const nav = document.querySelector('.nav');
