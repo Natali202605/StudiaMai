@@ -265,6 +265,7 @@
           { key: 'footer_site_url', label: 'Сайт (ссылка)' },
           { key: 'footer_hours', label: 'Часы работы', textarea: true, hint: 'Каждый день с новой строки или через « · ». Пример: пн 11:00–20:00' },
           { key: 'footer_legal_note', label: 'Правовая сноска' },
+          { key: 'footer_licenses', label: 'Строка про лицензии и сертификаты' },
           { key: 'footer_privacy_label', label: 'Ссылка «Политика конфиденциальности»' },
           { key: 'footer_consent_label', label: 'Ссылка «Согласие на обработку данных»' },
           { key: 'footer_offer_label', label: 'Ссылка «Публичная оферта»' },

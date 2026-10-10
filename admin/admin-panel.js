@@ -440,8 +440,8 @@
       html += '<input type="text" data-field="time" value="' + escapeHtml(item.time || '') + '" placeholder="1 час">';
       html += '</label>';
       html += '</div>';
-      html += '<label class="admin__field admin__field--compact"><span>Описание для «Подробнее» (необязательно)</span>';
-      html += '<textarea data-field="details" rows="2" placeholder="Краткое описание процедуры">' + escapeHtml(item.details || '') + '</textarea>';
+      html += '<label class="admin__field admin__field--compact"><span>Информация в кнопке «Подробнее»</span>';
+      html += '<textarea data-field="details" rows="3" placeholder="Текст, который открывается по кнопке «Подробнее»">' + escapeHtml(item.details || '') + '</textarea>';
       html += '</label>';
     }
 
