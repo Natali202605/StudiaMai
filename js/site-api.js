@@ -61,6 +61,17 @@
     }
   }
 
+  const THEME_IDS = ['sage', 'powder', 'champagne', 'lavender', 'tide'];
+
+  function applyTheme(theme) {
+    const id = theme && typeof theme.id === 'string' ? theme.id : 'mint';
+    if (THEME_IDS.indexOf(id) === -1) {
+      document.documentElement.removeAttribute('data-theme');
+      return;
+    }
+    document.documentElement.setAttribute('data-theme', id);
+  }
+
   function bookingHref(url) {
     const raw = String(url || '').trim();
     if (!raw) return '';
@@ -635,10 +646,12 @@
 
   async function loadCms() {
     await resolveCacheBust();
-    const [data, services] = await Promise.all([
+    const [data, services, theme] = await Promise.all([
       loadContentData(),
-      loadServicesData()
+      loadServicesData(),
+      fetchDataJson('theme.json')
     ]);
+    applyTheme(theme);
     applyContent(data.content);
     applyImages(data.images);
     if (services) applyServices(services);
@@ -837,6 +850,7 @@
     loadServicesData,
     loadSiteConfig,
     applyContent,
+    applyTheme,
     applyImages,
     applyServices,
     readLocalBookings,

@@ -185,6 +185,11 @@
       published.push('config.json');
     }
 
+    if (payload.theme && payload.theme.id) {
+      await putJson(cfg, 'data/theme.json', { id: String(payload.theme.id) }, message + ' (палитра)');
+      published.push('theme.json');
+    }
+
     await putJson(cfg, 'data/version.json', { v: Date.now() }, message + ' (версия кэша)');
     published.push('version.json');
 

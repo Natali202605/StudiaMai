@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="admin.css?v=simple8">
+  <link rel="stylesheet" href="admin.css?v=simple9">
   <script>
     var STUDIA_MAI_USER = 'admin';
     var STUDIA_MAI_PASS = 'Mai2026!';
@@ -415,7 +415,7 @@
           <div class="admin__stat"><span class="admin__stat-num" id="statBookingsCount">0</span><span>Заявок в списке</span></div>
         </div>
         <p class="admin__msg">
-          В панели можно просматривать заявки, менять все тексты, прайсы, фото и контакты на сайте, настроить уведомления о новых записях.
+          В панели можно просматривать заявки, менять все тексты, прайсы, фото, цвета и контакты на сайте, настроить уведомления о новых записях.
         </p>
         <div class="admin__toolbar admin__toolbar--hero">
           <button type="button" class="admin-btn admin-btn--primary admin-btn--edit" onclick="return studiaMaiSwitchTab('edit')">Редактировать сайт</button>
@@ -457,11 +457,22 @@
 
       <section class="admin__panel" data-panel="edit">
         <h2>Редактирование сайта</h2>
-        <p class="admin__msg">Здесь можно изменить тексты, меню, ссылки записи, карту, прайс, фото и контакты. После «Сохранить» изменения публикуются на сайт для всех посетителей (нужен токен в «Настройках»).</p>
+        <p class="admin__msg">Здесь можно изменить тексты, меню, ссылки записи, карту, прайс, фото, цвета и контакты. После «Сохранить» изменения публикуются на сайт для всех посетителей (нужен токен в «Настройках»).</p>
         <p class="admin__msg" id="publishAllMsg" hidden></p>
         <div class="admin__toolbar">
           <button type="button" class="admin-btn admin-btn--primary" onclick="return studiaMaiPublishAll()">Сохранить и опубликовать всё</button>
           <a href="../" target="_blank" rel="noopener" class="admin-btn admin-btn--ghost">Открыть сайт</a>
+        </div>
+
+        <div class="admin__edit-block">
+          <h3 class="admin__subtitle">Цвета и оттенки</h3>
+          <p class="admin__msg admin__msg--compact">Готовые палитры под студию красоты, брови, уход за кожей и трихологию. Меняются цвета кнопок, фона, карточек и акцентов. Тексты, фото и расположение блоков остаются на месте.</p>
+          <div class="theme-grid" id="themePicker"></div>
+          <p class="admin__msg" id="themeMsg" hidden></p>
+          <div class="admin__toolbar">
+            <button type="button" class="admin-btn admin-btn--primary" onclick="return studiaMaiSaveTheme()">Сохранить палитру</button>
+            <button type="button" class="admin-btn admin-btn--ghost" onclick="return studiaMaiResetTheme()">Вернуть мяту «Май»</button>
+          </div>
         </div>
 
         <div class="admin__edit-block">
@@ -609,7 +620,7 @@
   </div>
   <script src="../js/site-api.js?v=cms17"></script>
   <script src="cms-schema.js?v=4"></script>
-  <script src="github-publish.js?v=1"></script>
-  <script src="admin-panel.js?v=8"></script>
+  <script src="github-publish.js?v=2"></script>
+  <script src="admin-panel.js?v=9"></script>
 </body>
 </html>

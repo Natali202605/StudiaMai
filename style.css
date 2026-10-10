@@ -73,6 +73,36 @@
   --bg-section-filter: brightness(1.34) contrast(0.76) saturate(0.56) opacity(0.54);
   --bg-section-bright: #FFFFFF;
   --bg-mint-wash: linear-gradient(180deg, #FDFEFD 0%, #F7FCFA 16%, #EEF8F3 32%, #FBFDFC 48%, #EDF7F2 64%, #F9FCFB 80%, #F1F8F4 100%);
+  --page-bg: #F7FCFA;
+  --header-bg: rgba(250, 246, 240, 0.94);
+  --header-bg-scrolled: rgba(250, 246, 240, 0.95);
+  --header-line: rgba(168, 196, 184, 0.28);
+  --section-line: rgba(168, 196, 184, 0.15);
+  --btn-primary-bg: linear-gradient(135deg, #00EFC0 0%, #00D4A8 50%, #00B88C 100%);
+  --btn-primary-bg-hover: linear-gradient(135deg, #00D4A8 0%, #00B88C 50%, #009973 100%);
+  --btn-primary-border: rgba(0, 239, 192, 0.52);
+  --btn-light-bg: linear-gradient(135deg, #FFFFFF 0%, #C8FFF0 100%);
+  --btn-light-border: rgba(0, 212, 168, 0.4);
+  --btn-ghost-border: rgba(0, 212, 168, 0.42);
+  --btn-on-green-bg: linear-gradient(135deg, #FFFFFF 0%, var(--color-mint-light) 100%);
+  --btn-on-green-hover: linear-gradient(135deg, #FFFFFF 0%, #E8F2EC 100%);
+  --section-accent-bg:
+    radial-gradient(ellipse at 15% 0%, rgba(255, 255, 255, 0.26) 0%, transparent 50%),
+    linear-gradient(155deg, rgba(0, 168, 122, 0.84) 0%, rgba(0, 214, 170, 0.80) 38%, rgba(0, 236, 192, 0.76) 72%, rgba(0, 248, 205, 0.72) 100%);
+  --consultation-bg:
+    radial-gradient(ellipse at 15% 0%, rgba(255, 255, 255, 0.22) 0%, transparent 52%),
+    linear-gradient(155deg, rgba(0, 132, 98, 0.72) 0%, rgba(0, 176, 138, 0.64) 40%, rgba(0, 200, 162, 0.58) 100%);
+  --section-cta-bg:
+    radial-gradient(ellipse at 100% 50%, rgba(0, 235, 190, 0.34) 0%, transparent 50%),
+    linear-gradient(160deg, rgba(0, 130, 95, 0.80) 0%, rgba(0, 168, 125, 0.76) 32%, rgba(0, 205, 158, 0.72) 60%, rgba(0, 228, 176, 0.68) 85%, rgba(0, 239, 192, 0.64) 100%);
+  --theme-glow: rgba(0, 235, 190, 0.20);
+  --footer-bg:
+    radial-gradient(ellipse at 20% 0%, rgba(168, 196, 184, 0.16) 0%, transparent 50%),
+    linear-gradient(168deg, rgba(42, 54, 48, 0.86) 0%, rgba(58, 72, 64, 0.8) 48%, rgba(74, 88, 78, 0.76) 100%);
+  --review-card-solid: #FFFEFB;
+  --review-card-bg: linear-gradient(125deg, #FFFEFB 0%, #FFF8F2 42%, #F3FBF7 100%);
+  --chip-bg: linear-gradient(145deg, #C8FFF0, #00E8B8);
+  --chip-border: rgba(0, 212, 168, 0.42);
   --glass-blur: none;
 
   --card-gradient: linear-gradient(152deg, rgba(255, 252, 248, 0.40) 0%, rgba(245, 232, 218, 0.36) 28%, rgba(178, 222, 204, 0.34) 62%, rgba(238, 226, 210, 0.36) 100%);
@@ -94,7 +124,7 @@ html {
   scroll-behavior: auto;
   scroll-padding-top: 92px;
   overflow-x: clip;
-  background-color: #F7FCFA;
+  background-color: var(--page-bg);
   background-image: none;
 }
 
@@ -109,7 +139,7 @@ body {
   line-height: var(--line-body);
   color: var(--color-text);
   font-feature-settings: 'kern' 1, 'liga' 1;
-  background-color: #F7FCFA;
+  background-color: var(--page-bg);
   background-image: var(--bg-mint-wash);
   background-repeat: no-repeat;
   background-size: 100% 100%;
@@ -199,25 +229,25 @@ ul {
 }
 
 .btn--primary {
-  background: linear-gradient(135deg, #00EFC0 0%, #00D4A8 50%, #00B88C 100%);
+  background: var(--btn-primary-bg);
   color: var(--color-white);
-  border: 1px solid rgba(0, 239, 192, 0.52);
+  border: 1px solid var(--btn-primary-border);
   box-shadow: var(--shadow-float-btn), var(--neon-emerald-sm), var(--shadow-inner);
   letter-spacing: 0.06em;
   text-shadow: 0 1px 2px rgba(4, 120, 87, 0.3);
 }
 
 .btn--primary:hover {
-  background: linear-gradient(135deg, #00D4A8 0%, #00B88C 50%, #009973 100%);
+  background: var(--btn-primary-bg-hover);
   color: var(--color-white);
   transform: translateY(-2px);
   box-shadow: var(--shadow-float-btn-hover), var(--neon-emerald-strong), var(--shadow-inner);
 }
 
 .btn--light {
-  background: linear-gradient(135deg, #FFFFFF 0%, #C8FFF0 100%);
+  background: var(--btn-light-bg);
   color: var(--color-emerald-dark);
-  border: 1px solid rgba(0, 212, 168, 0.4);
+  border: 1px solid var(--btn-light-border);
   box-shadow: var(--shadow-float-btn), var(--neon-emerald-sm);
   font-weight: 600;
 }
@@ -232,7 +262,7 @@ ul {
 .btn--ghost {
   background: rgba(255, 255, 255, 0.65);
   color: var(--color-emerald-dark);
-  border: 1px solid rgba(0, 212, 168, 0.42);
+  border: 1px solid var(--btn-ghost-border);
   backdrop-filter: none;
   box-shadow: var(--shadow-float-btn), var(--neon-emerald-sm);
   font-weight: 600;
@@ -315,15 +345,15 @@ ul {
   left: 0;
   right: 0;
   z-index: 100;
-  background: rgba(250, 246, 240, 0.94);
+  background: var(--header-bg);
   backdrop-filter: none;
   border-bottom: 1px solid transparent;
   transition: box-shadow var(--transition), border-color var(--transition), background var(--transition);
 }
 
 .header--scrolled {
-  background: rgba(250, 246, 240, 0.95);
-  border-bottom-color: rgba(168, 196, 184, 0.28);
+  background: var(--header-bg-scrolled);
+  border-bottom-color: var(--header-line);
   box-shadow: 0 4px 28px rgba(168, 196, 184, 0.1);
 }
 
@@ -851,14 +881,12 @@ ul {
 .section--alt {
   background-color: transparent;
   background-image: none;
-  border-top: 1px solid rgba(168, 196, 184, 0.15);
-  border-bottom: 1px solid rgba(168, 196, 184, 0.15);
+  border-top: 1px solid var(--section-line);
+  border-bottom: 1px solid var(--section-line);
 }
 
 .section--accent {
-  background-image:
-    radial-gradient(ellipse at 15% 0%, rgba(255, 255, 255, 0.26) 0%, transparent 50%),
-    linear-gradient(155deg, rgba(0, 168, 122, 0.84) 0%, rgba(0, 214, 170, 0.80) 38%, rgba(0, 236, 192, 0.76) 72%, rgba(0, 248, 205, 0.72) 100%);
+  background-image: var(--section-accent-bg);
   background-size: 100% 100%, 100% 100%;
   background-position: center, center;
   background-repeat: no-repeat, no-repeat;
@@ -889,9 +917,9 @@ ul {
 }
 
 #consultation .container {
-  background:
-    radial-gradient(ellipse at 15% 0%, rgba(255, 255, 255, 0.22) 0%, transparent 52%),
-    linear-gradient(155deg, rgba(0, 132, 98, 0.72) 0%, rgba(0, 176, 138, 0.64) 40%, rgba(0, 200, 162, 0.58) 100%);
+  background-image: var(--consultation-bg);
+  background-size: 100% 100%, 100% 100%;
+  background-repeat: no-repeat, no-repeat;
   border: 1px solid rgba(255, 255, 255, 0.32);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-float-card), var(--shadow-inner);
@@ -899,9 +927,7 @@ ul {
 }
 
 .section--cta {
-  background-image:
-    radial-gradient(ellipse at 100% 50%, rgba(0, 235, 190, 0.34) 0%, transparent 50%),
-    linear-gradient(160deg, rgba(0, 130, 95, 0.80) 0%, rgba(0, 168, 125, 0.76) 32%, rgba(0, 205, 158, 0.72) 60%, rgba(0, 228, 176, 0.68) 85%, rgba(0, 239, 192, 0.64) 100%);
+  background-image: var(--section-cta-bg);
   background-size: 100% 100%, 100% 100%;
   background-position: center, center;
   background-repeat: no-repeat, no-repeat;
@@ -921,7 +947,7 @@ ul {
   z-index: 0;
   background:
     radial-gradient(ellipse at 18% 24%, rgba(255, 255, 255, 0.14) 0%, transparent 55%),
-    radial-gradient(ellipse at 82% 76%, rgba(0, 235, 190, 0.20) 0%, transparent 50%);
+    radial-gradient(ellipse at 82% 76%, var(--theme-glow) 0%, transparent 50%);
   opacity: 0.4;
   transform: translate3d(-1%, 1%, 0) scale(1.03);
 }
@@ -2214,8 +2240,8 @@ img[data-cms-img].is-cms-empty {
   overflow: hidden;
   border-radius: var(--radius-xl);
   position: relative;
-  background-color: #FFFEFB;
-  background-image: linear-gradient(125deg, #FFFEFB 0%, #FFF8F2 42%, #F3FBF7 100%);
+  background-color: var(--review-card-solid);
+  background-image: var(--review-card-bg);
   border: var(--border-mint);
   box-shadow: 0 8px 18px rgba(0, 158, 112, 0.38), 0 2px 6px rgba(0, 110, 80, 0.24), var(--shadow-inner);
   --review-slide-width: 100%;
@@ -2387,7 +2413,7 @@ img[data-cms-img].is-cms-empty {
 
 .reviews-slider__btn:hover {
   background: rgba(255, 255, 255, 0.95);
-  border-color: rgba(0, 212, 168, 0.5);
+  border-color: var(--chip-border);
   color: var(--color-emerald-deep);
   transform: translateY(-2px);
   box-shadow: var(--shadow-float-btn-hover), var(--neon-emerald-strong), var(--shadow-inner);
@@ -2891,7 +2917,7 @@ a.format-card {
 }
 
 .booking-form input:focus {
-  border-color: rgba(0, 212, 168, 0.5);
+  border-color: var(--chip-border);
   background: rgba(255, 255, 255, 0.78);
   box-shadow: 0 0 0 3px rgba(0, 212, 168, 0.15);
 }
@@ -3014,14 +3040,14 @@ a.format-card {
 }
 
 .cta-block .btn--primary {
-  background: linear-gradient(135deg, #FFFFFF 0%, var(--color-mint-light) 100%);
+  background: var(--btn-on-green-bg);
   color: var(--color-accent-dark);
   border: 1px solid rgba(255, 255, 255, 0.55);
   box-shadow: var(--shadow-float-btn), var(--neon-emerald-sm), var(--shadow-inner);
 }
 
 .cta-block .btn--primary:hover {
-  background: linear-gradient(135deg, #FFFFFF 0%, #E8F2EC 100%);
+  background: var(--btn-on-green-hover);
   color: var(--color-accent-dark);
   box-shadow: var(--shadow-float-btn-hover), var(--neon-emerald-strong), var(--shadow-inner);
 }
@@ -3037,9 +3063,7 @@ a.format-card {
   margin: clamp(22px, 3.5vw, 36px) clamp(16px, 3vw, 28px) clamp(18px, 3vw, 28px);
   border-radius: var(--radius-xl);
   border: 1px solid rgba(255, 255, 255, 0.22);
-  background-image:
-    radial-gradient(ellipse at 20% 0%, rgba(168, 196, 184, 0.16) 0%, transparent 50%),
-    linear-gradient(168deg, rgba(42, 54, 48, 0.86) 0%, rgba(58, 72, 64, 0.8) 48%, rgba(74, 88, 78, 0.76) 100%);
+  background-image: var(--footer-bg);
   background-size: 100% 100%, 100% 100%;
   background-position: center, center;
   background-repeat: no-repeat, no-repeat;
@@ -4398,8 +4422,8 @@ a.format-card {
 
 .benefit-card__num {
   color: var(--color-emerald-deep);
-  background: linear-gradient(145deg, #C8FFF0, #00E8B8);
-  border-color: rgba(0, 212, 168, 0.42);
+  background: var(--chip-bg);
+  border-color: var(--chip-border);
   box-shadow: var(--shadow-float-btn), var(--neon-emerald-sm), var(--shadow-inner);
 }
 
@@ -4426,14 +4450,14 @@ a.format-card {
 }
 
 .service-card__icon {
-  background: linear-gradient(145deg, #C8FFF0, #00E8B8);
+  background: var(--chip-bg);
   color: var(--color-emerald-dark);
-  border-color: rgba(0, 212, 168, 0.42);
+  border-color: var(--chip-border);
 }
 
 .reviews-slider__btn:hover {
   box-shadow: var(--shadow-float-btn-hover), var(--neon-emerald-strong), var(--shadow-inner);
-  border-color: rgba(0, 212, 168, 0.5);
+  border-color: var(--chip-border);
 }
 
 @media (max-width: 1200px) {

@@ -13,6 +13,7 @@
   var baseImages = {};
   var baseServices = {};
   var baseConfig = {};
+  var baseTheme = { id: 'mint' };
   var bookingsCache = [];
   var selectedBookingId = null;
 
@@ -1038,6 +1039,74 @@
     return false;
   };
 
+  var THEME_KEY = 'studia_mai_theme';
+  var THEME_OPTIONS = [
+    { id: 'mint', name: 'Мята «Май»', text: 'Текущая палитра студии: свежая мята для ухода, бровей и трихологии.', colors: ['#00D4A8', '#007A58', '#F7FCFA', '#FFF8F2'] },
+    { id: 'sage', name: 'Шалфей', text: 'Спокойный серо-зелёный оттенок. Подходит медицинскому уходу и трихологии.', colors: ['#6E9A84', '#2F5646', '#F6FAF7', '#E7F0EA'] },
+    { id: 'powder', name: 'Пудра', text: 'Тёплый пудровый тон для бровей, кожи и мягкого салонного настроения.', colors: ['#C17B72', '#7A403C', '#FDF8F6', '#F6EBE7'] },
+    { id: 'champagne', name: 'Шампань', text: 'Тёплое золото и слоновая кость. Спокойный премиальный вид кабинета.', colors: ['#C4A574', '#6B4E2E', '#FBF8F3', '#F4EBDD'] },
+    { id: 'lavender', name: 'Лаванда', text: 'Мягкая сирень. Подчёркивает эстетику ухода и расслабляющие ритуалы.', colors: ['#8D79A8', '#4E3D66', '#F9F7FB', '#EFE8F4'] },
+    { id: 'tide', name: 'Морская волна', text: 'Глубокая бирюза. Чистый клинический оттенок без неоновой мяты.', colors: ['#2A8C96', '#0E4C56', '#F5FAFA', '#E5F2F3'] }
+  ];
+
+  function getThemeState() {
+    return readJson(THEME_KEY) || baseTheme || { id: 'mint' };
+  }
+
+  function saveThemeState(theme) {
+    storageSet(THEME_KEY, JSON.stringify(theme || { id: 'mint' }));
+  }
+
+  function readThemeFromPicker() {
+    var picked = document.querySelector('input[name="siteTheme"]:checked');
+    var id = picked ? picked.value : (getThemeState().id || 'mint');
+    var known = false;
+    var i;
+    for (i = 0; i < THEME_OPTIONS.length; i++) {
+      if (THEME_OPTIONS[i].id === id) known = true;
+    }
+    return { id: known ? id : 'mint' };
+  }
+
+  function renderThemePicker() {
+    var root = getEl('themePicker');
+    if (!root) return;
+    var current = (getThemeState() && getThemeState().id) || 'mint';
+    var html = '';
+    var i;
+    var c;
+    for (i = 0; i < THEME_OPTIONS.length; i++) {
+      var theme = THEME_OPTIONS[i];
+      var checked = theme.id === current;
+      html += '<label class="theme-card">';
+      html += '<input type="radio" name="siteTheme" value="' + theme.id + '"' + (checked ? ' checked' : '') + '>';
+      html += '<span class="theme-card__swatches">';
+      for (c = 0; c < theme.colors.length; c++) {
+        html += '<span style="background:' + theme.colors[c] + '"></span>';
+      }
+      html += '</span>';
+      html += '<span class="theme-card__name">' + theme.name + '</span>';
+      html += '<span class="theme-card__text">' + theme.text + '</span>';
+      html += '</label>';
+    }
+    root.innerHTML = html;
+  }
+
+  window.studiaMaiSaveTheme = function () {
+    var theme = readThemeFromPicker();
+    saveThemeState(theme);
+    publishToSite({ theme: theme, message: 'CMS: обновить палитру сайта' }, 'themeMsg', 'Палитра сохранена.');
+    return false;
+  };
+
+  window.studiaMaiResetTheme = function () {
+    var theme = { id: 'mint' };
+    saveThemeState(theme);
+    renderThemePicker();
+    publishToSite({ theme: theme, message: 'CMS: вернуть мятную палитру' }, 'themeMsg', 'Возвращена палитра «Мята».');
+    return false;
+  };
+
   window.studiaMaiPublishAll = function () {
     var content = syncBookingUrl(readContentFromForm());
     saveContentState(content);
@@ -1055,11 +1124,14 @@
     saveImagesState(images);
     var config = getConfigState();
     saveConfigState(config);
+    var theme = readThemeFromPicker();
+    saveThemeState(theme);
     publishToSite({
       content: content,
       services: services,
       images: images,
       config: config,
+      theme: theme,
       message: 'CMS: полная публикация сайта'
     }, 'publishAllMsg', 'Все изменения сохранены.');
     return false;
@@ -1149,17 +1221,21 @@
       fetchJson('../data/content.json'),
       fetchJson('../data/images.json'),
       fetchJson('../data/services.json'),
-      fetchJson('../data/config.json')
+      fetchJson('../data/config.json'),
+      fetchJson('../data/theme.json')
     ]).then(function (results) {
       baseContent = results[0] || {};
       baseImages = results[1] || {};
       baseServices = results[2] || {};
       baseConfig = results[3] || {};
+      baseTheme = results[4] && results[4].id ? { id: results[4].id } : { id: 'mint' };
       if (!baseConfig.notificationEmail) baseConfig.notificationEmail = DEFAULT_NOTIFY_EMAIL;
       if (!baseConfig.githubOwner) baseConfig.githubOwner = 'Natali202605';
       if (!baseConfig.githubRepo) baseConfig.githubRepo = 'StudiaMai';
       if (!baseConfig.githubBranch) baseConfig.githubBranch = 'main';
       saveConfigState(merge(baseConfig, readJson(window.StudiaMaiSite ? window.StudiaMaiSite.STORAGE_CONFIG : 'studia_mai_site_config') || {}));
+      saveThemeState(merge(baseTheme, readJson(THEME_KEY) || {}));
+      renderThemePicker();
       renderContentForm();
       renderServicesEditor();
       renderPhotosGrid();
