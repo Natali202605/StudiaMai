@@ -90,10 +90,22 @@
     try { return JSON.parse(raw); } catch { return null; }
   }
 
+  let liveBundlePromise = null;
+
+  function loadLiveBundle() {
+    if (!liveBundlePromise) {
+      const live = window.StudiaMaiLive;
+      liveBundlePromise = live && typeof live.readBundle === 'function'
+        ? live.readBundle().catch(() => null)
+        : Promise.resolve(null);
+    }
+    return liveBundlePromise;
+  }
+
   async function loadSiteConfig() {
-    const fromFile = await fetchDataJson('config.json');
+    const [fromFile, live] = await Promise.all([fetchDataJson('config.json'), loadLiveBundle()]);
     const fromStorage = IS_ADMIN ? readStorageJson(STORAGE_CONFIG) : null;
-    const merged = mergeObjects(fromFile || {}, fromStorage || {});
+    const merged = mergeObjects(mergeObjects(fromFile || {}, (live && live.config) || {}), fromStorage || {});
     if (!merged.notificationEmail) merged.notificationEmail = DEFAULT_ADMIN_EMAIL;
     return merged;
   }
@@ -103,17 +115,20 @@
     if (fromApi?.content) {
       return { content: fromApi.content, images: fromApi.images || {} };
     }
-    const [contentFile, imagesFile] = await Promise.all([
+    const [contentFile, imagesFile, live] = await Promise.all([
       fetchDataJson('content.json'),
-      fetchDataJson('images.json')
+      fetchDataJson('images.json'),
+      loadLiveBundle()
     ]);
+    const content = mergeObjects(contentFile || {}, (live && live.content) || {});
+    const images = mergeObjects(imagesFile || {}, (live && live.images) || {});
     if (IS_ADMIN) {
       return {
-        content: mergeObjects(contentFile, readStorageJson(STORAGE_CONTENT)),
-        images: mergeObjects(imagesFile, readStorageJson(STORAGE_IMAGES))
+        content: mergeObjects(content, readStorageJson(STORAGE_CONTENT)),
+        images: mergeObjects(images, readStorageJson(STORAGE_IMAGES))
       };
     }
-    return { content: contentFile || {}, images: imagesFile || {} };
+    return { content, images };
   }
 
   function fillHoursList(el, text) {
@@ -700,21 +715,21 @@
   }
 
   async function loadServicesData() {
-    const fromFile = await fetchDataJson('services.json');
-    if (IS_ADMIN) {
-      return mergeObjects(fromFile || {}, readStorageJson(STORAGE_SERVICES) || {});
-    }
-    return fromFile;
+    const [fromFile, live] = await Promise.all([fetchDataJson('services.json'), loadLiveBundle()]);
+    const merged = mergeObjects(fromFile || {}, (live && live.services) || {});
+    if (IS_ADMIN) return mergeObjects(merged, readStorageJson(STORAGE_SERVICES) || {});
+    return merged;
   }
 
   async function loadCms() {
     await resolveCacheBust();
-    const [data, services, theme] = await Promise.all([
+    const [data, services, themeFile, live] = await Promise.all([
       loadContentData(),
       loadServicesData(),
-      fetchDataJson('theme.json')
+      fetchDataJson('theme.json'),
+      loadLiveBundle()
     ]);
-    applyTheme(theme);
+    applyTheme((live && live.theme) || themeFile);
     applyContent(data.content);
     applyImages(data.images);
     if (services) applyServices(services);

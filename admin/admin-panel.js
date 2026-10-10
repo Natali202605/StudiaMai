@@ -14,6 +14,10 @@
   var baseServices = {};
   var baseConfig = {};
   var baseTheme = { id: 'mint' };
+  var fileContent = {};
+  var fileImages = {};
+  var fileServices = {};
+  var fileTheme = { id: 'mint' };
   var bookingsCache = [];
   var selectedBookingId = null;
 
@@ -62,27 +66,19 @@
     return window.StudiaMaiGithubPublish || null;
   }
 
-  function publishStatusLabel(prefix, result) {
-    return prefix + ' Опубликовано на сайте для всех посетителей (обновление GitHub Pages — обычно 1–2 минуты).';
-  }
-
   async function publishToSite(payload, msgId, okLocalText) {
-    var gh = getGithub();
-    if (!gh || !gh.isConfigured()) {
-      showMsg(msgId, okLocalText + ' Чтобы изменения видели все посетители без разработчика: откройте «Настройки» → укажите GitHub-токен → сохраните настройки публикации.', false);
+    var live = window.StudiaMaiLive;
+    if (!live || typeof live.publish !== 'function') {
+      showMsg(msgId, okLocalText + ' Обновите страницу админки и сохраните ещё раз.', false);
       return false;
     }
-    showMsg(msgId, okLocalText + ' Публикация на сайт…', true);
+    showMsg(msgId, okLocalText + ' Сохранение на сайт…', true);
     try {
-      var result = await gh.publish(payload);
-      if (result.images) {
-        saveImagesState(result.images);
-        renderPhotosGrid();
-      }
-      showMsg(msgId, publishStatusLabel(okLocalText, result), true);
+      await live.publish(payload);
+      showMsg(msgId, okLocalText + ' Изменения уже на сайте для всех посетителей.', true);
       return true;
     } catch (err) {
-      showMsg(msgId, okLocalText + ' Локально сохранено, но публикация не удалась: ' + (err && err.message ? err.message : err), false);
+      showMsg(msgId, okLocalText + ' На этом компьютере сохранено, на сайт не отправилось. Нажмите «Сохранить» ещё раз.', false);
       return false;
     }
   }
@@ -530,11 +526,12 @@
 
   window.studiaMaiResetServices = function () {
     storageSet(window.StudiaMaiSite ? window.StudiaMaiSite.STORAGE_SERVICES : 'studia_mai_cms_services', '{}');
+    baseServices = fileServices;
     renderServicesEditor();
     if (window.StudiaMaiSite && window.StudiaMaiSite.applyServices) {
-      window.StudiaMaiSite.applyServices(baseServices);
+      window.StudiaMaiSite.applyServices(fileServices);
     }
-    showMsg('servicesMsg', 'Прайс сброшен к исходному из data/services.json', true);
+    publishToSite({ services: {} }, 'servicesMsg', 'Прайс сброшен к исходному.');
     return false;
   };
 
@@ -808,9 +805,10 @@
 
   window.studiaMaiResetContent = function () {
     storageSet(window.StudiaMaiSite ? window.StudiaMaiSite.STORAGE_CONTENT : 'studia_mai_cms_content', '{}');
+    baseContent = fileContent;
     renderContentForm();
-    if (window.StudiaMaiSite) window.StudiaMaiSite.applyContent(baseContent);
-    showMsg('contentMsg', 'Тексты сброшены к исходным из data/content.json', true);
+    if (window.StudiaMaiSite) window.StudiaMaiSite.applyContent(fileContent);
+    publishToSite({ content: {} }, 'contentMsg', 'Тексты сброшены к исходным.');
     return false;
   };
 
@@ -1011,9 +1009,10 @@
 
   window.studiaMaiResetPhotos = function () {
     storageSet(window.StudiaMaiSite ? window.StudiaMaiSite.STORAGE_IMAGES : 'studia_mai_cms_images', '{}');
+    baseImages = fileImages;
     renderPhotosGrid();
-    if (window.StudiaMaiSite) window.StudiaMaiSite.applyImages(baseImages);
-    showMsg('photosMsg', 'Фото сброшены к исходным', true);
+    if (window.StudiaMaiSite) window.StudiaMaiSite.applyImages(fileImages);
+    publishToSite({ images: {} }, 'photosMsg', 'Фото сброшены к исходным.');
     return false;
   };
 
@@ -1064,17 +1063,7 @@
     config.telegramChatId = getEl('notifyTelegramChat') ? getEl('notifyTelegramChat').value.trim() : '';
     config.bookingsApiUrl = getEl('notifyBookingsApi') ? getEl('notifyBookingsApi').value.trim() : '';
     saveConfigState(config);
-    if (!silent) {
-      publishToSite({ config: config, message: 'CMS: обновить настройки уведомлений' }, 'notifyMsg', 'Настройки уведомлений сохранены.');
-    } else {
-      showMsg('notifyMsg', 'Сохранено', true);
-      var msg = getEl('notifyMsg');
-      if (msg) {
-        setTimeout(function () {
-          if (msg.textContent === 'Сохранено') msg.hidden = true;
-        }, 1500);
-      }
-    }
+    publishToSite({ config: config }, 'notifyMsg', silent ? 'Сохранено.' : 'Настройки уведомлений сохранены.');
     return false;
   };
 
@@ -1318,17 +1307,21 @@
       fetchJson('../data/images.json'),
       fetchJson('../data/services.json'),
       fetchJson('../data/config.json'),
-      fetchJson('../data/theme.json')
+      fetchJson('../data/theme.json'),
+      window.StudiaMaiLive ? window.StudiaMaiLive.readBundle().catch(function () { return null; }) : Promise.resolve(null)
     ]).then(function (results) {
-      baseContent = results[0] || {};
-      baseImages = results[1] || {};
-      baseServices = results[2] || {};
+      var live = results[5] || null;
+      fileContent = results[0] || {};
+      fileImages = results[1] || {};
+      fileServices = results[2] || {};
       baseConfig = results[3] || {};
-      baseTheme = results[4] && results[4].id ? { id: results[4].id } : { id: 'mint' };
+      fileTheme = results[4] && results[4].id ? { id: results[4].id } : { id: 'mint' };
+      baseContent = merge(fileContent, (live && live.content) || {});
+      baseImages = merge(fileImages, (live && live.images) || {});
+      baseServices = merge(fileServices, (live && live.services) || {});
+      baseConfig = merge(baseConfig, (live && live.config) || {});
+      baseTheme = (live && live.theme && live.theme.id) ? { id: live.theme.id } : fileTheme;
       if (!baseConfig.notificationEmail) baseConfig.notificationEmail = DEFAULT_NOTIFY_EMAIL;
-      if (!baseConfig.githubOwner) baseConfig.githubOwner = 'Natali202605';
-      if (!baseConfig.githubRepo) baseConfig.githubRepo = 'StudiaMai';
-      if (!baseConfig.githubBranch) baseConfig.githubBranch = 'main';
       saveConfigState(merge(baseConfig, readJson(window.StudiaMaiSite ? window.StudiaMaiSite.STORAGE_CONFIG : 'studia_mai_site_config') || {}));
       saveThemeState(merge(baseTheme, readJson(THEME_KEY) || {}));
       renderThemePicker();
@@ -1336,7 +1329,6 @@
       renderServicesEditor();
       renderPhotosGrid();
       renderNotifyForm();
-      renderPublishSettings();
       return loadBookings();
     });
   };
