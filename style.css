@@ -93,6 +93,8 @@ html {
   scroll-behavior: auto;
   scroll-padding-top: 92px;
   overflow-x: clip;
+  background-color: #FFFFFF;
+  background-image: none;
 }
 
 [id] {
@@ -106,7 +108,8 @@ body {
   line-height: var(--line-body);
   color: var(--color-text);
   font-feature-settings: 'kern' 1, 'liga' 1;
-  background-color: #FFFCF8;
+  background-color: #FFFFFF;
+  background-image: none;
   overflow-x: clip;
   -webkit-font-smoothing: antialiased;
   text-rendering: auto;
@@ -543,13 +546,15 @@ ul {
   position: relative;
   padding: clamp(120px, 14vw, 160px) 0 clamp(80px, 10vw, 100px);
   overflow: hidden;
+  background-color: #FFFFFF;
+  background-image: none;
 }
 
 .hero__bg {
   position: absolute;
   inset: 0;
   background-image: none;
-  background-color: transparent;
+  background-color: #FFFFFF;
   filter: none;
   z-index: 0;
   overflow: hidden;
@@ -811,7 +816,7 @@ ul {
 
 .section:not(.section--accent):not(.section--cta) {
   background-image: none;
-  background-color: transparent;
+  background-color: #FFFFFF;
 }
 
 .section:not(.section--accent):not(.section--cta)::after {
@@ -836,11 +841,12 @@ ul {
 }
 
 .section:not(.section--accent):not(.section--cta) {
-  background-color: transparent;
+  background-color: #FFFFFF;
+  background-image: none;
 }
 
 .section--alt {
-  background-color: transparent;
+  background-color: #FFFFFF;
   background-image: none;
   border-top: 1px solid rgba(168, 196, 184, 0.15);
   border-bottom: 1px solid rgba(168, 196, 184, 0.15);
