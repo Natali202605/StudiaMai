@@ -2214,9 +2214,10 @@ img[data-cms-img].is-cms-empty {
   overflow: hidden;
   border-radius: var(--radius-xl);
   position: relative;
-  background: var(--card-gradient-warm);
+  background-color: #FFFEFB;
+  background-image: linear-gradient(125deg, #FFFEFB 0%, #FFF8F2 42%, #F3FBF7 100%);
   border: var(--border-mint);
-  box-shadow: var(--shadow-float-card), var(--neon-emerald-sm), var(--shadow-inner);
+  box-shadow: 0 8px 18px rgba(0, 158, 112, 0.38), 0 2px 6px rgba(0, 110, 80, 0.24), var(--shadow-inner);
   --review-slide-width: 100%;
 }
 
@@ -2267,7 +2268,7 @@ img[data-cms-img].is-cms-empty {
   width: var(--review-slide-width, 100%);
   max-width: var(--review-slide-width, 100%);
   min-width: var(--review-slide-width, 100%);
-  background: var(--card-gradient-warm);
+  background: transparent;
   border: none;
   border-radius: var(--radius-xl);
   padding: clamp(36px, 5vw, 52px);
@@ -3716,7 +3717,7 @@ a.format-card {
   .reviews-slider__viewport {
     touch-action: pan-y;
     --review-slide-width: 100%;
-    box-shadow: var(--shadow-sm), var(--shadow-inner);
+    box-shadow: 0 8px 18px rgba(0, 158, 112, 0.38), 0 2px 6px rgba(0, 110, 80, 0.24), var(--shadow-inner);
   }
 
   .reviews-slider__viewport::before,
@@ -3740,7 +3741,7 @@ a.format-card {
   }
 
   .review-card {
-    box-shadow: var(--shadow-sm), var(--shadow-inner);
+    box-shadow: none;
   }
 
   .reviews-slider__progress-bar {
