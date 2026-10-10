@@ -472,3 +472,180 @@ html[data-theme="cocoa"] {
   --card-gradient-hero: linear-gradient(158deg, rgba(255, 252, 248, 0.48) 0%, rgba(246, 232, 218, 0.38) 22%, rgba(206, 176, 152, 0.30) 55%, rgba(240, 222, 206, 0.36) 100%);
 }
 
+html[data-theme="noir"] {
+  --color-accent: #5C646E;
+  --color-accent-dark: #1A1C20;
+  --color-mint: #8E98A4;
+  --color-mint-light: #E6E9ED;
+  --color-mint-soft: #F4F5F7;
+  --color-emerald: #5C646E;
+  --color-emerald-bright: #C5CCD4;
+  --color-emerald-deep: #111111;
+  --color-emerald-dark: #0A0A0A;
+  --color-emerald-accent: #050505;
+  --color-emerald-accent-rich: #161616;
+  --color-powder: #D8DCE1;
+  --color-bg-mint: #ECEEF1;
+  --page-bg: #F7F8F9;
+  --bg-mint-wash: linear-gradient(180deg, #FFFFFF 0%, #F7F8F9 16%, #E6E9ED 32%, #FBFBFC 48%, #DEE2E6 64%, #F5F6F7 80%, #EEEFF2 100%);
+  --shadow-float: 0 3px 7px rgba(0, 0, 0, 0.28), 0 10px 18px rgba(0, 0, 0, 0.20);
+  --shadow-float-hover: 0 4px 10px rgba(0, 0, 0, 0.34), 0 12px 22px rgba(0, 0, 0, 0.24);
+  --shadow-float-glow: 0 0 12px rgba(197, 204, 212, 0.55);
+  --shadow-float-glow-hover: 0 0 14px rgba(197, 204, 212, 0.68);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.18);
+  --shadow-float-card-accent: 0 4px 10px rgba(0, 0, 0, 0.28), 0 12px 22px rgba(0, 0, 0, 0.36);
+  --shadow-float-card-accent-hover: 0 5px 12px rgba(0, 0, 0, 0.32), 0 14px 24px rgba(0, 0, 0, 0.42);
+  --border-soft: 1px solid rgba(17, 17, 17, 0.22);
+  --border-mint: 1px solid rgba(92, 100, 110, 0.42);
+  --header-line: rgba(142, 152, 164, 0.45);
+  --section-line: rgba(142, 152, 164, 0.30);
+  --btn-primary-bg: linear-gradient(135deg, #C5CCD4 0%, #5C646E 48%, #111111 100%);
+  --btn-primary-bg-hover: linear-gradient(135deg, #8E98A4 0%, #2A2E34 48%, #050505 100%);
+  --btn-primary-border: rgba(17, 17, 17, 0.55);
+  --btn-light-bg: linear-gradient(135deg, #FFFFFF 0%, #E6E9ED 100%);
+  --btn-light-border: rgba(17, 17, 17, 0.28);
+  --btn-ghost-border: rgba(17, 17, 17, 0.32);
+  --btn-on-green-hover: linear-gradient(135deg, #FFFFFF 0%, #E6E9ED 100%);
+  --section-accent-bg:
+    radial-gradient(ellipse at 15% 0%, rgba(255, 255, 255, 0.16) 0%, transparent 50%),
+    linear-gradient(155deg, rgba(5, 5, 5, 0.94) 0%, rgba(17, 17, 17, 0.90) 48%, rgba(42, 46, 52, 0.84) 100%);
+  --consultation-bg:
+    radial-gradient(ellipse at 15% 0%, rgba(197, 204, 212, 0.18) 0%, transparent 52%),
+    linear-gradient(155deg, rgba(8, 8, 8, 0.94) 0%, rgba(17, 17, 17, 0.88) 52%, rgba(42, 46, 52, 0.78) 100%);
+  --section-cta-bg:
+    radial-gradient(ellipse at 100% 50%, rgba(197, 204, 212, 0.26) 0%, transparent 50%),
+    linear-gradient(160deg, rgba(5, 5, 5, 0.96) 0%, rgba(17, 17, 17, 0.90) 48%, rgba(42, 46, 52, 0.82) 100%);
+  --theme-glow: rgba(197, 204, 212, 0.36);
+  --footer-bg:
+    radial-gradient(ellipse at 20% 0%, rgba(197, 204, 212, 0.14) 0%, transparent 50%),
+    linear-gradient(168deg, rgba(5, 5, 5, 0.96) 0%, rgba(17, 17, 17, 0.92) 48%, rgba(32, 34, 38, 0.86) 100%);
+  --review-card-solid: #FFFFFF;
+  --review-card-bg: linear-gradient(125deg, #FFFFFF 0%, #F4F5F7 42%, #E6E9ED 100%);
+  --chip-bg: linear-gradient(145deg, #FFFFFF, #C5CCD4);
+  --chip-border: rgba(17, 17, 17, 0.28);
+  --card-gradient: linear-gradient(152deg, rgba(255, 255, 255, 0.52) 0%, rgba(236, 238, 241, 0.36) 28%, rgba(180, 186, 194, 0.28) 62%, rgba(248, 248, 249, 0.38) 100%);
+  --card-gradient-soft: linear-gradient(148deg, rgba(255, 255, 255, 0.50) 0%, rgba(236, 238, 241, 0.34) 34%, rgba(176, 182, 190, 0.26) 72%, rgba(246, 247, 248, 0.36) 100%);
+  --card-gradient-mint: linear-gradient(145deg, rgba(230, 233, 237, 0.42) 0%, rgba(176, 182, 190, 0.28) 40%, rgba(255, 255, 255, 0.36) 100%);
+  --card-gradient-beige: linear-gradient(150deg, rgba(250, 250, 251, 0.46) 0%, rgba(230, 233, 237, 0.34) 46%, rgba(176, 182, 190, 0.26) 100%);
+  --card-gradient-warm: linear-gradient(155deg, rgba(255, 255, 255, 0.50) 0%, rgba(236, 238, 241, 0.36) 30%, rgba(176, 182, 190, 0.28) 65%, rgba(246, 247, 248, 0.36) 100%);
+  --card-gradient-hero: linear-gradient(158deg, rgba(255, 255, 255, 0.52) 0%, rgba(236, 238, 241, 0.38) 22%, rgba(176, 182, 190, 0.28) 55%, rgba(248, 248, 249, 0.38) 100%);
+}
+
+html[data-theme="rose"] {
+  --color-accent: #B0727C;
+  --color-accent-dark: #8A5560;
+  --color-mint: #C48B95;
+  --color-mint-light: #F6E4E7;
+  --color-mint-soft: #FBF3F4;
+  --color-emerald: #B0727C;
+  --color-emerald-bright: #D7A8B0;
+  --color-emerald-deep: #6E3E48;
+  --color-emerald-dark: #5C343C;
+  --color-emerald-accent: #3E2228;
+  --color-emerald-accent-rich: #4A2A32;
+  --color-powder: #EBD4D8;
+  --color-bg-mint: #F6E8EB;
+  --page-bg: #FDF7F8;
+  --bg-mint-wash: linear-gradient(180deg, #FFFBFC 0%, #FBF4F5 16%, #F6E8EB 32%, #FDF8F9 48%, #F3E2E6 64%, #FAF3F4 80%, #F7EBEE 100%);
+  --shadow-float: 0 3px 7px rgba(110, 62, 72, 0.20), 0 10px 18px rgba(110, 62, 72, 0.16);
+  --shadow-float-hover: 0 4px 10px rgba(110, 62, 72, 0.26), 0 12px 22px rgba(110, 62, 72, 0.20);
+  --shadow-float-glow: 0 0 12px rgba(196, 139, 149, 0.34);
+  --shadow-float-glow-hover: 0 0 14px rgba(196, 139, 149, 0.44);
+  --shadow-sm: 0 2px 8px rgba(110, 62, 72, 0.16);
+  --shadow-float-card-accent: 0 4px 10px rgba(0, 0, 0, 0.12), 0 12px 22px rgba(110, 62, 72, 0.26);
+  --shadow-float-card-accent-hover: 0 5px 12px rgba(0, 0, 0, 0.16), 0 14px 24px rgba(110, 62, 72, 0.32);
+  --border-soft: 1px solid rgba(176, 114, 124, 0.28);
+  --border-mint: 1px solid rgba(176, 114, 124, 0.40);
+  --header-line: rgba(215, 168, 176, 0.42);
+  --section-line: rgba(215, 168, 176, 0.26);
+  --btn-primary-bg: linear-gradient(135deg, #E4B8C0 0%, #C48B95 50%, #8A5560 100%);
+  --btn-primary-bg-hover: linear-gradient(135deg, #C48B95 0%, #8A5560 50%, #6E3E48 100%);
+  --btn-primary-border: rgba(138, 85, 96, 0.48);
+  --btn-light-bg: linear-gradient(135deg, #FFFFFF 0%, #F6E4E7 100%);
+  --btn-light-border: rgba(176, 114, 124, 0.42);
+  --btn-ghost-border: rgba(176, 114, 124, 0.42);
+  --btn-on-green-hover: linear-gradient(135deg, #FFFFFF 0%, #F6E8EB 100%);
+  --section-accent-bg:
+    radial-gradient(ellipse at 15% 0%, rgba(255, 255, 255, 0.26) 0%, transparent 50%),
+    linear-gradient(155deg, rgba(110, 62, 72, 0.88) 0%, rgba(176, 114, 124, 0.82) 48%, rgba(215, 168, 176, 0.74) 100%);
+  --consultation-bg:
+    radial-gradient(ellipse at 15% 0%, rgba(255, 255, 255, 0.22) 0%, transparent 52%),
+    linear-gradient(155deg, rgba(92, 52, 60, 0.84) 0%, rgba(138, 85, 96, 0.74) 52%, rgba(196, 139, 149, 0.64) 100%);
+  --section-cta-bg:
+    radial-gradient(ellipse at 100% 50%, rgba(228, 184, 192, 0.30) 0%, transparent 50%),
+    linear-gradient(160deg, rgba(62, 34, 40, 0.90) 0%, rgba(110, 62, 72, 0.82) 48%, rgba(176, 114, 124, 0.74) 100%);
+  --theme-glow: rgba(228, 184, 192, 0.34);
+  --footer-bg:
+    radial-gradient(ellipse at 20% 0%, rgba(215, 168, 176, 0.16) 0%, transparent 50%),
+    linear-gradient(168deg, rgba(42, 24, 28, 0.92) 0%, rgba(62, 34, 40, 0.86) 48%, rgba(82, 48, 56, 0.80) 100%);
+  --review-card-solid: #FFFBFC;
+  --review-card-bg: linear-gradient(125deg, #FFFBFC 0%, #FBF4F5 42%, #F6E8EB 100%);
+  --chip-bg: linear-gradient(145deg, #FBF3F4, #E4B8C0);
+  --chip-border: rgba(176, 114, 124, 0.42);
+  --card-gradient: linear-gradient(152deg, rgba(255, 250, 250, 0.46) 0%, rgba(246, 228, 232, 0.36) 28%, rgba(210, 168, 176, 0.30) 62%, rgba(250, 236, 238, 0.36) 100%);
+  --card-gradient-soft: linear-gradient(148deg, rgba(255, 250, 250, 0.44) 0%, rgba(246, 230, 232, 0.34) 34%, rgba(206, 164, 172, 0.28) 72%, rgba(248, 234, 236, 0.34) 100%);
+  --card-gradient-mint: linear-gradient(145deg, rgba(246, 228, 232, 0.40) 0%, rgba(206, 164, 172, 0.30) 40%, rgba(255, 244, 246, 0.34) 100%);
+  --card-gradient-beige: linear-gradient(150deg, rgba(252, 242, 244, 0.44) 0%, rgba(240, 220, 224, 0.34) 46%, rgba(206, 164, 172, 0.28) 100%);
+  --card-gradient-warm: linear-gradient(155deg, rgba(255, 248, 248, 0.46) 0%, rgba(246, 224, 228, 0.36) 30%, rgba(206, 164, 172, 0.30) 65%, rgba(240, 216, 220, 0.34) 100%);
+  --card-gradient-hero: linear-gradient(158deg, rgba(255, 250, 250, 0.48) 0%, rgba(248, 228, 232, 0.38) 22%, rgba(206, 164, 172, 0.30) 55%, rgba(242, 220, 224, 0.36) 100%);
+}
+
+html[data-theme="olive"] {
+  --color-accent: #6E754C;
+  --color-accent-dark: #4E5434;
+  --color-mint: #8A9168;
+  --color-mint-light: #E6E4D4;
+  --color-mint-soft: #F4F3EA;
+  --color-emerald: #6E754C;
+  --color-emerald-bright: #A8AE86;
+  --color-emerald-deep: #3E4428;
+  --color-emerald-dark: #343A22;
+  --color-emerald-accent: #242818;
+  --color-emerald-accent-rich: #2C321C;
+  --color-powder: #DCD8C4;
+  --color-bg-mint: #E8E6D8;
+  --page-bg: #F8F8F4;
+  --bg-mint-wash: linear-gradient(180deg, #FDFDFB 0%, #F6F6F1 16%, #E8E6D8 32%, #FAFAF6 48%, #E2E0D0 64%, #F5F5EF 80%, #EEEDE2 100%);
+  --shadow-float: 0 3px 7px rgba(62, 68, 40, 0.22), 0 10px 18px rgba(62, 68, 40, 0.16);
+  --shadow-float-hover: 0 4px 10px rgba(62, 68, 40, 0.28), 0 12px 22px rgba(62, 68, 40, 0.20);
+  --shadow-float-glow: 0 0 12px rgba(138, 145, 104, 0.32);
+  --shadow-float-glow-hover: 0 0 14px rgba(138, 145, 104, 0.42);
+  --shadow-sm: 0 2px 8px rgba(62, 68, 40, 0.16);
+  --shadow-float-card-accent: 0 4px 10px rgba(0, 0, 0, 0.14), 0 12px 22px rgba(62, 68, 40, 0.28);
+  --shadow-float-card-accent-hover: 0 5px 12px rgba(0, 0, 0, 0.18), 0 14px 24px rgba(62, 68, 40, 0.34);
+  --border-soft: 1px solid rgba(110, 117, 76, 0.30);
+  --border-mint: 1px solid rgba(110, 117, 76, 0.40);
+  --header-line: rgba(168, 174, 134, 0.40);
+  --section-line: rgba(168, 174, 134, 0.26);
+  --btn-primary-bg: linear-gradient(135deg, #C2C69A 0%, #8A9168 50%, #5A6240 100%);
+  --btn-primary-bg-hover: linear-gradient(135deg, #8A9168 0%, #5A6240 50%, #4E5434 100%);
+  --btn-primary-border: rgba(90, 98, 64, 0.48);
+  --btn-light-bg: linear-gradient(135deg, #FFFFFF 0%, #E6E4D4 100%);
+  --btn-light-border: rgba(110, 117, 76, 0.42);
+  --btn-ghost-border: rgba(110, 117, 76, 0.42);
+  --btn-on-green-hover: linear-gradient(135deg, #FFFFFF 0%, #E8E6D8 100%);
+  --section-accent-bg:
+    radial-gradient(ellipse at 15% 0%, rgba(255, 255, 255, 0.24) 0%, transparent 50%),
+    linear-gradient(155deg, rgba(78, 84, 52, 0.90) 0%, rgba(110, 117, 76, 0.82) 48%, rgba(168, 174, 134, 0.74) 100%);
+  --consultation-bg:
+    radial-gradient(ellipse at 15% 0%, rgba(255, 255, 255, 0.20) 0%, transparent 52%),
+    linear-gradient(155deg, rgba(62, 68, 40, 0.86) 0%, rgba(90, 98, 64, 0.74) 52%, rgba(138, 145, 104, 0.64) 100%);
+  --section-cta-bg:
+    radial-gradient(ellipse at 100% 50%, rgba(194, 198, 154, 0.30) 0%, transparent 50%),
+    linear-gradient(160deg, rgba(52, 58, 34, 0.90) 0%, rgba(78, 84, 52, 0.82) 48%, rgba(110, 117, 76, 0.74) 100%);
+  --theme-glow: rgba(194, 198, 154, 0.32);
+  --footer-bg:
+    radial-gradient(ellipse at 20% 0%, rgba(168, 174, 134, 0.16) 0%, transparent 50%),
+    linear-gradient(168deg, rgba(36, 40, 24, 0.92) 0%, rgba(52, 58, 34, 0.86) 48%, rgba(70, 76, 48, 0.80) 100%);
+  --review-card-solid: #FDFDFB;
+  --review-card-bg: linear-gradient(125deg, #FDFDFB 0%, #F6F6F1 42%, #E8E6D8 100%);
+  --chip-bg: linear-gradient(145deg, #F4F3EA, #C2C69A);
+  --chip-border: rgba(110, 117, 76, 0.42);
+  --card-gradient: linear-gradient(152deg, rgba(255, 254, 248, 0.46) 0%, rgba(236, 234, 220, 0.36) 28%, rgba(190, 194, 160, 0.30) 62%, rgba(244, 242, 230, 0.36) 100%);
+  --card-gradient-soft: linear-gradient(148deg, rgba(255, 254, 248, 0.44) 0%, rgba(236, 234, 222, 0.34) 34%, rgba(186, 190, 156, 0.28) 72%, rgba(242, 240, 228, 0.34) 100%);
+  --card-gradient-mint: linear-gradient(145deg, rgba(230, 228, 212, 0.40) 0%, rgba(186, 190, 156, 0.30) 40%, rgba(248, 246, 236, 0.34) 100%);
+  --card-gradient-beige: linear-gradient(150deg, rgba(248, 246, 236, 0.44) 0%, rgba(226, 224, 208, 0.34) 46%, rgba(186, 190, 156, 0.28) 100%);
+  --card-gradient-warm: linear-gradient(155deg, rgba(255, 254, 248, 0.46) 0%, rgba(234, 232, 216, 0.36) 30%, rgba(186, 190, 156, 0.30) 65%, rgba(228, 226, 210, 0.34) 100%);
+  --card-gradient-hero: linear-gradient(158deg, rgba(255, 254, 248, 0.48) 0%, rgba(236, 234, 218, 0.38) 22%, rgba(186, 190, 156, 0.30) 55%, rgba(230, 228, 212, 0.36) 100%);
+}
+
