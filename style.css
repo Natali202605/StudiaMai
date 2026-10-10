@@ -72,10 +72,6 @@
   --bg-section-image: url('images/bg-section.png');
   --bg-section-filter: brightness(1.34) contrast(0.76) saturate(0.56) opacity(0.54);
   --bg-section-bright: #FFFFFF;
-  --bg-mint-wash:
-    radial-gradient(ellipse at 10% 0%, rgba(214, 244, 230, 0.85) 0%, rgba(214, 244, 230, 0) 54%),
-    radial-gradient(ellipse at 92% 100%, rgba(232, 248, 240, 0.95) 0%, rgba(232, 248, 240, 0) 48%),
-    linear-gradient(168deg, #FFFEFC 0%, #F5FBF8 46%, #E8F6EF 100%);
   --glass-blur: none;
 
   --card-gradient: linear-gradient(152deg, rgba(255, 252, 248, 0.40) 0%, rgba(245, 232, 218, 0.36) 28%, rgba(178, 222, 204, 0.34) 62%, rgba(238, 226, 210, 0.36) 100%);
@@ -552,10 +548,8 @@ ul {
 .hero__bg {
   position: absolute;
   inset: 0;
-  background-image: var(--bg-mint-wash);
-  background-position: center;
-  background-size: 100% 100%, 100% 100%, 100% 100%;
-  background-repeat: no-repeat;
+  background-image: none;
+  background-color: transparent;
   filter: none;
   z-index: 0;
   overflow: hidden;
@@ -816,10 +810,8 @@ ul {
 }
 
 .section:not(.section--accent):not(.section--cta) {
-  background-image: var(--bg-mint-wash);
-  background-position: center;
-  background-size: 100% 100%, 100% 100%, 100% 100%;
-  background-repeat: no-repeat;
+  background-image: none;
+  background-color: transparent;
 }
 
 .section:not(.section--accent):not(.section--cta)::after {
@@ -834,16 +826,8 @@ ul {
 }
 
 .section::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background-image: var(--bg-mint-wash);
-  background-position: center;
-  background-size: 100% 100%, 100% 100%, 100% 100%;
-  background-repeat: no-repeat;
-  filter: none;
-  pointer-events: none;
+  content: none;
+  display: none;
 }
 
 .section .container {
@@ -891,10 +875,7 @@ ul {
 
 #consultation.section--accent {
   background-color: transparent;
-  background-image: var(--bg-mint-wash);
-  background-size: 100% 100%, 100% 100%, 100% 100%;
-  background-position: center;
-  background-repeat: no-repeat;
+  background-image: none;
   padding: clamp(28px, 4vw, 48px) clamp(16px, 3vw, 28px);
 }
 
@@ -3048,11 +3029,10 @@ a.format-card {
   border: 1px solid rgba(255, 255, 255, 0.22);
   background-image:
     radial-gradient(ellipse at 20% 0%, rgba(168, 196, 184, 0.16) 0%, transparent 50%),
-    linear-gradient(168deg, rgba(42, 54, 48, 0.86) 0%, rgba(58, 72, 64, 0.8) 48%, rgba(74, 88, 78, 0.76) 100%),
-    var(--bg-mint-wash);
-  background-size: 100% 100%, 100% 100%, cover;
-  background-position: center, center, center;
-  background-repeat: no-repeat, no-repeat, no-repeat;
+    linear-gradient(168deg, rgba(42, 54, 48, 0.86) 0%, rgba(58, 72, 64, 0.8) 48%, rgba(74, 88, 78, 0.76) 100%);
+  background-size: 100% 100%, 100% 100%;
+  background-position: center, center;
+  background-repeat: no-repeat, no-repeat;
   color: rgba(255, 255, 255, 0.92);
   padding-top: clamp(60px, 8vw, 80px);
   box-shadow: var(--shadow-float-card-dark);
