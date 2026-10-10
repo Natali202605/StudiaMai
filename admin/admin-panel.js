@@ -461,7 +461,7 @@
       var key = keys[i];
       var meta = metaMap[key] || { title: key, hint: '' };
       var data = services[key] || { title_html: '', desc: '', items: [] };
-      html += '<div class="admin__service-card" data-service-key="' + key + '">';
+      html += '<div class="admin__service-card" data-service-key="' + key + '" data-search="' + escapeHtml(meta.title + ' ' + (meta.hint || '')) + '">';
       html += '<h4 class="admin__service-card__title">' + escapeHtml(meta.title) + '</h4>';
       if (meta.hint) html += '<p class="admin__msg admin__msg--compact">' + escapeHtml(meta.hint) + '</p>';
       html += '<label class="admin__field"><span>Заголовок карточки (HTML)</span>';
@@ -485,6 +485,7 @@
       html += '</div></div>';
     }
     box.innerHTML = html;
+    if (window.studiaMaiFilterEdit && getEl('editSearch')) window.studiaMaiFilterEdit(getEl('editSearch').value);
   }
 
   window.studiaMaiAddServiceItem = function (key, type) {
@@ -770,7 +771,7 @@
     var g;
     for (g = 0; g < groups.length; g++) {
       var group = groups[g];
-      html += '<details class="admin__cms-group" open>';
+      html += '<details class="admin__cms-group" data-search="' + escapeHtml(group.title) + '" open>';
       html += '<summary class="admin__cms-group__title">' + escapeHtml(group.title) + '</summary>';
       html += '<div class="admin__cms-group__body">';
       var fields = group.fields || [];
@@ -784,6 +785,7 @@
       html = '<p class="admin__msg">Схема CMS не загружена. Проверьте подключение cms-schema.js</p>';
     }
     form.innerHTML = html;
+    if (window.studiaMaiFilterEdit && getEl('editSearch')) window.studiaMaiFilterEdit(getEl('editSearch').value);
   }
 
   window.studiaMaiSaveContent = function () {
@@ -892,7 +894,7 @@
       var fit = getImageFit(key);
       var pathValue = (!src || src.indexOf('data:') === 0 || removed) ? '' : src;
       var changed = src && src !== baseImages[key];
-      html += '<div class="admin__photo-card" data-photo-key="' + key + '">';
+      html += '<div class="admin__photo-card" data-photo-key="' + key + '" data-search="' + escapeHtml(labels[key]) + '">';
       if (preview) {
         html += '<img class="is-' + fit + '" src="' + escapeHtml(preview) + '" alt="' + escapeHtml(labels[key]) + '">';
       } else {
@@ -918,6 +920,7 @@
       html += '</div>';
     }
     grid.innerHTML = html;
+    if (window.studiaMaiFilterEdit && getEl('editSearch')) window.studiaMaiFilterEdit(getEl('editSearch').value);
   }
 
   function applyImageAltsToContent(content) {
@@ -1140,6 +1143,55 @@
     saveThemeState(theme);
     renderThemePicker();
     publishToSite({ theme: theme, message: 'CMS: вернуть мятную палитру' }, 'themeMsg', 'Возвращена палитра «Мята».');
+    return false;
+  };
+
+  function searchFold(value) {
+    return String(value || '').toLowerCase().replace(/ё/g, 'е').replace(/\s+/g, ' ').trim();
+  }
+
+  function itemSearchBlob(item) {
+    var parts = [item.getAttribute('data-search') || ''];
+    var nodes = item.querySelectorAll('summary, h4, .admin__field > span');
+    var i;
+    for (i = 0; i < nodes.length; i++) parts.push(nodes[i].textContent || '');
+    if (item.firstElementChild && item.firstElementChild.tagName === 'SPAN') parts.push(item.firstElementChild.textContent || '');
+    var label = item.querySelector(':scope > span');
+    if (label) parts.push(label.textContent || '');
+    return searchFold(parts.join(' '));
+  }
+
+  window.studiaMaiFilterEdit = function (raw) {
+    var q = searchFold(raw);
+    var panel = document.querySelector('.admin__panel[data-panel="edit"]');
+    if (!panel) return false;
+    var blocks = panel.querySelectorAll('.admin__edit-block');
+    var visible = 0;
+    var first = null;
+    var i;
+    var j;
+    for (i = 0; i < blocks.length; i++) {
+      var block = blocks[i];
+      var titleEl = block.querySelector('h3');
+      var title = searchFold(((titleEl && titleEl.textContent) || '') + ' ' + (block.getAttribute('data-search') || ''));
+      var items = block.querySelectorAll('.admin__cms-group, .admin__service-card, .admin__photo-card');
+      var titleHit = !q || title.indexOf(q) !== -1;
+      var itemHit = 0;
+      for (j = 0; j < items.length; j++) {
+        var showItem = !q || titleHit || itemSearchBlob(items[j]).indexOf(q) !== -1;
+        items[j].classList.toggle('is-search-hidden', !showItem);
+        if (showItem) itemHit += 1;
+      }
+      var showBlock = !q || titleHit || itemHit > 0;
+      block.classList.toggle('is-search-hidden', !showBlock);
+      if (showBlock) {
+        visible += 1;
+        if (!first) first = block;
+      }
+    }
+    var empty = getEl('editSearchEmpty');
+    if (empty) empty.hidden = !q || visible > 0;
+    if (q && first) first.scrollIntoView({ block: 'nearest' });
     return false;
   };
 

@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="admin.css?v=simple10">
+  <link rel="stylesheet" href="admin.css?v=simple11">
   <script>
     var STUDIA_MAI_USER = 'admin';
     var STUDIA_MAI_PASS = 'Mai2026!';
@@ -464,7 +464,13 @@
           <a href="../" target="_blank" rel="noopener" class="admin-btn admin-btn--ghost">Открыть сайт</a>
         </div>
 
-        <div class="admin__edit-block">
+        <label class="admin__search">
+          <span>Найти блок по названию</span>
+          <input type="search" id="editSearch" placeholder="фото, услуги, прайс, отзывы, мастер, подвал" oninput="return studiaMaiFilterEdit(this.value)">
+        </label>
+        <p class="admin__msg" id="editSearchEmpty" hidden>Такого блока нет. Попробуйте: фото, услуги, прайс, подробнее, отзывы, мастер.</p>
+
+        <div class="admin__edit-block" data-search="цвета палитра оттенки фон">
           <h3 class="admin__subtitle">Цвета и оттенки</h3>
           <p class="admin__msg admin__msg--compact">Готовые палитры под студию красоты, брови, уход за кожей и трихологию. Меняются цвета кнопок, фона, карточек и акцентов. Тексты, фото и расположение блоков остаются на месте.</p>
           <div class="theme-grid" id="themePicker"></div>
@@ -475,20 +481,19 @@
           </div>
         </div>
 
-        <div class="admin__edit-block">
-          <h3 class="admin__subtitle">Тексты всех разделов</h3>
-          <p class="admin__msg admin__msg--compact">SEO, меню, главный экран, ссылки записи и карты, о студии, мастер, услуги, отзывы, контакты и другие блоки.</p>
-          <div class="admin__form admin__form--cms" id="contentForm"></div>
-          <p class="admin__msg" id="contentMsg" hidden></p>
+        <div class="admin__edit-block" data-search="фото фотографии картинки изображение заменить логотип мастер сертификаты студия брови косметология массаж трихология депиляция ритуалы">
+          <h3 class="admin__subtitle">Все фото сайта</h3>
+          <p class="admin__msg admin__msg--compact">Можно заменить каждое фото: логотип, надпись, студию, мастера, сертификаты и все карточки услуг. Снимок встаёт в своё окно. Удаление оставляет пустую рамку, блоки остаются на месте.</p>
+          <div class="admin__photos" id="photosGrid"></div>
+          <p class="admin__msg" id="photosMsg" hidden></p>
           <div class="admin__toolbar">
-            <button type="button" class="admin-btn admin-btn--primary" onclick="return studiaMaiSaveContent()">Сохранить тексты</button>
-            <button type="button" class="admin-btn admin-btn--ghost" onclick="return studiaMaiResetContent()">Сбросить тексты</button>
-            <button type="button" class="admin-btn admin-btn--ghost" onclick="return studiaMaiExportContent()">Скачать content.json</button>
+            <button type="button" class="admin-btn admin-btn--primary" onclick="return studiaMaiSavePhotos()">Сохранить фото</button>
+            <button type="button" class="admin-btn admin-btn--ghost" onclick="return studiaMaiResetPhotos()">Сбросить фото</button>
           </div>
         </div>
 
-        <div class="admin__edit-block">
-          <h3 class="admin__subtitle">Прайс, названия и «Подробнее»</h3>
+        <div class="admin__edit-block" data-search="услуги прайс цена цены название подробнее брови косметология массаж трихология депиляция ритуалы">
+          <h3 class="admin__subtitle">Услуги: прайс, названия и «Подробнее»</h3>
           <p class="admin__msg admin__msg--compact">У каждой услуги можно изменить название, цену, время и текст, который открывается по кнопке «Подробнее». Пустое поле «Подробнее» убирает эту кнопку только у этой услуги.</p>
           <div id="servicesEditor"></div>
           <p class="admin__msg" id="servicesMsg" hidden></p>
@@ -499,14 +504,15 @@
           </div>
         </div>
 
-        <div class="admin__edit-block">
-          <h3 class="admin__subtitle">Все фото сайта</h3>
-          <p class="admin__msg admin__msg--compact">Можно заменить каждое фото: логотип, надпись, студию, мастера, сертификаты и все карточки услуг. Снимок встаёт в своё окно. Удаление оставляет пустую рамку, блоки остаются на месте.</p>
-          <div class="admin__photos" id="photosGrid"></div>
-          <p class="admin__msg" id="photosMsg" hidden></p>
+        <div class="admin__edit-block" data-search="тексты разделы меню отзывы контакты мастер о студии консультация">
+          <h3 class="admin__subtitle">Тексты всех разделов</h3>
+          <p class="admin__msg admin__msg--compact">SEO, меню, главный экран, ссылки записи и карты, о студии, мастер, услуги, отзывы, контакты и другие блоки.</p>
+          <div class="admin__form admin__form--cms" id="contentForm"></div>
+          <p class="admin__msg" id="contentMsg" hidden></p>
           <div class="admin__toolbar">
-            <button type="button" class="admin-btn admin-btn--primary" onclick="return studiaMaiSavePhotos()">Сохранить фото</button>
-            <button type="button" class="admin-btn admin-btn--ghost" onclick="return studiaMaiResetPhotos()">Сбросить фото</button>
+            <button type="button" class="admin-btn admin-btn--primary" onclick="return studiaMaiSaveContent()">Сохранить тексты</button>
+            <button type="button" class="admin-btn admin-btn--ghost" onclick="return studiaMaiResetContent()">Сбросить тексты</button>
+            <button type="button" class="admin-btn admin-btn--ghost" onclick="return studiaMaiExportContent()">Скачать content.json</button>
           </div>
         </div>
 
@@ -621,6 +627,6 @@
   <script src="../js/site-api.js?v=cms21"></script>
   <script src="cms-schema.js?v=6"></script>
   <script src="github-publish.js?v=2"></script>
-  <script src="admin-panel.js?v=11"></script>
+  <script src="admin-panel.js?v=12"></script>
 </body>
 </html>
