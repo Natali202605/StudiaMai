@@ -34,15 +34,15 @@
   --radius-lg: 24px;
   --radius-xl: 32px;
   --shadow-inner: inset 0 1px 0 rgba(255, 255, 255, 0.88);
-  --shadow-float: 0 2px 5px rgba(5, 150, 105, 0.12), 0 8px 16px rgba(141, 155, 132, 0.16);
-  --shadow-float-hover: 0 3px 8px rgba(5, 150, 105, 0.16), 0 10px 20px rgba(141, 155, 132, 0.20);
-  --shadow-float-glow: 0 0 8px rgba(0, 212, 168, 0.18);
-  --shadow-float-glow-hover: 0 0 10px rgba(0, 212, 168, 0.26);
+  --shadow-float: 0 3px 6px rgba(4, 140, 96, 0.20), 0 9px 16px rgba(12, 110, 82, 0.22);
+  --shadow-float-hover: 0 4px 9px rgba(4, 140, 96, 0.26), 0 12px 20px rgba(12, 110, 82, 0.28);
+  --shadow-float-glow: 0 0 10px rgba(0, 176, 136, 0.28);
+  --shadow-float-glow-hover: 0 0 12px rgba(0, 176, 136, 0.36);
   --shadow-float-card: var(--shadow-float);
   --shadow-float-card-hover: var(--shadow-float-hover);
   --shadow-float-btn: var(--shadow-float);
   --shadow-float-btn-hover: var(--shadow-float-hover);
-  --shadow-sm: 0 1px 6px rgba(141, 155, 132, 0.12);
+  --shadow-sm: 0 2px 7px rgba(12, 110, 82, 0.18);
   --shadow: var(--shadow-float);
   --shadow-hover: var(--shadow-float-hover);
   --shadow-glow-mint: var(--shadow-float-glow);
@@ -51,9 +51,9 @@
   --neon-emerald-sm: var(--shadow-float-glow);
   --neon-emerald: var(--shadow-float-glow);
   --neon-emerald-strong: var(--shadow-float-glow-hover);
-  --shadow-float-card-dark: 0 3px 8px rgba(0, 0, 0, 0.16), 0 10px 18px rgba(0, 0, 0, 0.16);
-  --shadow-float-card-accent: 0 3px 8px rgba(0, 0, 0, 0.14), 0 10px 18px rgba(4, 120, 87, 0.26);
-  --shadow-float-card-accent-hover: 0 4px 10px rgba(0, 0, 0, 0.16), 0 12px 22px rgba(4, 120, 87, 0.30);
+  --shadow-float-card-dark: 0 4px 10px rgba(0, 0, 0, 0.22), 0 12px 20px rgba(0, 0, 0, 0.22);
+  --shadow-float-card-accent: 0 4px 10px rgba(0, 0, 0, 0.18), 0 12px 20px rgba(4, 120, 87, 0.36);
+  --shadow-float-card-accent-hover: 0 5px 12px rgba(0, 0, 0, 0.22), 0 14px 24px rgba(4, 120, 87, 0.42);
   --border-soft: 1px solid rgba(0, 232, 184, 0.30);
   --border-mint: 1px solid rgba(0, 212, 168, 0.42);
   --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
@@ -72,7 +72,7 @@
   --bg-section-image: url('images/bg-section.png');
   --bg-section-filter: brightness(1.34) contrast(0.76) saturate(0.56) opacity(0.54);
   --bg-section-bright: #FFFFFF;
-  --bg-mint-wash: linear-gradient(180deg, #F3FBF7 0%, #E3F4EB 36%, #D7EEE4 70%, #E4F5ED 100%);
+  --bg-mint-wash: linear-gradient(180deg, #FBFEFC 0%, #F3FBF7 16%, #E4F4EC 32%, #F8FCF9 48%, #E2F3EA 64%, #F6FBF8 80%, #E7F5EE 100%);
   --glass-blur: none;
 
   --card-gradient: linear-gradient(152deg, rgba(255, 252, 248, 0.40) 0%, rgba(245, 232, 218, 0.36) 28%, rgba(178, 222, 204, 0.34) 62%, rgba(238, 226, 210, 0.36) 100%);
@@ -94,7 +94,7 @@ html {
   scroll-behavior: auto;
   scroll-padding-top: 92px;
   overflow-x: clip;
-  background-color: #E4F5ED;
+  background-color: #F4FAF7;
   background-image: none;
 }
 
@@ -109,7 +109,7 @@ body {
   line-height: var(--line-body);
   color: var(--color-text);
   font-feature-settings: 'kern' 1, 'liga' 1;
-  background-color: #E4F5ED;
+  background-color: #F4FAF7;
   background-image: var(--bg-mint-wash);
   background-repeat: no-repeat;
   background-size: 100% 100%;
