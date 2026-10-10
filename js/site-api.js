@@ -100,9 +100,13 @@
   function loadLiveBundle() {
     if (!liveBundlePromise) {
       const live = window.StudiaMaiLive;
-      liveBundlePromise = live && typeof live.readBundle === 'function'
+      const read = live && typeof live.readBundle === 'function'
         ? live.readBundle().catch(() => null)
         : Promise.resolve(null);
+      liveBundlePromise = Promise.race([
+        read,
+        new Promise((resolve) => setTimeout(() => resolve(null), 2500))
+      ]);
     }
     return liveBundlePromise;
   }

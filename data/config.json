@@ -1,10 +1,10 @@
 {
-  "web3formsAccessKey": "",
-  "notificationEmail": "brow_studia_may@mail.ru",
-  "telegramBotToken": "",
-  "telegramChatId": "",
-  "bookingsApiUrl": "",
-  "githubOwner": "Natali202605",
-  "githubRepo": "StudiaMai",
-  "githubBranch": "main"
+    "web3formsAccessKey":  "",
+    "notificationEmail":  "brow_studia_may@mail.ru",
+    "telegramBotToken":  "",
+    "telegramChatId":  "",
+    "bookingsApiUrl":  "",
+    "githubOwner":  "Natali202605",
+    "githubRepo":  "StudiaMai",
+    "githubBranch":  "main"
 }
