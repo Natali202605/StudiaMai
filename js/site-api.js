@@ -67,9 +67,14 @@
     const id = theme && typeof theme.id === 'string' ? theme.id : 'mint';
     if (THEME_IDS.indexOf(id) === -1) {
       document.documentElement.removeAttribute('data-theme');
-      return;
+    } else {
+      document.documentElement.setAttribute('data-theme', id);
     }
-    document.documentElement.setAttribute('data-theme', id);
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) {
+      const color = getComputedStyle(document.documentElement).getPropertyValue('--theme-color').trim();
+      if (color) meta.setAttribute('content', color);
+    }
   }
 
   function bookingHref(url) {
