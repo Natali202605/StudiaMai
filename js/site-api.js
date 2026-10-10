@@ -61,7 +61,7 @@
     }
   }
 
-  const THEME_IDS = ['sage', 'powder', 'champagne', 'lavender', 'tide'];
+  const THEME_IDS = ['sage', 'powder', 'champagne', 'lavender', 'tide', 'silver', 'pearl', 'cocoa'];
 
   function applyTheme(theme) {
     const id = theme && typeof theme.id === 'string' ? theme.id : 'mint';
