@@ -106,11 +106,8 @@
   </script>
   <link rel="icon" href="images/logo.png" type="image/png">
   <title>Студия красоты «Май» — Красота, в которой комфортно оставаться собой</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" as="image" href="images/hero-studio.png">
   <link rel="preload" as="image" href="images/logo.png">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=sync29">
   <link rel="stylesheet" href="css/themes.css?v=themes4">
 </head>
@@ -1159,19 +1156,17 @@
           </span>
         </div>
         <form class="contact-form" id="contactForm">
+          <p class="booking-form__message" id="bookingIntakeNotice">Форма не сохраняет данные. Позвоните, чтобы записаться.</p>
           <div class="contact-form__fields">
-            <input type="text" id="bookingName" name="name" placeholder="Имя" autocomplete="given-name">
-            <input type="text" id="bookingSurname" name="surname" placeholder="Фамилия" autocomplete="family-name">
-            <input type="tel" id="bookingPhoneField" name="phone" placeholder="Номер телефона" autocomplete="tel">
-            <input type="email" id="bookingEmail" name="email" placeholder="Адрес электронной почты" autocomplete="email">
-            <input type="text" name="comment" id="bookingComment" placeholder="Комментарий (необязательно)">
+            <input type="text" id="bookingName" name="name" placeholder="Имя (необязательно)" autocomplete="given-name" maxlength="80">
+            <input type="tel" id="bookingPhoneField" name="phone" placeholder="Номер телефона" autocomplete="tel" required>
           </div>
           <p class="booking-form__message" id="bookingMessage" hidden></p>
-          <button type="submit" id="submitBooking" class="btn btn--primary btn--wide" data-cms-cta="book">Записаться</button>
+          <button type="submit" id="submitBooking" class="btn btn--primary btn--wide" data-cms-cta="book" disabled>Записаться</button>
           <p class="booking-form__phone"><span data-cms="booking_phone_prefix">или позвоните:</span> <a href="tel:+79024737800" id="bookingPhone" class="booking-form__phone-link" data-phone="+7 902 473-78-00" title="Нажмите, чтобы скопировать номер">+7 902 473-78-00</a></p>
           <label class="booking-form__agree">
-            <input type="checkbox" name="pd_consent">
-            <span data-cms="booking_consent">Даю согласие на обработку персональных данных</span>
+            <input type="checkbox" name="pd_consent" value="true">
+            <span>Даю отдельное согласие на обработку телефона и имени для обратного звонка. <a href="personal-data-consent.html">Текст согласия</a> и <a href="privacy.html">политика</a> — черновики до утверждения оператором.</span>
           </label>
         </form>
       </div>
@@ -1570,10 +1565,11 @@
       });
 
       sanitizeReviewCards();
-      prependUserReviews(loadStoredReviews());
+      try { localStorage.removeItem(REVIEWS_STORAGE_KEY); } catch (e) {}
       sanitizeReviewCards();
 
       function loadRemoteReviews() {
+        return;
         if (!window.STUDIA_MAI_API) return;
         fetch(`${window.STUDIA_MAI_API}/api/reviews`)
           .then(res => res.ok ? res.json() : null)
@@ -1583,7 +1579,7 @@
             data.reviews.forEach(review => {
               if (!track.querySelector(`[data-review-id="${review.id}"]`)) {
                 fresh.push(review);
-                saveStoredReview(review);
+                review.id = review.id;
               }
             });
             prependUserReviews(fresh);
@@ -1761,17 +1757,8 @@
     }
 
     function persistReviewDraft() {
-      const author = reviewAuthorInput?.value || '';
-      const text = reviewTextInput?.value || '';
-      if (!author.trim() && !text.trim()) {
-        clearReviewDraft();
-        if (reviewDraftStatus) reviewDraftStatus.hidden = true;
-        updateContinueButton();
-        return;
-      }
-      const draft = saveReviewDraft(author, text);
-      showDraftStatus(draft);
-      updateContinueButton();
+      clearReviewDraft();
+      if (reviewDraftStatus) reviewDraftStatus.hidden = true;
     }
 
     function scheduleDraftSave() {
@@ -1823,44 +1810,14 @@
         return;
       }
 
-      const review = {
-        id: `u${Date.now()}`,
-        author,
-        text,
-        date: formatReviewDate()
-      };
-
-      let saved = false;
-      const api = window.STUDIA_MAI_API;
-      if (api) {
-        try {
-          const res = await fetch(`${api}/api/reviews`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ author, text })
-          });
-          const json = await res.json().catch(() => ({}));
-          if (res.ok && json.review) {
-            review.id = json.review.id;
-            review.date = json.review.date;
-            saved = true;
-          }
-        } catch {
-          /* сохраним локально */
-        }
-      }
-
-      saveStoredReview(review);
-      reviewSliderApi?.addReviewCard(review.author, review.date, review.text, review.id);
       clearReviewDraft();
-      updateContinueButton();
       closeReviewModal();
       fillReviewForm('', '');
       if (reviewDraftStatus) reviewDraftStatus.hidden = true;
 
       const notice = document.getElementById('reviewSuccessNotice');
       if (notice) {
-        notice.textContent = saved ? 'Спасибо! Ваш отзыв опубликован.' : 'Спасибо! Ваш отзыв добавлен в слайдер.';
+        notice.textContent = 'Новый отзыв не публикуется автоматически. Нужны модерация и отдельное согласие на распространение.';
         notice.hidden = false;
         setTimeout(() => { notice.hidden = true; }, 5000);
       }

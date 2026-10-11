@@ -1,8 +1,10 @@
 import express from 'express';
+import { validateCallbackRequest } from './intake-policy.mjs';
 import cors from 'cors';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import multer from 'multer';
@@ -14,9 +16,31 @@ const DB_PATH = path.join(DATA_DIR, 'db.json');
 const UPLOADS_DIR = path.join(ROOT, 'uploads');
 
 const PORT = process.env.PORT || 3000;
-const JWT_SECRET = process.env.JWT_SECRET || 'studia-mai-dev-secret-change-me';
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'mai';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'mai2026';
+const JWT_SECRET = process.env.JWT_SECRET || '';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
+const BLOCKED_SECRET_HASHES = new Set([
+  '2a829bd30bf504edc68e1b4b4bedcf79febe92bf3f6d73be83cc324310b0dafe',
+  '33bb5de28e42e0122c0fc4b2677ef6c5b60da5456949695094b70a758d4f9d2a',
+  '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918',
+  '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8',
+  '057ba03d6c44104863dc7361fe4578965d1887360f90a0895882e58a6248fc86'
+]);
+
+function isBlockedSecret(value) {
+  const hash = crypto.createHash('sha256').update(String(value)).digest('hex');
+  return BLOCKED_SECRET_HASHES.has(hash);
+}
+
+function assertRuntimeSecrets() {
+  if (JWT_SECRET.length < 32 || isBlockedSecret(JWT_SECRET)) {
+    console.error('Сервер не запущен: задайте JWT_SECRET длиной от 32 символов в окружении, не в репозитории.');
+    process.exit(1);
+  }
+  if (ADMIN_PASSWORD.length < 12 || isBlockedSecret(ADMIN_PASSWORD)) {
+    console.error('Сервер не запущен: задайте ADMIN_PASSWORD длиной от 12 символов в окружении. Первый администратор создаётся только этой служебной переменной.');
+    process.exit(1);
+  }
+}
 
 const DEFAULT_PROCEDURES = [
   { id: 'p1', category: 'Брови / Броволог', name: 'SMART-коррекция бровей', price: 'от 1 500 ₽', duration: '1 час' },
@@ -75,15 +99,16 @@ function normalizeDb(raw) {
 
 function loadDb() {
   if (!fs.existsSync(DB_PATH)) {
-    const hash = bcrypt.hashSync(ADMIN_PASSWORD, 10);
+    const hash = bcrypt.hashSync(ADMIN_PASSWORD, 12);
     const db = normalizeDb({
-      user: { username: ADMIN_USERNAME, passwordHash: hash },
+      user: { username: process.env.ADMIN_USERNAME || 'admin', passwordHash: hash },
       setupComplete: true,
       content: {},
       images: { ...DEFAULT_IMAGES },
       procedures: [...DEFAULT_PROCEDURES],
       leads: [],
-      bookings: []
+      bookings: [],
+      sessions: []
     });
     saveDb(db);
     return db;
@@ -109,6 +134,7 @@ function saveDb(db) {
   fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), 'utf8');
 }
 
+assertRuntimeSecrets();
 let db = loadDb();
 
 function authMiddleware(req, res, next) {
@@ -133,12 +159,45 @@ const storage = multer.diskStorage({
 const upload = multer({ storage, limits: { fileSize: 8 * 1024 * 1024 } });
 
 const app = express();
-app.use(cors());
-app.use(express.json({ limit: '2mb' }));
+const allowedOrigins = String(process.env.CORS_ORIGINS || '').split(',').map(s => s.trim()).filter(Boolean);
+app.use(cors({ origin: allowedOrigins.length ? allowedOrigins : false }));
+app.use(express.json({ limit: '32kb' }));
+app.use('/api', (_req, res, next) => {
+  res.set('Cache-Control', 'no-store');
+  next();
+});
 
-app.use('/uploads', express.static(UPLOADS_DIR));
+const attempts = new Map();
+function rateLimit(key, limit, windowMs) {
+  const now = Date.now();
+  const bucket = (attempts.get(key) || []).filter(ts => now - ts < windowMs);
+  bucket.push(now);
+  attempts.set(key, bucket);
+  return bucket.length <= limit;
+}
+
+app.use((req, res, next) => {
+  const target = decodeURIComponent(req.path || '');
+  if (/(^|\/)(\.env|server|backup|db\.json|\.git)(\/|$)/i.test(target)) {
+    return res.status(404).end();
+  }
+  next();
+});
+
+app.use('/css', express.static(path.join(ROOT, 'css')));
+app.use('/js', express.static(path.join(ROOT, 'js')));
+app.use('/images', express.static(path.join(ROOT, 'images')));
 app.use('/admin', express.static(path.join(ROOT, 'admin')));
-app.use(express.static(ROOT));
+app.get(/^\/data\/(content|services|images|theme|version|intake|config)\.json$/, (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  res.sendFile(path.join(ROOT, req.path));
+});
+['/', '/index.html', '/privacy.html', '/personal-data-consent.html', '/public-offer.html'].forEach((route) => {
+  app.get(route, (_req, res) => {
+    const file = route === '/' ? 'index.html' : route.slice(1);
+    res.sendFile(path.join(ROOT, file));
+  });
+});
 
 app.get('/api/auth/status', (_req, res) => {
   res.json({
@@ -151,36 +210,30 @@ app.get('/api/auth/session', authMiddleware, (req, res) => {
   res.json({ ok: true, username: req.user.username });
 });
 
-app.post('/api/auth/register', (req, res) => {
-  if (db.setupComplete) {
-    return res.status(403).json({ error: 'Регистрация уже выполнена. Войдите или смените данные в настройках.' });
-  }
-  const { username, password, passwordConfirm } = req.body || {};
-  const usernameError = validateUsername(username);
-  if (usernameError) return res.status(400).json({ error: usernameError });
-  const passwordError = validatePassword(password);
-  if (passwordError) return res.status(400).json({ error: passwordError });
-  if (password !== passwordConfirm) {
-    return res.status(400).json({ error: 'Пароли не совпадают' });
-  }
-  const cleanUsername = String(username).trim();
-  db.user = { username: cleanUsername, passwordHash: bcrypt.hashSync(password, 10) };
-  db.setupComplete = true;
-  saveDb(db);
-  const token = jwt.sign({ role: 'admin', username: cleanUsername }, JWT_SECRET, { expiresIn: '12h' });
-  res.json({ token, username: cleanUsername });
+app.post('/api/auth/register', (_req, res) => {
+  return res.status(403).json({ error: 'Открытая регистрация администратора отключена' });
 });
 
 app.post('/api/auth/login', (req, res) => {
-  if (!db.user?.username) {
-    return res.status(403).json({ error: 'Сначала зарегистрируйте логин и пароль администратора' });
+  const ip = req.ip || 'local';
+  if (!rateLimit(`login:${ip}`, 5, 15 * 60 * 1000)) {
+    return res.status(429).json({ error: 'Слишком много попыток входа' });
+  }
+  const origin = req.get('origin');
+  const allowed = String(process.env.CORS_ORIGINS || '').split(',').map(s => s.trim()).filter(Boolean);
+  if (origin && allowed.length && !allowed.includes(origin)) {
+    return res.status(403).json({ error: 'Источник запроса не разрешён' });
+  }
+  if (!db.user?.username || !db.user?.passwordHash) {
+    return res.status(403).json({ error: 'Администратор не создан' });
   }
   const { username, password } = req.body || {};
   const cleanUsername = String(username || '').trim();
-  if (cleanUsername !== db.user.username || !bcrypt.compareSync(password || '', db.user.passwordHash)) {
+  const passwordOk = bcrypt.compareSync(String(password || ''), db.user.passwordHash);
+  if (cleanUsername !== db.user.username || !passwordOk) {
     return res.status(401).json({ error: 'Неверный логин или пароль' });
   }
-  const token = jwt.sign({ role: 'admin', username: cleanUsername }, JWT_SECRET, { expiresIn: '12h' });
+  const token = jwt.sign({ role: 'admin', username: cleanUsername, sid: Date.now() }, JWT_SECRET, { expiresIn: '12h' });
   res.json({ token, username: cleanUsername });
 });
 
@@ -229,35 +282,33 @@ app.put('/api/procedures', authMiddleware, (req, res) => {
   res.json({ procedures: db.procedures });
 });
 
+const IMAGE_SIGNATURES = [
+  { mime: 'image/jpeg', bytes: [0xff, 0xd8, 0xff] },
+  { mime: 'image/png', bytes: [0x89, 0x50, 0x4e, 0x47] },
+  { mime: 'image/webp', bytes: [0x52, 0x49, 0x46, 0x46] }
+];
+
 app.post('/api/images/:key', authMiddleware, upload.single('file'), (req, res) => {
   const key = req.params.key;
   if (!DEFAULT_IMAGES[key] && !db.images[key]) {
     return res.status(400).json({ error: 'Неизвестный ключ изображения' });
   }
   if (!req.file) return res.status(400).json({ error: 'Файл не загружен' });
+  const sample = fs.readFileSync(req.file.path);
+  const allowed = IMAGE_SIGNATURES.some(sig => sig.bytes.every((byte, i) => sample[i] === byte));
+  const name = req.file.originalname.toLowerCase();
+  if (!allowed || name.endsWith('.svg') || name.endsWith('.html') || name.endsWith('.htm')) {
+    fs.unlinkSync(req.file.path);
+    return res.status(400).json({ error: 'Допустимы только JPEG, PNG и WEBP' });
+  }
   db.images[key] = `/uploads/${req.file.filename}`;
   saveDb(db);
   res.json({ images: db.images });
 });
 
 app.post('/api/leads', (req, res) => {
-  const { name, surname, phone, email, consent } = req.body || {};
-  if (!name || !phone) {
-    return res.status(400).json({ error: 'Укажите имя и телефон' });
-  }
-  const lead = {
-    id: `l${Date.now()}`,
-    name: String(name).trim(),
-    surname: String(surname || '').trim(),
-    phone: String(phone).trim(),
-    email: String(email || '').trim(),
-    consent: Boolean(consent),
-    createdAt: new Date().toISOString(),
-    status: 'new'
-  };
-  db.leads.unshift(lead);
-  saveDb(db);
-  res.json({ ok: true, lead });
+  const decision = validateCallbackRequest(req.body, false);
+  return res.status(decision.status || 403).json({ ok: false, error: decision.error || 'Приём заявок выключен' });
 });
 
 app.get('/api/leads', authMiddleware, (_req, res) => {
@@ -273,42 +324,14 @@ app.patch('/api/leads/:id', authMiddleware, (req, res) => {
 });
 
 app.post('/api/bookings', (req, res) => {
-  const { name, surname, phone, email, procedureId, procedureName, preferredDate, consent, comment } = req.body || {};
-  if (!name || !phone) {
-    return res.status(400).json({ error: 'Укажите имя и телефон' });
+  if (!rateLimit(`booking:${req.ip || 'local'}`, 5, 60 * 60 * 1000)) {
+    return res.status(429).json({ ok: false, error: 'Слишком много заявок. Позвоните в студию.' });
   }
-  const procedure = procedureId ? db.procedures.find(p => p.id === procedureId) : null;
-  const booking = {
-    id: `b${Date.now()}`,
-    name: String(name).trim(),
-    surname: String(surname || '').trim(),
-    phone: String(phone).trim(),
-    email: String(email || '').trim(),
-    procedureId: procedureId || '',
-    procedureName: procedureName || procedure?.name || '',
-    category: procedure?.category || '',
-    preferredDate: preferredDate || '',
-    comment: String(comment || '').trim(),
-    consent: Boolean(consent),
-    createdAt: new Date().toISOString(),
-    status: 'new'
-  };
-  db.bookings.unshift(booking);
-  const lead = {
-    id: `l${Date.now()}`,
-    name: booking.name,
-    surname: booking.surname,
-    phone: booking.phone,
-    email: booking.email,
-    consent: booking.consent,
-    createdAt: booking.createdAt,
-    status: 'new',
-    source: 'booking',
-    bookingId: booking.id
-  };
-  db.leads.unshift(lead);
-  saveDb(db);
-  res.json({ ok: true, booking });
+  const decision = validateCallbackRequest(req.body, false);
+  if (!decision.ok) {
+    return res.status(decision.status).json({ ok: false, error: decision.error });
+  }
+  return res.status(403).json({ ok: false, error: 'Приём заявок выключен до отдельного включения оператором' });
 });
 
 app.get('/api/bookings', authMiddleware, (_req, res) => {
@@ -330,30 +353,11 @@ function formatReviewDate(date = new Date()) {
 }
 
 app.get('/api/reviews', (_req, res) => {
-  res.json({ reviews: db.userReviews || [] });
+  res.json({ reviews: [] });
 });
 
-app.post('/api/reviews', (req, res) => {
-  const { author, text } = req.body || {};
-  const cleanAuthor = String(author || '').trim();
-  const cleanText = String(text || '').trim();
-  if (!cleanAuthor || !cleanText) {
-    return res.status(400).json({ error: 'Укажите имя и текст отзыва' });
-  }
-  if (cleanText.length > 2000) {
-    return res.status(400).json({ error: 'Отзыв слишком длинный' });
-  }
-  const review = {
-    id: `r${Date.now()}`,
-    author: cleanAuthor,
-    text: cleanText,
-    date: formatReviewDate(),
-    createdAt: new Date().toISOString()
-  };
-  if (!db.userReviews) db.userReviews = [];
-  db.userReviews.unshift(review);
-  saveDb(db);
-  res.json({ ok: true, review });
+app.post('/api/reviews', (_req, res) => {
+  return res.status(403).json({ ok: false, error: 'Публикация отзыва без модерации отключена' });
 });
 
 app.get('/api/stats', authMiddleware, (_req, res) => {
@@ -371,11 +375,5 @@ app.get('/admin', (_req, res) => {
 
 ensureDirs();
 app.listen(PORT, () => {
-  console.log(`Студия «Май» — сервер: http://localhost:${PORT}`);
-  console.log(`Админ-панель: http://localhost:${PORT}/admin`);
-  if (!db.setupComplete) {
-    console.log('Первый вход: зарегистрируйте логин и пароль на странице входа.');
-  } else {
-    console.log(`Администратор: ${db.user.username}`);
-  }
+  console.log(`Студия «Май» — сервер слушает порт ${PORT}`);
 });

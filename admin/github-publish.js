@@ -31,16 +31,16 @@
       owner: String(cfg.githubOwner || DEFAULTS.githubOwner).trim(),
       repo: String(cfg.githubRepo || DEFAULTS.githubRepo).trim(),
       branch: String(cfg.githubBranch || DEFAULTS.githubBranch).trim() || 'main',
-      token: String(storageGet(TOKEN_KEY) || cfg.githubToken || '').trim()
+      token: ''
     };
   }
 
-  function setToken(token) {
-    storageSet(TOKEN_KEY, String(token || '').trim());
+  function setToken() {
+    try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
   }
 
   function getToken() {
-    return getPublishConfig().token;
+    return '';
   }
 
   function isConfigured() {
@@ -123,8 +123,10 @@
   }
 
   function publicConfig(config) {
-    var out = Object.assign({}, config || {});
-    delete out.githubToken;
+    var out = {};
+    if (config && (config.intakeEnabled === true || config.intakeEnabled === false)) {
+      out.intakeEnabled = config.intakeEnabled;
+    }
     return out;
   }
 
@@ -151,7 +153,9 @@
    * Публикует данные сайта в GitHub → GitHub Pages обновляется автоматически.
    * @param {{content?:object, services?:object, images?:object, config?:object, message?:string}} payload
    */
-  async function publish(payload) {
+  async function publish() {
+    try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
+    throw new Error('Публикация из браузера отключена. Токен GitHub здесь не хранится.');
     var cfg = getPublishConfig();
     if (!cfg.token) {
       throw new Error('Не задан GitHub-токен. Откройте «Настройки» и сохраните токен публикации.');

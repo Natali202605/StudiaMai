@@ -774,15 +774,19 @@
     document.dispatchEvent(new CustomEvent('studia-mai-cms-applied'));
   }
 
+  function consentIsTrue(value) {
+    return value === true;
+  }
+
   function getFormData(form) {
     const fd = new FormData(form);
+    const box = form.querySelector('[name="pd_consent"]');
     return {
       name: fd.get('name')?.trim() || '',
-      surname: fd.get('surname')?.trim() || '',
       phone: fd.get('phone')?.trim() || '',
-      email: fd.get('email')?.trim() || '',
-      consent: form.querySelector('[name="pd_consent"]')?.checked || false,
-      comment: form.querySelector('#bookingComment')?.value?.trim() || ''
+      consent: box ? box.checked === true : false,
+      consentVersion: 'draft-2026-10-11',
+      policyVersion: 'draft-2026-10-11'
     };
   }
 
@@ -819,64 +823,15 @@
     saveLocalBookings(list.slice(0, 200));
   }
 
-  async function notifyEmail(config, subject, message) {
-    const email = config.notificationEmail || DEFAULT_ADMIN_EMAIL;
+  async function intakeEnabled() {
     try {
-      const res = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(email)}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-          _subject: subject,
-          _captcha: 'false',
-          message
-        })
-      });
-      return res.ok;
+      const res = await fetch(`${DATA_BASE}/intake.json?v=${cacheBust}`, { cache: 'no-store' });
+      if (!res.ok) return false;
+      const data = await res.json();
+      return data && data.enabled === true;
     } catch {
       return false;
     }
-  }
-
-  async function notifyWeb3Forms(config, booking) {
-    if (!config.web3formsAccessKey) return false;
-    const body = new FormData();
-    body.append('access_key', config.web3formsAccessKey);
-    body.append('subject', 'Новая заявка — Студия «Май»');
-    body.append('name', `${booking.name} ${booking.surname}`.trim());
-    body.append('phone', booking.phone);
-    body.append('email', booking.email || 'не указан');
-    body.append('message', formatBookingMessage(booking));
-    if (config.notificationEmail) body.append('replyto', config.notificationEmail);
-    const res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body });
-    const json = await res.json().catch(() => ({}));
-    return res.ok && json.success;
-  }
-
-  async function notifyTelegram(config, booking) {
-    if (!config.telegramBotToken || !config.telegramChatId) return false;
-    const res = await fetch(`https://api.telegram.org/bot${config.telegramBotToken}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: config.telegramChatId,
-        text: formatBookingMessage(booking)
-      })
-    });
-    return res.ok;
-  }
-
-  async function saveBookingRemote(config, booking) {
-    if (!config.bookingsApiUrl) return false;
-    const res = await fetch(config.bookingsApiUrl, {
-      method: 'POST',
-      mode: 'cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(booking)
-    });
-    return res.ok;
   }
 
   let bookingSubmitting = false;
@@ -885,78 +840,45 @@
     if (bookingSubmitting) return;
     const data = getFormData(form);
     const submitBtn = form.querySelector('[type="submit"], #submitBooking');
-
-    if (!data.name || !data.phone) {
-      showFormMessage(msgEl, 'Заполните имя и телефон', false);
+    const open = await intakeEnabled();
+    if (!open) {
+      showFormMessage(msgEl, 'Форма не сохраняет данные. Позвоните по номеру на странице.', false);
       return;
     }
-    if (!data.consent) {
-      showFormMessage(msgEl, 'Подтвердите согласие на обработку данных', false);
+    if (!data.phone) {
+      showFormMessage(msgEl, 'Укажите телефон', false);
+      return;
+    }
+    if (!consentIsTrue(data.consent)) {
+      showFormMessage(msgEl, 'Нужна отдельная отметка согласия', false);
+      return;
+    }
+    const url = apiUrl('/api/bookings');
+    if (!url) {
+      showFormMessage(msgEl, 'Собственный сервер заявок не подключён. Данные не отправлены.', false);
       return;
     }
 
     bookingSubmitting = true;
     if (submitBtn) submitBtn.disabled = true;
-
     try {
-      const url = apiUrl('/api/bookings');
-      if (url) {
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
-        });
-        const json = await res.json().catch(() => ({}));
-        if (res.ok) {
-          showFormMessage(msgEl, 'Заявка на запись отправлена! Мы свяжемся для подтверждения.', true);
-          form.reset();
-          return;
-        }
-        showFormMessage(msgEl, json.error || 'Не удалось отправить заявку', false);
-        return;
-      }
-
-      const booking = {
-        id: `b${Date.now()}`,
-        ...data,
-        createdAt: new Date().toISOString(),
-        status: 'new',
-        source: 'site'
-      };
-
-      const config = await loadSiteConfig();
-      let delivered = false;
-
-      try {
-        if (await notifyEmail(config, 'Новая заявка — Студия «Май»', formatBookingMessage(booking))) {
-          delivered = true;
-        }
-      } catch { /* ignore */ }
-
-      try {
-        if (await notifyWeb3Forms(config, booking)) delivered = true;
-      } catch { /* ignore */ }
-
-      try {
-        if (await notifyTelegram(config, booking)) delivered = true;
-      } catch { /* ignore */ }
-
-      try {
-        if (await saveBookingRemote(config, booking)) delivered = true;
-      } catch { /* ignore */ }
-
-      appendLocalBooking(booking);
-
-      if (delivered) {
-        showFormMessage(msgEl, 'Заявка отправлена! Мы свяжемся с вами в ближайшее время.', true);
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const json = await res.json().catch(() => ({}));
+      if (res.ok && json.ok === true) {
+        showFormMessage(msgEl, 'Заявка принята. Мы перезвоним.', true);
         form.reset();
         return;
       }
-
-      showFormMessage(msgEl, 'Заявка сохранена локально. Не удалось отправить уведомление — попробуйте ещё раз или позвоните нам.', false);
+      showFormMessage(msgEl, 'Заявка не сохранена.', false);
+    } catch {
+      showFormMessage(msgEl, 'Заявка не сохранена.', false);
     } finally {
       bookingSubmitting = false;
-      if (submitBtn) submitBtn.disabled = false;
+      if (submitBtn) submitBtn.disabled = !open;
     }
   }
 
@@ -973,7 +895,7 @@
     mergeServices,
     readLocalBookings,
     saveLocalBookings,
-    sendAdminEmail: (subject, message) => notifyEmail({ notificationEmail: DEFAULT_ADMIN_EMAIL }, subject, message),
+    sendAdminEmail: () => Promise.resolve(false),
     DEFAULT_ADMIN_EMAIL,
     STORAGE_CONTENT,
     STORAGE_IMAGES,

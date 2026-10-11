@@ -4,7 +4,7 @@
   var STORAGE_KEY = 'studia_mai_admin_simple_v2';
   var SESSION_KEY = 'studia_mai_admin_ok';
   var DEFAULT_USER = 'admin';
-  var DEFAULT_PASS = 'Mai2026!';
+  var DEFAULT_PASS = '';
   var memoryCreds = null;
 
   var loginScreen = document.getElementById('loginScreen');
@@ -49,9 +49,8 @@
       try {
         var data = JSON.parse(raw);
         var u = String(data.username || '').trim();
-        var p = String(data.password || '');
-        if (u && p) {
-          memoryCreds = { username: u, password: p };
+        if (u) {
+          memoryCreds = { username: u, password: '' };
           return memoryCreds;
         }
       } catch (e) {}
@@ -61,12 +60,12 @@
     return memoryCreds;
   }
 
-  function saveCreds(username, password) {
+  function saveCreds(username) {
     memoryCreds = {
       username: String(username || '').trim(),
-      password: String(password || '')
+      password: ''
     };
-    storageSet(STORAGE_KEY, JSON.stringify(memoryCreds));
+    storageSet(STORAGE_KEY, JSON.stringify({ username: memoryCreds.username }));
     return memoryCreds;
   }
 
@@ -80,15 +79,12 @@
     return saveCreds(DEFAULT_USER, DEFAULT_PASS);
   }
 
-  function checkLogin(username, password) {
-    var creds = loadCreds();
-    if (username === creds.username && password === creds.password) return true;
-    if (username === DEFAULT_USER && password === DEFAULT_PASS) return true;
+  function checkLogin() {
     return false;
   }
 
   function isLoggedIn() {
-    return sessionGet(SESSION_KEY) === '1';
+    return false;
   }
 
   function setLoggedIn(value) {
@@ -178,14 +174,10 @@
       return;
     }
 
-    if (!checkLogin(username, password)) {
-      showError(loginError, 'Неверный логин или пароль. Нажмите «Сбросить пароль», если забыли.');
-      return;
-    }
-
-    saveCreds(username, password);
-    setLoggedIn(true);
-    showApp();
+    checkLogin();
+    sessionRemove(SESSION_KEY);
+    storageRemove(STORAGE_KEY);
+    showError(loginError, 'Вход из браузера отключён. Пароль здесь не проверяется и не сохраняется.');
   }
 
   function handleLogout() {
@@ -201,7 +193,7 @@
     hideError(loginError);
     updateHint();
     if (loginHint) {
-      loginHint.textContent = 'Пароль сброшен. Логин: admin · Пароль: Mai2026!';
+      loginHint.textContent = 'Сброс пароля в браузере отключён. Заявки через эту панель не принимаются.';
     }
   }
 
@@ -251,8 +243,7 @@
 
   function updateHint() {
     if (!loginHint) return;
-    var creds = loadCreds();
-    loginHint.innerHTML = 'Логин: <strong>admin</strong> · Пароль: <strong>Mai2026!</strong><br>Текущий сохранённый логин: <strong>' + creds.username + '</strong>';
+    loginHint.textContent = 'Пароль в браузере не хранится и не показывается. Приём заявок выключен.';
   }
 
   function init() {
