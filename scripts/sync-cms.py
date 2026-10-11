@@ -55,6 +55,26 @@ def main():
         if not isinstance(obj, dict) or not obj:
             continue
         target = ROOT / name
+        if name == "services.json" and target.exists():
+            try:
+                previous_obj = json.loads(target.read_text(encoding="utf-8"))
+            except Exception:
+                previous_obj = None
+            if isinstance(previous_obj, dict):
+                for key, prev in previous_obj.items():
+                    nxt = obj.get(key)
+                    if not isinstance(prev, dict) or not isinstance(nxt, dict):
+                        continue
+                    prev_items = prev.get("items") or []
+                    next_items = nxt.get("items") or []
+                    if prev_items and not next_items:
+                        nxt = dict(nxt)
+                        nxt["items"] = prev_items
+                        if str(prev.get("desc") or "").strip():
+                            nxt["desc"] = prev["desc"]
+                        if str(prev.get("title_html") or "").strip():
+                            nxt["title_html"] = prev["title_html"]
+                        obj[key] = nxt
         encoded = json.dumps(obj, ensure_ascii=False, indent=2) + "\n"
         previous = target.read_text(encoding="utf-8") if target.exists() else ""
         try:

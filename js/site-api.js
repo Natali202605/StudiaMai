@@ -89,6 +89,47 @@
     return { ...(base || {}), ...(override || {}) };
   }
 
+  function isUploadedImage(value) {
+    return value === '__removed__' || (typeof value === 'string' && (value.startsWith('data:') || value.startsWith('live:')));
+  }
+
+  function mergeImages(base, extra) {
+    const out = { ...(base || {}) };
+    if (!extra || typeof extra !== 'object') return out;
+    Object.keys(extra).forEach((key) => {
+      const value = extra[key];
+      if (typeof value !== 'string' || !value) return;
+      if (isUploadedImage(value) || !out[key]) out[key] = value;
+    });
+    return out;
+  }
+
+  function mergeServices(base, extra) {
+    const out = { ...(base || {}) };
+    if (!extra || typeof extra !== 'object') return out;
+    Object.keys(extra).forEach((key) => {
+      const next = extra[key];
+      const prev = out[key];
+      if (!next || typeof next !== 'object' || Array.isArray(next) || !prev || typeof prev !== 'object' || Array.isArray(prev)) {
+        out[key] = next;
+        return;
+      }
+      const merged = { ...prev, ...next };
+      const nextItems = Array.isArray(next.items) ? next.items : [];
+      const prevItems = Array.isArray(prev.items) ? prev.items : [];
+      if (!nextItems.length && prevItems.length) {
+        merged.items = prevItems;
+        if (String(prev.desc || '').trim()) merged.desc = prev.desc;
+        if (String(prev.title_html || '').trim()) merged.title_html = prev.title_html;
+      } else {
+        if (!String(next.desc || '').trim() && String(prev.desc || '').trim()) merged.desc = prev.desc;
+        if (!String(next.title_html || '').trim() && String(prev.title_html || '').trim()) merged.title_html = prev.title_html;
+      }
+      out[key] = merged;
+    });
+    return out;
+  }
+
   function readStorageJson(key) {
     const raw = storageGet(key);
     if (!raw) return null;
@@ -130,11 +171,11 @@
       loadLiveBundle()
     ]);
     const content = mergeObjects(contentFile || {}, (live && live.content) || {});
-    const images = mergeObjects(imagesFile || {}, (live && live.images) || {});
+    const images = mergeImages(imagesFile || {}, (live && live.images) || {});
     if (IS_ADMIN) {
       return {
         content: mergeObjects(content, readStorageJson(STORAGE_CONTENT)),
-        images: mergeObjects(images, readStorageJson(STORAGE_IMAGES))
+        images: mergeImages(images, readStorageJson(STORAGE_IMAGES))
       };
     }
     return { content, images };
@@ -693,11 +734,7 @@
       const items = normalizeServiceItems(data?.items);
       const pricesWrap = ul.closest('.service-card__prices, .rituals__prices');
 
-      if (!items.length) {
-        ul.innerHTML = '';
-        if (pricesWrap) pricesWrap.classList.add('service-card__prices--pending');
-        return;
-      }
+      if (!items.length) return;
 
       const html = items.map(buildPriceItemHtml).filter(Boolean).join('');
       const probe = document.createElement('div');
@@ -715,18 +752,14 @@
       if (desc) {
         fillServiceDesc(el, desc);
         el.hidden = false;
-      } else {
-        el.textContent = '';
-        el.classList.remove('service-card__desc--points');
-        el.hidden = true;
       }
     });
   }
 
   async function loadServicesData() {
     const [fromFile, live] = await Promise.all([fetchDataJson('services.json'), loadLiveBundle()]);
-    const merged = mergeObjects(fromFile || {}, (live && live.services) || {});
-    if (IS_ADMIN) return mergeObjects(merged, readStorageJson(STORAGE_SERVICES) || {});
+    const merged = mergeServices(fromFile || {}, (live && live.services) || {});
+    if (IS_ADMIN) return mergeServices(merged, readStorageJson(STORAGE_SERVICES) || {});
     return merged;
   }
 
@@ -940,6 +973,8 @@
     applyTheme,
     applyImages,
     applyServices,
+    mergeImages,
+    mergeServices,
     readLocalBookings,
     saveLocalBookings,
     sendAdminEmail: (subject, message) => notifyEmail({ notificationEmail: DEFAULT_ADMIN_EMAIL }, subject, message),

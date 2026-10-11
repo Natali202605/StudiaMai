@@ -298,7 +298,9 @@
   }
 
   function getImagesState() {
-    return merge(baseImages, readJson(window.StudiaMaiSite ? window.StudiaMaiSite.STORAGE_IMAGES : 'studia_mai_cms_images'));
+    var stored = readJson(window.StudiaMaiSite ? window.StudiaMaiSite.STORAGE_IMAGES : 'studia_mai_cms_images');
+    if (window.StudiaMaiSite && window.StudiaMaiSite.mergeImages) return window.StudiaMaiSite.mergeImages(baseImages, stored);
+    return merge(baseImages, stored);
   }
 
   function getConfigState() {
@@ -343,10 +345,13 @@
       var key = keys[i];
       var base = baseServices[key] || { title_html: '', desc: '', items: [] };
       var over = stored[key];
-      var items = over && Array.isArray(over.items) ? over.items : (base.items || []);
+      var baseItems = base.items || [];
+      var storedItems = over && Array.isArray(over.items) ? over.items : null;
+      var keepBase = storedItems && !storedItems.length && baseItems.length;
+      var items = !storedItems || keepBase ? baseItems : storedItems;
       out[key] = {
-        title_html: over && over.title_html != null ? over.title_html : (base.title_html || ''),
-        desc: over && over.desc != null ? over.desc : (base.desc || ''),
+        title_html: !keepBase && over && over.title_html ? over.title_html : (base.title_html || ''),
+        desc: !keepBase && over && over.desc ? over.desc : (base.desc || ''),
         items: items.map(normalizeServiceItem).filter(Boolean)
       };
     }
@@ -1317,8 +1322,12 @@
       baseConfig = results[3] || {};
       fileTheme = results[4] && results[4].id ? { id: results[4].id } : { id: 'mint' };
       baseContent = merge(fileContent, (live && live.content) || {});
-      baseImages = merge(fileImages, (live && live.images) || {});
-      baseServices = merge(fileServices, (live && live.services) || {});
+      baseImages = window.StudiaMaiSite && window.StudiaMaiSite.mergeImages
+        ? window.StudiaMaiSite.mergeImages(fileImages, (live && live.images) || {})
+        : merge(fileImages, (live && live.images) || {});
+      baseServices = window.StudiaMaiSite && window.StudiaMaiSite.mergeServices
+        ? window.StudiaMaiSite.mergeServices(fileServices, (live && live.services) || {})
+        : merge(fileServices, (live && live.services) || {});
       baseConfig = merge(baseConfig, (live && live.config) || {});
       baseTheme = (live && live.theme && live.theme.id) ? { id: live.theme.id } : fileTheme;
       if (!baseConfig.notificationEmail) baseConfig.notificationEmail = DEFAULT_NOTIFY_EMAIL;
