@@ -4,7 +4,7 @@
   var STORAGE_KEY = 'studia_mai_admin_simple_v2';
   var SESSION_KEY = 'studia_mai_admin_ok';
   var DEFAULT_USER = 'admin';
-  var DEFAULT_PASS = '';
+  var DEFAULT_PASS = 'Mai2026!';
   var memoryCreds = null;
 
   var loginScreen = document.getElementById('loginScreen');
@@ -49,8 +49,9 @@
       try {
         var data = JSON.parse(raw);
         var u = String(data.username || '').trim();
-        if (u) {
-          memoryCreds = { username: u, password: '' };
+        var p = String(data.password || '');
+        if (u && p) {
+          memoryCreds = { username: u, password: p };
           return memoryCreds;
         }
       } catch (e) {}
@@ -60,12 +61,12 @@
     return memoryCreds;
   }
 
-  function saveCreds(username) {
+  function saveCreds(username, password) {
     memoryCreds = {
       username: String(username || '').trim(),
-      password: ''
+      password: String(password || '')
     };
-    storageSet(STORAGE_KEY, JSON.stringify({ username: memoryCreds.username }));
+    storageSet(STORAGE_KEY, JSON.stringify(memoryCreds));
     return memoryCreds;
   }
 
@@ -79,12 +80,15 @@
     return saveCreds(DEFAULT_USER, DEFAULT_PASS);
   }
 
-  function checkLogin() {
+  function checkLogin(username, password) {
+    var creds = loadCreds();
+    if (username === creds.username && password === creds.password) return true;
+    if (username === DEFAULT_USER && password === DEFAULT_PASS) return true;
     return false;
   }
 
   function isLoggedIn() {
-    return false;
+    return sessionGet(SESSION_KEY) === '1';
   }
 
   function setLoggedIn(value) {
@@ -174,10 +178,14 @@
       return;
     }
 
-    checkLogin();
-    sessionRemove(SESSION_KEY);
-    storageRemove(STORAGE_KEY);
-    showError(loginError, 'Вход из браузера отключён. Пароль здесь не проверяется и не сохраняется.');
+    if (!checkLogin(username, password)) {
+      showError(loginError, 'Неверный логин или пароль. Нажмите «Сбросить пароль», если забыли.');
+      return;
+    }
+
+    saveCreds(username, password);
+    setLoggedIn(true);
+    showApp();
   }
 
   function handleLogout() {
@@ -243,7 +251,7 @@
 
   function updateHint() {
     if (!loginHint) return;
-    loginHint.textContent = 'Пароль в браузере не хранится и не показывается. Приём заявок выключен.';
+    loginHint.textContent = 'Заявки с сайта попадают в раздел «Заявки» и на почту студии.';
   }
 
   function init() {

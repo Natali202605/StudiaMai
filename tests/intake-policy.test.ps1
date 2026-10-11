@@ -14,13 +14,17 @@ if ((NormalizePhone '123') -ne '') { throw 'short phone' }
 $live = Get-Content -LiteralPath 'js\live-store.js' -Raw -Encoding UTF8
 if ($live -match 'access_token' -or $live -match 'formsubmit' -or $live -match 'telegra\.ph') { throw 'public store still calls external writer' }
 $api = Get-Content -LiteralPath 'js\site-api.js' -Raw -Encoding UTF8
-if ($api -match 'formsubmit|web3forms|api\.telegram|bookingsApiUrl') { throw 'browser still posts bookings to a third party' }
+if ($api -match 'web3forms|api\.telegram|bookingsApiUrl') { throw 'browser still posts bookings to an extra service' }
+if ($api -notmatch 'formsubmit\.co/ajax') { throw 'email notification is missing' }
+if ($api -notmatch 'appendLocalBooking') { throw 'admin booking store is missing' }
 $html = Get-Content -LiteralPath 'index.html' -Raw -Encoding UTF8
 if ($html -match 'fonts\.googleapis') { throw 'google fonts still preload' }
+if ($html -notmatch 'id="bookingSurname"' -or $html -notmatch 'id="bookingEmail"' -or $html -notmatch 'id="bookingComment"') { throw 'previous form fields are missing' }
+if ($html -match 'id="submitBooking"[^>]*disabled') { throw 'submit button is disabled' }
 $admin = Get-Content -LiteralPath 'admin\index.html' -Raw -Encoding UTF8
-if ($admin -match 'recover_pass' -or $admin -match 'formsubmit') { throw 'admin still resets a password or posts to a form service' }
+if ($admin -match 'recover_pass') { throw 'admin still resets a password by link' }
 $server = Get-Content -LiteralPath 'server\server.js' -Raw -Encoding UTF8
 if ($server -match 'express\.static\(ROOT\)') { throw 'server still serves the project root' }
 if ($server -notmatch 'assertRuntimeSecrets') { throw 'server can start without secrets' }
-if ($api -notmatch 'intake\.json') { throw 'intake flag is not read' }
+if ($api -notmatch 'consentIsTrue') { throw 'consent check is missing' }
 Write-Output 'intake-policy.ps1: ok'

@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="admin.css?v=simple11">
   <script>
     var STUDIA_MAI_USER = 'admin';
-    var STUDIA_MAI_PASS = '';
+    var STUDIA_MAI_PASS = 'Mai2026!';
     var STUDIA_MAI_STORAGE = 'studia_mai_admin_simple_v3';
     var STUDIA_MAI_SESSION = 'studia_mai_admin_ok';
     var STUDIA_MAI_TEMP_CREDS = 'studia_mai_admin_temp_creds';
@@ -59,10 +59,13 @@
       return { username: STUDIA_MAI_USER, password: STUDIA_MAI_PASS };
     }
 
-    function studiaMaiSaveCreds(username) {
-      studiaMaiStorageRemove(STUDIA_MAI_STORAGE);
-      studiaMaiStorageRemove(STUDIA_MAI_TEMP_CREDS);
-      return { username: studiaMaiTrim(username), password: '' };
+    function studiaMaiSaveCreds(username, password) {
+      var creds = {
+        username: studiaMaiTrim(username),
+        password: String(password || '')
+      };
+      studiaMaiStorageSet(STUDIA_MAI_STORAGE, JSON.stringify(creds));
+      return creds;
     }
 
     function studiaMaiGetTempCreds() {
@@ -76,7 +79,9 @@
       return null;
     }
 
-    function studiaMaiCheckLogin() {
+    function studiaMaiCheckLogin(username, password) {
+      var creds = studiaMaiLoadCreds();
+      if (username === creds.username && password === creds.password && password) return true;
       return false;
     }
 
@@ -153,12 +158,17 @@
         return false;
       }
 
-      studiaMaiCheckLogin();
-      studiaMaiStorageRemove(STUDIA_MAI_STORAGE);
-      studiaMaiStorageRemove(STUDIA_MAI_TEMP_CREDS);
-      studiaMaiSessionRemove(STUDIA_MAI_SESSION);
+      if (!studiaMaiCheckLogin(username, password)) {
+        studiaMaiSetStatus('');
+        studiaMaiSetError('Неверный логин или пароль.');
+        return false;
+      }
+
+      studiaMaiSaveCreds(username, password);
+      studiaMaiSessionSet(STUDIA_MAI_SESSION, '1');
       studiaMaiSetStatus('');
-      studiaMaiSetError('Вход из браузера отключён. Пароль здесь не проверяется и не сохраняется.');
+      studiaMaiShowApp();
+      if (window.studiaMaiAdminInit) window.studiaMaiAdminInit();
       return false;
     }
 
@@ -241,9 +251,12 @@
 
     function studiaMaiBoot() {
       studiaMaiParseRecoverUrl();
-      studiaMaiSessionRemove(STUDIA_MAI_SESSION);
-      studiaMaiStorageRemove(STUDIA_MAI_STORAGE);
-      studiaMaiShowLogin();
+      if (studiaMaiSessionGet(STUDIA_MAI_SESSION) === '1') {
+        studiaMaiShowApp();
+        if (window.studiaMaiAdminInit) window.studiaMaiAdminInit();
+      } else {
+        studiaMaiShowLogin();
+      }
     }
 
     if (document.addEventListener) {
@@ -420,8 +433,8 @@
       <section class="admin__panel" data-panel="notify">
         <h2>Уведомления о заявках</h2>
         <div class="admin__notify-help">
-          <p>Отправка заявок на чужие сервисы отключена. Ключи Telegram, Web3Forms и адрес внешнего хранилища в эту панель не вводятся и в публичную сборку не попадают.</p>
-          <p>Если понадобится уведомление оператору, сервер может отправить только текст «Новая заявка», без имени, телефона и ссылки на данные.</p>
+          <p>Заявки сохраняются в разделе «Заявки» и дублируются письмом на brow_studia_may@mail.ru. Telegram и внешние хранилища не используются.</p>
+          <p>При первой заявке на почту может прийти письмо-подтверждение от FormSubmit — откройте его и нажмите «Activate Form», чтобы уведомления работали постоянно.</p>
         </div>
         <p class="admin__msg" id="notifyMsg" hidden></p>
         <div class="admin__toolbar">
@@ -461,7 +474,7 @@
     </main>
   </div>
   <script src="../js/live-store.js?v=live1"></script>
-  <script src="../js/site-api.js?v=cms28"></script>
+  <script src="../js/site-api.js?v=cms29"></script>
   <script src="cms-schema.js?v=6"></script>
   <script src="admin-panel.js?v=16"></script>
 </body>

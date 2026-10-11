@@ -1156,17 +1156,19 @@
           </span>
         </div>
         <form class="contact-form" id="contactForm">
-          <p class="booking-form__message" id="bookingIntakeNotice">Форма не сохраняет данные. Позвоните, чтобы записаться.</p>
           <div class="contact-form__fields">
-            <input type="text" id="bookingName" name="name" placeholder="Имя (необязательно)" autocomplete="given-name" maxlength="80">
-            <input type="tel" id="bookingPhoneField" name="phone" placeholder="Номер телефона" autocomplete="tel" required>
+            <input type="text" id="bookingName" name="name" placeholder="Имя" autocomplete="given-name">
+            <input type="text" id="bookingSurname" name="surname" placeholder="Фамилия" autocomplete="family-name">
+            <input type="tel" id="bookingPhoneField" name="phone" placeholder="Номер телефона" autocomplete="tel">
+            <input type="email" id="bookingEmail" name="email" placeholder="Адрес электронной почты" autocomplete="email">
+            <input type="text" name="comment" id="bookingComment" placeholder="Комментарий (необязательно)">
           </div>
           <p class="booking-form__message" id="bookingMessage" hidden></p>
-          <button type="submit" id="submitBooking" class="btn btn--primary btn--wide" data-cms-cta="book" disabled>Записаться</button>
+          <button type="submit" id="submitBooking" class="btn btn--primary btn--wide" data-cms-cta="book">Записаться</button>
           <p class="booking-form__phone"><span data-cms="booking_phone_prefix">или позвоните:</span> <a href="tel:+79024737800" id="bookingPhone" class="booking-form__phone-link" data-phone="+7 902 473-78-00" title="Нажмите, чтобы скопировать номер">+7 902 473-78-00</a></p>
           <label class="booking-form__agree">
-            <input type="checkbox" name="pd_consent" value="true">
-            <span>Даю отдельное согласие на обработку телефона и имени для обратного звонка. <a href="personal-data-consent.html">Текст согласия</a> и <a href="privacy.html">политика</a> — черновики до утверждения оператором.</span>
+            <input type="checkbox" name="pd_consent">
+            <span data-cms="booking_consent">Даю согласие на обработку персональных данных</span>
           </label>
         </form>
       </div>
@@ -1241,7 +1243,7 @@
 
   <script src="js/config.js"></script>
   <script src="js/live-store.js?v=live1"></script>
-  <script src="js/site-api.js?v=cms28"></script>
+  <script src="js/site-api.js?v=cms29"></script>
   <script>
     const burger = document.querySelector('.burger');
     const nav = document.querySelector('.nav');

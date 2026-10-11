@@ -61,14 +61,21 @@ export function validateCallbackRequest(body, intakeEnabled) {
   const phone = normalizePhone(input.phone);
   if (!phone) return { ok: false, status: 400, error: 'Укажите телефон' };
   const name = String(input.name || '').trim().slice(0, 80);
-  if (input.surname || input.email || input.comment) {
-    return { ok: false, status: 400, error: 'Лишние поля не принимаются' };
+  if (!name) return { ok: false, status: 400, error: 'Укажите имя' };
+  const surname = String(input.surname || '').trim().slice(0, 80);
+  const email = String(input.email || '').trim().slice(0, 120);
+  const comment = String(input.comment || '').trim().slice(0, 500);
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return { ok: false, status: 400, error: 'Проверьте адрес почты' };
   }
   return {
     ok: true,
     record: {
       name,
+      surname,
       phone,
+      email,
+      comment,
       consent: true,
       consentVersion: CONSENT_VERSION,
       policyVersion: POLICY_VERSION,

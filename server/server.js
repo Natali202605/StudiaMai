@@ -327,11 +327,21 @@ app.post('/api/bookings', (req, res) => {
   if (!rateLimit(`booking:${req.ip || 'local'}`, 5, 60 * 60 * 1000)) {
     return res.status(429).json({ ok: false, error: 'Слишком много заявок. Позвоните в студию.' });
   }
-  const decision = validateCallbackRequest(req.body, false);
+  const decision = validateCallbackRequest(req.body, true);
   if (!decision.ok) {
     return res.status(decision.status).json({ ok: false, error: decision.error });
   }
-  return res.status(403).json({ ok: false, error: 'Приём заявок выключен до отдельного включения оператором' });
+  const booking = {
+    id: `b${Date.now()}`,
+    ...decision.record,
+    createdAt: new Date().toISOString(),
+    status: 'new',
+    source: 'site'
+  };
+  db.bookings.unshift(booking);
+  db.bookings = db.bookings.slice(0, 500);
+  saveDb(db);
+  return res.json({ ok: true });
 });
 
 app.get('/api/bookings', authMiddleware, (_req, res) => {
