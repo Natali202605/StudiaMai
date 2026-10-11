@@ -473,10 +473,6 @@
             userCards.forEach((card) => fragment.appendChild(card));
             track.insertBefore(fragment, track.firstChild);
           }
-          const heroReviewValue = document.querySelector('[data-reviews-count]') || heroValues[1];
-          if (heroReviewValue) {
-            heroReviewValue.textContent = String(track.querySelectorAll('.review-card').length);
-          }
         }
       }
     }
