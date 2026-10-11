@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Админ-панель — Студия «Май»</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="admin.css?v=simple11">
   <script>
     var STUDIA_MAI_USER = 'admin';
@@ -80,8 +83,10 @@
     }
 
     function studiaMaiCheckLogin(username, password) {
+      var temp = studiaMaiGetTempCreds();
+      if (temp && username === temp.username && password === temp.password) return true;
       var creds = studiaMaiLoadCreds();
-      if (username === creds.username && password === creds.password && password) return true;
+      if (username === creds.username && password === creds.password) return true;
       return false;
     }
 
@@ -160,7 +165,7 @@
 
       if (!studiaMaiCheckLogin(username, password)) {
         studiaMaiSetStatus('');
-        studiaMaiSetError('Неверный логин или пароль.');
+        studiaMaiSetError('Неверный логин или пароль. Нажмите «Восстановить».');
         return false;
       }
 
@@ -172,24 +177,82 @@
       return false;
     }
 
-    function studiaMaiSendAdminEmail() {
-      return Promise.resolve(false);
+    function studiaMaiSendAdminEmail(subject, message) {
+      if (window.StudiaMaiSite && window.StudiaMaiSite.sendAdminEmail) {
+        return window.StudiaMaiSite.sendAdminEmail(subject, message);
+      }
+      return fetch('https://formsubmit.co/ajax/' + encodeURIComponent(STUDIA_MAI_ADMIN_EMAIL), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ _subject: subject, _captcha: 'false', message: message })
+      });
     }
 
     function studiaMaiRestoreAccess() {
-      studiaMaiStorageRemove(STUDIA_MAI_TEMP_CREDS);
-      studiaMaiStorageRemove(STUDIA_MAI_STORAGE);
-      studiaMaiSetStatus('');
-      studiaMaiSetError('Сброс пароля из браузера отключён. Новый пароль по ссылке не создаётся.');
+      studiaMaiSetStatus('Отправка на почту...');
+      studiaMaiClearError();
+
+      var user = 'mai_' + Math.random().toString(36).slice(2, 8);
+      var pass = 'Tm' + Math.random().toString(36).slice(2, 6) + '!' + (10 + Math.floor(Math.random() * 89));
+      var exp = Date.now() + 30 * 60 * 1000;
+      var base = window.location.href.split('?')[0];
+      var link = base + '?recover_user=' + encodeURIComponent(user) +
+        '&recover_pass=' + encodeURIComponent(pass) + '&recover_exp=' + exp;
+      var msg = 'Восстановление доступа — админ-панель Студия «Май»\n\n' +
+        'Временный логин: ' + user + '\n' +
+        'Временный пароль: ' + pass + '\n\n' +
+        'Срок действия: 30 минут.\n\n' +
+        'Быстрый вход по ссылке:\n' + link + '\n\n' +
+        'После входа смените пароль в разделе «Настройки».';
+
+      studiaMaiStorageSet(STUDIA_MAI_TEMP_CREDS, JSON.stringify({
+        username: user,
+        password: pass,
+        expires: exp
+      }));
+
+      studiaMaiSendAdminEmail('Восстановление доступа — Админка Студия «Май»', msg)
+        .then(function (res) {
+          if (res.ok) {
+            studiaMaiSetStatus('Временный логин и пароль отправлены на ' + STUDIA_MAI_ADMIN_EMAIL);
+            var userEl = studiaMaiGet('loginUsername');
+            var passEl = studiaMaiGet('loginPassword');
+            if (userEl) userEl.value = user;
+            if (passEl) passEl.value = pass;
+          } else {
+            studiaMaiSetError('Не удалось отправить письмо. Попробуйте позже.');
+            studiaMaiSetStatus('');
+          }
+        })
+        .catch(function () {
+          studiaMaiSetError('Ошибка отправки. Проверьте интернет.');
+          studiaMaiSetStatus('');
+        });
       return false;
     }
 
     function studiaMaiParseRecoverUrl() {
       try {
-        if (window.location.search && window.history && window.history.replaceState) {
+        var search = window.location.search;
+        if (!search) return;
+        var params = new URLSearchParams(search);
+        var u = params.get('recover_user');
+        var p = params.get('recover_pass');
+        var exp = parseInt(params.get('recover_exp'), 10);
+        if (!u || !p || !exp || exp <= Date.now()) return;
+        studiaMaiStorageSet(STUDIA_MAI_TEMP_CREDS, JSON.stringify({
+          username: u,
+          password: p,
+          expires: exp
+        }));
+        if (window.history && window.history.replaceState) {
           window.history.replaceState({}, '', window.location.pathname);
         }
-        studiaMaiStorageRemove(STUDIA_MAI_TEMP_CREDS);
+        var userEl = studiaMaiGet('loginUsername');
+        var passEl = studiaMaiGet('loginPassword');
+        if (userEl) userEl.value = u;
+        if (passEl) passEl.value = p;
+        studiaMaiSetStatus('Временный доступ получен. Нажмите «Войти».');
       } catch (e) {}
     }
 
@@ -243,9 +306,39 @@
       if (!msg) return false;
       msg.hidden = true;
 
-      msg.textContent = 'Смена пароля в браузере отключена.';
-      msg.className = 'admin__msg';
+      if (current !== creds.password && current !== STUDIA_MAI_PASS) {
+        msg.textContent = 'Текущий пароль неверен';
+        msg.className = 'admin__msg';
+        msg.hidden = false;
+        return false;
+      }
+
+      var nextUser = newUser || creds.username;
+      var nextPass = newPass || creds.password;
+
+      if (nextUser.length < 3) {
+        msg.textContent = 'Логин — минимум 3 символа';
+        msg.className = 'admin__msg';
+        msg.hidden = false;
+        return false;
+      }
+
+      if (nextPass.length < 6) {
+        msg.textContent = 'Пароль — минимум 6 символов';
+        msg.className = 'admin__msg';
+        msg.hidden = false;
+        return false;
+      }
+
+      studiaMaiSaveCreds(nextUser, nextPass);
+      msg.textContent = 'Настройки сохранены. Новый логин: ' + nextUser;
+      msg.className = 'admin__msg admin__msg--ok';
       msg.hidden = false;
+      form.reset();
+      var welcome = studiaMaiGet('welcomeMsg');
+      if (welcome) {
+        welcome.textContent = 'Вы вошли как «' + nextUser + '». Упрощённая панель активна.';
+      }
       return false;
     }
 
@@ -432,9 +525,32 @@
 
       <section class="admin__panel" data-panel="notify">
         <h2>Уведомления о заявках</h2>
+        <p class="admin__msg admin__msg--ok">Заявки с сайта отправляются на <strong>brow_studia_may@mail.ru</strong>. Настройки сохраняются автоматически при вводе.</p>
         <div class="admin__notify-help">
-          <p>Заявки сохраняются в разделе «Заявки» и дублируются письмом на brow_studia_may@mail.ru. Telegram и внешние хранилища не используются.</p>
           <p>При первой заявке на почту может прийти письмо-подтверждение от FormSubmit — откройте его и нажмите «Activate Form», чтобы уведомления работали постоянно.</p>
+          <p>Дополнительно можно подключить Telegram или Google Таблицы для общего списка заявок.</p>
+        </div>
+        <div class="admin__form" id="notifyForm">
+          <label class="admin__field">
+            <span>Email для заявок</span>
+            <input type="email" id="notifyEmail" value="brow_studia_may@mail.ru" readonly>
+          </label>
+          <label class="admin__field">
+            <span>Ключ Web3Forms (дополнительно)</span>
+            <input type="text" id="notifyWeb3forms" placeholder="Необязательно">
+          </label>
+          <label class="admin__field">
+            <span>Токен Telegram-бота</span>
+            <input type="text" id="notifyTelegramToken" placeholder="Необязательно">
+          </label>
+          <label class="admin__field">
+            <span>Chat ID Telegram</span>
+            <input type="text" id="notifyTelegramChat" placeholder="Необязательно">
+          </label>
+          <label class="admin__field">
+            <span>URL хранилища заявок</span>
+            <input type="url" id="notifyBookingsApi" placeholder="https://script.google.com/macros/s/.../exec">
+          </label>
         </div>
         <p class="admin__msg" id="notifyMsg" hidden></p>
         <div class="admin__toolbar">
@@ -474,7 +590,7 @@
     </main>
   </div>
   <script src="../js/live-store.js?v=live1"></script>
-  <script src="../js/site-api.js?v=cms29"></script>
+  <script src="../js/site-api.js?v=cms28"></script>
   <script src="cms-schema.js?v=6"></script>
   <script src="admin-panel.js?v=16"></script>
 </body>

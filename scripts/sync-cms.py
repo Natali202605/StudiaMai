@@ -95,9 +95,6 @@ def main():
         if not isinstance(obj, dict) or not obj:
             continue
         target = ROOT / name
-        if name == "config.json":
-            enabled = obj.get("intakeEnabled") is True
-            obj = {"intakeEnabled": enabled}
         if name == "services.json" and target.exists():
             try:
                 previous_obj = json.loads(target.read_text(encoding="utf-8"))

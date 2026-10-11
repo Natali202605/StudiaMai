@@ -201,7 +201,7 @@
     hideError(loginError);
     updateHint();
     if (loginHint) {
-      loginHint.textContent = 'Сброс пароля в браузере отключён. Заявки через эту панель не принимаются.';
+      loginHint.textContent = 'Пароль сброшен. Логин: admin · Пароль: Mai2026!';
     }
   }
 
@@ -251,7 +251,8 @@
 
   function updateHint() {
     if (!loginHint) return;
-    loginHint.textContent = 'Заявки с сайта попадают в раздел «Заявки» и на почту студии.';
+    var creds = loadCreds();
+    loginHint.innerHTML = 'Логин: <strong>admin</strong> · Пароль: <strong>Mai2026!</strong><br>Текущий сохранённый логин: <strong>' + creds.username + '</strong>';
   }
 
   function init() {

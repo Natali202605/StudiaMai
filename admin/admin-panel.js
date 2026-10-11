@@ -1060,20 +1060,15 @@
     }, 400);
   }
 
-  window.studiaMaiSaveNotify = function () {
+  window.studiaMaiSaveNotify = function (silent) {
     var config = getConfigState();
-    delete config.web3formsAccessKey;
-    delete config.telegramBotToken;
-    delete config.telegramChatId;
-    delete config.bookingsApiUrl;
-    delete config.notificationEmail;
-    delete config.githubToken;
+    config.web3formsAccessKey = getEl('notifyWeb3forms') ? getEl('notifyWeb3forms').value.trim() : '';
+    config.notificationEmail = DEFAULT_NOTIFY_EMAIL;
+    config.telegramBotToken = getEl('notifyTelegramToken') ? getEl('notifyTelegramToken').value.trim() : '';
+    config.telegramChatId = getEl('notifyTelegramChat') ? getEl('notifyTelegramChat').value.trim() : '';
+    config.bookingsApiUrl = getEl('notifyBookingsApi') ? getEl('notifyBookingsApi').value.trim() : '';
     saveConfigState(config);
-    var msg = getEl('notifyMsg');
-    if (msg) {
-      msg.textContent = 'Секреты уведомлений не сохраняются. Приём заявок остаётся выключенным.';
-      msg.hidden = false;
-    }
+    publishToSite({ config: config }, 'notifyMsg', silent ? 'Сохранено.' : 'Настройки уведомлений сохранены.');
     return false;
   };
 
