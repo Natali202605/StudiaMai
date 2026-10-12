@@ -595,10 +595,6 @@
               content.booking_url || content.footer_booking_url || (business.sameAs && business.sameAs[1]) || ''
             ].filter(Boolean);
           }
-          if (business.aggregateRating) {
-            if (content.hero_stat_rating) business.aggregateRating.ratingValue = String(content.hero_stat_rating);
-            if (content.hero_stat_reviews) business.aggregateRating.reviewCount = String(content.hero_stat_reviews);
-          }
           if (content.footer_master && business.employee) business.employee.name = content.footer_master;
           if (content.master_role && business.employee) business.employee.jobTitle = content.master_role;
         }
