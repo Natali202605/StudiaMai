@@ -992,3 +992,20 @@ html[data-theme="olive"] {
   --color-powder-light: #E8E6D8;
 }
 
+:root,
+html[data-theme] {
+  --bg-mint-wash: linear-gradient(180deg, var(--page-bg) 0%, var(--color-bg-mint) 100%);
+  --card-gradient: #FFFFFF;
+  --card-gradient-soft: #FFFFFF;
+  --card-gradient-mint: #FFFFFF;
+  --card-gradient-beige: #FFFFFF;
+  --card-gradient-warm: #FFFFFF;
+  --card-gradient-hero: #FFFFFF;
+  --review-card-bg: #FFFFFF;
+  --review-card-solid: #FFFFFF;
+  --section-accent-bg: linear-gradient(var(--color-accent-dark), var(--color-accent-dark));
+  --consultation-bg: linear-gradient(var(--color-emerald-deep), var(--color-emerald-deep));
+  --section-cta-bg: linear-gradient(var(--color-emerald-accent), var(--color-emerald-accent));
+  --footer-bg: linear-gradient(var(--color-emerald-accent), var(--color-emerald-accent));
+}
+

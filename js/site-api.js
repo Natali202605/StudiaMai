@@ -65,10 +65,11 @@
 
   function applyTheme(theme) {
     const id = theme && typeof theme.id === 'string' ? theme.id : 'mint';
-    if (THEME_IDS.indexOf(id) === -1) {
-      document.documentElement.removeAttribute('data-theme');
-    } else {
-      document.documentElement.setAttribute('data-theme', id);
+    const next = THEME_IDS.indexOf(id) === -1 ? '' : id;
+    const current = document.documentElement.getAttribute('data-theme') || '';
+    if (current !== next) {
+      if (!next) document.documentElement.removeAttribute('data-theme');
+      else document.documentElement.setAttribute('data-theme', next);
     }
     const meta = document.querySelector('meta[name="theme-color"]');
     if (meta) {
@@ -146,7 +147,7 @@
         : Promise.resolve(null);
       liveBundlePromise = Promise.race([
         read,
-        new Promise((resolve) => setTimeout(() => resolve(null), 2500))
+        new Promise((resolve) => setTimeout(() => resolve(null), 800))
       ]);
     }
     return liveBundlePromise;
@@ -332,12 +333,8 @@
     const heroLabels = document.querySelectorAll('.hero__stats .hero__stat-label');
     if (heroValues[0] && content.hero_stat_rating != null) heroValues[0].textContent = content.hero_stat_rating;
     if (heroLabels[0] && content.hero_stat_rating_label != null) heroLabels[0].textContent = content.hero_stat_rating_label;
-    if (heroValues[1]) {
-      if (Array.isArray(content.reviews)) {
-        heroValues[1].textContent = String(content.reviews.length);
-      } else if (content.hero_stat_reviews != null) {
-        heroValues[1].textContent = content.hero_stat_reviews;
-      }
+    if (heroValues[1] && content.hero_stat_reviews != null && content.hero_stat_reviews !== '') {
+      heroValues[1].textContent = content.hero_stat_reviews;
     }
     if (heroLabels[1] && content.hero_stat_reviews_label != null) heroLabels[1].textContent = content.hero_stat_reviews_label;
 
@@ -757,13 +754,20 @@
 
   async function loadCms() {
     await resolveCacheBust();
+    const themeFilePromise = fetchDataJson('theme.json');
+    themeFilePromise.then((themeFile) => {
+      if (themeFile && themeFile.id) applyTheme(themeFile);
+    });
     const [data, services, themeFile, live] = await Promise.all([
       loadContentData(),
       loadServicesData(),
-      fetchDataJson('theme.json'),
+      themeFilePromise,
       loadLiveBundle()
     ]);
-    applyTheme((live && live.theme) || themeFile);
+    const liveTheme = live && live.theme;
+    const liveId = liveTheme && typeof liveTheme.id === 'string' ? liveTheme.id : '';
+    if (THEME_IDS.indexOf(liveId) !== -1) applyTheme(liveTheme);
+    else if (themeFile && themeFile.id) applyTheme(themeFile);
     applyContent(data.content);
     applyImages(data.images);
     if (services) applyServices(services);
