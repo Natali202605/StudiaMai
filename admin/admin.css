@@ -477,6 +477,18 @@ body {
   cursor: pointer;
   margin-bottom: 8px;
   position: relative;
+  overflow: hidden;
+}
+
+.admin__photo-upload input[type="file"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  font-size: 16px;
+  cursor: pointer;
 }
 
 .admin__toolbar {
@@ -715,13 +727,69 @@ body {
 }
 
 @media (max-width: 900px) {
-  .admin { grid-template-columns: 1fr; }
-  .admin__sidebar { flex-direction: row; flex-wrap: wrap; gap: 8px; }
-  .admin__nav { flex-direction: row; flex-wrap: wrap; flex: none; width: 100%; }
-  .admin__logout { margin-top: 0; width: 100%; }
-  .admin__main { padding: 20px; }
-  .admin__proc-row { grid-template-columns: 1fr; }
-  .admin__service-item__grid { grid-template-columns: 1fr; }
+  html, body { overflow-x: hidden; }
+  .admin {
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+    max-width: 100%;
+  }
+  .admin__sidebar,
+  .admin__main {
+    min-width: 0;
+    max-width: 100%;
+  }
+  .admin__sidebar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 16px;
+  }
+  .admin__brand { margin-bottom: 8px; }
+  .admin__nav {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    width: 100%;
+  }
+  .admin__nav-btn,
+  .admin__logout {
+    width: 100%;
+    margin-top: 0;
+  }
+  .admin__main {
+    overflow: visible;
+    padding: 16px;
+  }
+  .admin__toolbar,
+  .admin__service-item__head,
+  .admin__service-item__actions {
+    flex-wrap: wrap;
+  }
+  .admin__toolbar .admin-btn,
+  .admin__toolbar a.admin-btn {
+    width: 100%;
+    margin-right: 0;
+  }
+  .admin__proc-row,
+  .admin__service-item__grid,
+  .admin__photos,
+  .theme-grid {
+    grid-template-columns: 1fr;
+  }
+  .admin__table-wrap {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .admin__field input,
+  .admin__field textarea,
+  .admin__field select,
+  .admin__search input,
+  .login__field input,
+  .login__password-wrap input {
+    width: 100%;
+    max-width: 100%;
+    font-size: 16px;
+  }
 }
 
 .admin__form--cms {

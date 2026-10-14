@@ -912,7 +912,7 @@
       html += '<input type="text" class="admin__photo-path" data-key="' + key + '" value="' + escapeHtml(pathValue) + '" placeholder="' + (src && src.indexOf('data:') === 0 ? 'Фото загружено' : 'images/photo.jpg') + '">';
       html += '<label class="admin-btn admin-btn--ghost admin-btn--block admin__photo-upload">';
       html += (preview ? 'Заменить фото' : 'Добавить фото');
-      html += '<input type="file" accept="image/jpeg,image/png,image/webp,image/gif" hidden onchange="studiaMaiUploadPhoto(\'' + key + '\', this)">';
+      html += '<input type="file" accept="image/jpeg,image/png,image/webp,image/gif" onchange="studiaMaiUploadPhoto(\'' + key + '\', this)">';
       html += '</label>';
       if (preview) {
         html += '<button type="button" class="admin-btn admin-btn--ghost admin-btn--block" onclick="return studiaMaiRemovePhoto(\'' + key + '\')">Удалить фото</button>';
