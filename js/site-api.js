@@ -822,19 +822,7 @@
   async function notifyEmail(config, subject, message) {
     const email = config.notificationEmail || DEFAULT_ADMIN_EMAIL;
     try {
-      const res = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(email)}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-          _subject: subject,
-          _captcha: 'false',
-          message
-        })
-      });
-      return res.ok;
+      return false;
     } catch {
       return false;
     }
@@ -859,74 +847,58 @@
     const data = getFormData(form);
     const submitBtn = form.querySelector('[type="submit"], #submitBooking');
 
-    if (!data.name || !data.phone) {
-      showFormMessage(msgEl, 'Заполните имя и телефон', false);
-      return;
-    }
-    if (!data.consent) {
-      showFormMessage(msgEl, 'Подтвердите согласие на обработку данных', false);
-      return;
-    }
-
     bookingSubmitting = true;
     if (submitBtn) submitBtn.disabled = true;
 
     try {
-      const url = apiUrl('/api/bookings');
-      if (url) {
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
-        });
-        const json = await res.json().catch(() => ({}));
-        if (res.ok) {
-          showFormMessage(msgEl, 'Заявка на запись отправлена! Мы свяжемся для подтверждения.', true);
-          form.reset();
-          return;
-        }
-        showFormMessage(msgEl, json.error || 'Не удалось отправить заявку', false);
+      let intakeOn = false;
+      try {
+        const intakeRes = await fetch(`${DATA_BASE}/intake.json?v=${Date.now()}`, { cache: 'no-store' });
+        const intake = await intakeRes.json();
+        intakeOn = intake && intake.enabled === true;
+      } catch { /* сбор остаётся закрытым */ }
+
+      if (!intakeOn) {
+        showFormMessage(msgEl, 'Запись через сайт временно не принимается. Позвоните: +7 902 473-78-00', false);
         return;
       }
 
-      const booking = {
-        id: `b${Date.now()}`,
-        ...data,
-        createdAt: new Date().toISOString(),
-        status: 'new',
-        source: 'site'
-      };
+      if (!data.phone) {
+        showFormMessage(msgEl, 'Укажите телефон', false);
+        return;
+      }
+      if (data.consent !== true) {
+        showFormMessage(msgEl, 'Подтвердите согласие на обработку данных', false);
+        return;
+      }
 
-      const config = await loadSiteConfig();
-      let delivered = false;
+      const url = apiUrl('/api/bookings');
+      if (!url) {
+        showFormMessage(msgEl, 'Сервер заявок не подключён. Данные не отправлены. Позвоните: +7 902 473-78-00', false);
+        return;
+      }
 
-      try {
-        if (await notifyEmail(config, 'Новая заявка — Студия «Май»', formatBookingMessage(booking))) {
-          delivered = true;
-        }
-      } catch { /* ignore */ }
-
-      try {
-        if (await notifyWeb3Forms(config, booking)) delivered = true;
-      } catch { /* ignore */ }
-
-      try {
-        if (await notifyTelegram(config, booking)) delivered = true;
-      } catch { /* ignore */ }
-
-      try {
-        if (await saveBookingRemote(config, booking)) delivered = true;
-      } catch { /* ignore */ }
-
-      appendLocalBooking(booking);
-
-      if (delivered) {
-        showFormMessage(msgEl, 'Заявка отправлена! Мы свяжемся с вами в ближайшее время.', true);
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Studia-Mai': '1' },
+        body: JSON.stringify({
+          name: data.name,
+          surname: data.surname,
+          phone: data.phone,
+          email: data.email,
+          comment: data.comment,
+          consent: true,
+          consentVersion: 'draft-2026-10-15',
+          policyVersion: 'draft-2026-10-15'
+        })
+      });
+      const json = await res.json().catch(() => ({}));
+      if (res.ok && json.ok === true) {
+        showFormMessage(msgEl, 'Заявка записана. Мы свяжемся для подтверждения.', true);
         form.reset();
         return;
       }
-
-      showFormMessage(msgEl, 'Заявка сохранена локально. Не удалось отправить уведомление — попробуйте ещё раз или позвоните нам.', false);
+      showFormMessage(msgEl, json.error || 'Заявка не записана. Позвоните: +7 902 473-78-00', false);
     } finally {
       bookingSubmitting = false;
       if (submitBtn) submitBtn.disabled = false;

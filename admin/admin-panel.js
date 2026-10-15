@@ -75,7 +75,7 @@
     showMsg(msgId, okLocalText + ' Сохранение на сайт…', true);
     try {
       await live.publish(payload);
-      showMsg(msgId, okLocalText + ' Изменения уже на сайте для всех посетителей.', true);
+      showMsg(msgId, okLocalText + ' Сервер студии подтвердил сохранение.', true);
       return true;
     } catch (err) {
       showMsg(msgId, okLocalText + ' На этом компьютере сохранено, на сайт не отправилось. Нажмите «Сохранить» ещё раз.', false);

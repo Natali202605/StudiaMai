@@ -1188,6 +1188,8 @@
           <label class="booking-form__agree">
             <input type="checkbox" name="pd_consent">
             <span data-cms="booking_consent">Даю согласие на обработку персональных данных</span>
+            <a href="personal-data-consent.html">Текст согласия</a>
+            <a href="privacy.html">Политика</a>
           </label>
         </form>
       </div>
@@ -1586,7 +1588,7 @@
       });
 
       sanitizeReviewCards();
-      prependUserReviews(loadStoredReviews());
+      /* Новые отзывы из браузера не показываются как опубликованные. */
       sanitizeReviewCards();
 
       function loadRemoteReviews() {
@@ -1838,6 +1840,8 @@
         showReviewFormMessage('Заполните имя и текст отзыва', false);
         return;
       }
+      showReviewFormMessage('Новый отзыв не публикуется, пока владелец не утвердит отдельное согласие на распространение.', false);
+      return;
 
       const review = {
         id: `u${Date.now()}`,

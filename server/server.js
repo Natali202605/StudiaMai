@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import multer from 'multer';
+import crypto from 'crypto';
 import { isPrivateRequestPath, validateBooking } from './intake-policy.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -122,20 +123,37 @@ let db = secretsReady ? loadDb() : {
   userReviews: []
 };
 
-function authMiddleware(req, res, next) {
-  const header = req.headers.authorization || '';
-  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
-  if (!token) return res.status(401).json({ error: 'Требуется авторизация' });
-  try {
-    req.user = jwt.verify(token, JWT_SECRET);
-    const currentVersion = db.user && db.user.sessionVersion || 0;
-    if ((req.user.sessionVersion || 0) !== currentVersion) {
-      return res.status(401).json({ error: 'Сессия отозвана. Войдите снова' });
-    }
-    next();
-  } catch {
-    res.status(401).json({ error: 'Сессия истекла, войдите снова' });
+function readCookie(req, name) {
+  const raw = String(req.headers.cookie || '');
+  const parts = raw.split(';');
+  for (const part of parts) {
+    const [key, ...rest] = part.trim().split('=');
+    if (key === name) return decodeURIComponent(rest.join('='));
   }
+  return '';
+}
+
+function setSessionCookie(res, id) {
+  const secure = process.env.COOKIE_SECURE === '1' ? '; Secure' : '';
+  res.setHeader('Set-Cookie', `studia_mai_session=${encodeURIComponent(id)}; HttpOnly; SameSite=Lax; Path=/; Max-Age=43200${secure}`);
+}
+
+function clearSessionCookie(res) {
+  res.setHeader('Set-Cookie', 'studia_mai_session=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0');
+}
+
+function authMiddleware(req, res, next) {
+  if (!['GET', 'HEAD', 'OPTIONS'].includes(req.method) && req.get('X-Studia-Mai') !== '1') {
+    return res.status(403).json({ error: 'Запрос отклонён' });
+  }
+  const sid = readCookie(req, 'studia_mai_session');
+  const session = sid && db.sessions && db.sessions[sid];
+  const currentVersion = db.user && db.user.sessionVersion || 0;
+  if (!session || session.expires < Date.now() || session.sessionVersion !== currentVersion) {
+    return res.status(401).json({ error: 'Требуется авторизация' });
+  }
+  req.user = { username: session.username };
+  next();
 }
 
 const storage = multer.diskStorage({
@@ -211,12 +229,24 @@ app.post('/api/auth/login', (req, res) => {
   if (cleanUsername !== db.user.username || !bcrypt.compareSync(password || '', db.user.passwordHash)) {
     return res.status(401).json({ error: 'Неверный логин или пароль' });
   }
-  const token = jwt.sign({
-    role: 'admin',
+  if (!db.sessions) db.sessions = {};
+  const sid = crypto.randomBytes(32).toString('hex');
+  db.sessions[sid] = {
     username: cleanUsername,
-    sessionVersion: db.user.sessionVersion || 0
-  }, JWT_SECRET, { expiresIn: '12h' });
-  res.json({ token, username: cleanUsername });
+    sessionVersion: db.user.sessionVersion || 0,
+    expires: Date.now() + 12 * 60 * 60 * 1000
+  };
+  saveDb(db);
+  setSessionCookie(res, sid);
+  res.json({ ok: true, username: cleanUsername });
+});
+
+app.post('/api/auth/logout', (req, res) => {
+  const sid = readCookie(req, 'studia_mai_session');
+  if (sid && db.sessions) delete db.sessions[sid];
+  if (secretsReady) saveDb(db);
+  clearSessionCookie(res);
+  res.json({ ok: true });
 });
 
 app.post('/api/auth/change-password', authMiddleware, (req, res) => {
@@ -277,6 +307,9 @@ app.post('/api/images/:key', authMiddleware, upload.single('file'), (req, res) =
 });
 
 app.post('/api/leads', (req, res) => {
+  if (process.env.INTAKE_ENABLED !== 'true') {
+    return res.status(403).json({ error: 'Приём заявок выключен' });
+  }
   if (!allowHit('lead:' + (req.ip || 'local'), 5, 10 * 60 * 1000)) {
     return res.status(429).json({ error: 'Слишком много заявок. Повторите позже.' });
   }
@@ -306,6 +339,9 @@ app.patch('/api/leads/:id', authMiddleware, (req, res) => {
 });
 
 app.post('/api/bookings', (req, res) => {
+  if (process.env.INTAKE_ENABLED !== 'true') {
+    return res.status(403).json({ error: 'Приём заявок выключен' });
+  }
   if (!allowHit('booking:' + (req.ip || 'local'), 5, 10 * 60 * 1000)) {
     return res.status(429).json({ error: 'Слишком много заявок. Повторите позже.' });
   }
@@ -384,6 +420,15 @@ app.post('/api/reviews', authMiddleware, (req, res) => {
   db.userReviews.unshift(review);
   saveDb(db);
   res.json({ ok: true, review });
+});
+
+app.post('/api/cms', authMiddleware, (req, res) => {
+  const body = req.body || {};
+  if (body.content && typeof body.content === 'object' && !Array.isArray(body.content)) db.content = body.content;
+  if (body.services && typeof body.services === 'object' && !Array.isArray(body.services)) db.services = body.services;
+  if (body.theme && typeof body.theme.id === 'string') db.theme = { id: body.theme.id.slice(0, 40) };
+  saveDb(db);
+  res.json({ ok: true });
 });
 
 app.get('/api/stats', authMiddleware, (_req, res) => {

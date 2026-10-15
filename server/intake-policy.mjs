@@ -49,9 +49,14 @@ export function isPrivateRequestPath(urlPath) {
   );
 }
 
+export const CONSENT_VERSION = 'draft-2026-10-15';
+
 export function validateBooking(body) {
   const source = body && typeof body === 'object' ? body : {};
   if (!consentIsTrue(source.consent)) return { ok: false, status: 400, error: 'Нужно согласие на обработку данных' };
+  if (source.consentVersion !== CONSENT_VERSION || source.policyVersion !== CONSENT_VERSION) {
+    return { ok: false, status: 400, error: 'Неизвестная версия документа' };
+  }
   const name = String(source.name || '').trim().slice(0, 80);
   const phone = normalizePhone(source.phone);
   if (!name || !phone) return { ok: false, status: 400, error: 'Укажите имя и телефон' };

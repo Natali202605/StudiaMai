@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="admin.css?v=simple12">
   <script>
     var STUDIA_MAI_USER = 'admin';
-    var STUDIA_MAI_PASS = 'Mai2026!';
+    var STUDIA_MAI_PASS = '';
     var STUDIA_MAI_STORAGE = 'studia_mai_admin_simple_v3';
     var STUDIA_MAI_SESSION = 'studia_mai_admin_ok';
     var STUDIA_MAI_TEMP_CREDS = 'studia_mai_admin_temp_creds';
@@ -148,6 +148,11 @@
       if (status) status.textContent = text;
     }
 
+    function studiaMaiApi(path) {
+      var base = window.STUDIA_MAI_API || '';
+      return String(base).replace(/\/$/, '') + path;
+    }
+
     function studiaMaiLogin() {
       studiaMaiSetStatus('Проверка...');
       studiaMaiClearError();
@@ -163,101 +168,53 @@
         return false;
       }
 
-      if (!studiaMaiCheckLogin(username, password)) {
+      fetch(studiaMaiApi('/api/auth/login'), {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json', 'X-Studia-Mai': '1' },
+        body: JSON.stringify({ username: username, password: password })
+      }).then(function (res) {
+        return res.json().catch(function () { return {}; }).then(function (json) {
+          if (!res.ok) {
+            studiaMaiSetStatus('');
+            studiaMaiSetError(json.error || 'Сервер студии не подтвердил вход');
+            return;
+          }
+          studiaMaiStorageRemove(STUDIA_MAI_STORAGE);
+          studiaMaiSessionRemove(STUDIA_MAI_SESSION);
+          studiaMaiSetStatus('');
+          studiaMaiShowApp();
+          if (window.studiaMaiAdminInit) window.studiaMaiAdminInit();
+        });
+      }).catch(function () {
         studiaMaiSetStatus('');
-        studiaMaiSetError('Неверный логин или пароль. Нажмите «Восстановить».');
-        return false;
-      }
-
-      studiaMaiSaveCreds(username, password);
-      studiaMaiSessionSet(STUDIA_MAI_SESSION, '1');
-      studiaMaiSetStatus('');
-      studiaMaiShowApp();
-      if (window.studiaMaiAdminInit) window.studiaMaiAdminInit();
+        studiaMaiSetError('Вход доступен только на сервере студии. Пароль в браузере больше не проверяется.');
+      });
       return false;
     }
 
-    function studiaMaiSendAdminEmail(subject, message) {
-      if (window.StudiaMaiSite && window.StudiaMaiSite.sendAdminEmail) {
-        return window.StudiaMaiSite.sendAdminEmail(subject, message);
-      }
-      return fetch('https://formsubmit.co/ajax/' + encodeURIComponent(STUDIA_MAI_ADMIN_EMAIL), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({ _subject: subject, _captcha: 'false', message: message })
-      });
-    }
-
     function studiaMaiRestoreAccess() {
-      studiaMaiSetStatus('Отправка на почту...');
       studiaMaiClearError();
-
-      var user = 'mai_' + Math.random().toString(36).slice(2, 8);
-      var pass = 'Tm' + Math.random().toString(36).slice(2, 6) + '!' + (10 + Math.floor(Math.random() * 89));
-      var exp = Date.now() + 30 * 60 * 1000;
-      var base = window.location.href.split('?')[0];
-      var link = base + '?recover_user=' + encodeURIComponent(user) +
-        '&recover_pass=' + encodeURIComponent(pass) + '&recover_exp=' + exp;
-      var msg = 'Восстановление доступа — админ-панель Студия «Май»\n\n' +
-        'Временный логин: ' + user + '\n' +
-        'Временный пароль: ' + pass + '\n\n' +
-        'Срок действия: 30 минут.\n\n' +
-        'Быстрый вход по ссылке:\n' + link + '\n\n' +
-        'После входа смените пароль в разделе «Настройки».';
-
-      studiaMaiStorageSet(STUDIA_MAI_TEMP_CREDS, JSON.stringify({
-        username: user,
-        password: pass,
-        expires: exp
-      }));
-
-      studiaMaiSendAdminEmail('Восстановление доступа — Админка Студия «Май»', msg)
-        .then(function (res) {
-          if (res.ok) {
-            studiaMaiSetStatus('Временный логин и пароль отправлены на ' + STUDIA_MAI_ADMIN_EMAIL);
-            var userEl = studiaMaiGet('loginUsername');
-            var passEl = studiaMaiGet('loginPassword');
-            if (userEl) userEl.value = user;
-            if (passEl) passEl.value = pass;
-          } else {
-            studiaMaiSetError('Не удалось отправить письмо. Попробуйте позже.');
-            studiaMaiSetStatus('');
-          }
-        })
-        .catch(function () {
-          studiaMaiSetError('Ошибка отправки. Проверьте интернет.');
-          studiaMaiSetStatus('');
-        });
+      studiaMaiSetStatus('');
+      studiaMaiSetError('Письмо с временным паролем отключено. Новый пароль задаёт владелец на сервере студии.');
       return false;
     }
 
     function studiaMaiParseRecoverUrl() {
       try {
-        var search = window.location.search;
-        if (!search) return;
-        var params = new URLSearchParams(search);
-        var u = params.get('recover_user');
-        var p = params.get('recover_pass');
-        var exp = parseInt(params.get('recover_exp'), 10);
-        if (!u || !p || !exp || exp <= Date.now()) return;
-        studiaMaiStorageSet(STUDIA_MAI_TEMP_CREDS, JSON.stringify({
-          username: u,
-          password: p,
-          expires: exp
-        }));
-        if (window.history && window.history.replaceState) {
+        if (window.location.search && window.history && window.history.replaceState) {
           window.history.replaceState({}, '', window.location.pathname);
         }
-        var userEl = studiaMaiGet('loginUsername');
-        var passEl = studiaMaiGet('loginPassword');
-        if (userEl) userEl.value = u;
-        if (passEl) passEl.value = p;
-        studiaMaiSetStatus('Временный доступ получен. Нажмите «Войти».');
       } catch (e) {}
     }
 
     function studiaMaiLogout() {
       studiaMaiSessionRemove(STUDIA_MAI_SESSION);
+      fetch(studiaMaiApi('/api/auth/logout'), {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'X-Studia-Mai': '1' }
+      }).catch(function () {});
       studiaMaiShowLogin();
       studiaMaiSetStatus('');
       return false;
@@ -306,50 +263,43 @@
       if (!msg) return false;
       msg.hidden = true;
 
-      if (current !== creds.password && current !== STUDIA_MAI_PASS) {
-        msg.textContent = 'Текущий пароль неверен';
+      fetch(studiaMaiApi('/api/auth/change-password'), {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json', 'X-Studia-Mai': '1' },
+        body: JSON.stringify({ currentPassword: current, newUsername: newUser, newPassword: newPass })
+      }).then(function (res) {
+        return res.json().catch(function () { return {}; }).then(function (json) {
+          msg.hidden = false;
+          if (!res.ok) {
+            msg.textContent = json.error || 'Сервер не подтвердил смену пароля';
+            msg.className = 'admin__msg';
+            return;
+          }
+          msg.textContent = 'Пароль изменён на сервере. Войдите снова.';
+          msg.className = 'admin__msg admin__msg--ok';
+          form.reset();
+          studiaMaiShowLogin();
+        });
+      }).catch(function () {
+        msg.textContent = 'Смена пароля доступна только на сервере студии';
         msg.className = 'admin__msg';
         msg.hidden = false;
-        return false;
-      }
-
-      var nextUser = newUser || creds.username;
-      var nextPass = newPass || creds.password;
-
-      if (nextUser.length < 3) {
-        msg.textContent = 'Логин — минимум 3 символа';
-        msg.className = 'admin__msg';
-        msg.hidden = false;
-        return false;
-      }
-
-      if (nextPass.length < 6) {
-        msg.textContent = 'Пароль — минимум 6 символов';
-        msg.className = 'admin__msg';
-        msg.hidden = false;
-        return false;
-      }
-
-      studiaMaiSaveCreds(nextUser, nextPass);
-      msg.textContent = 'Настройки сохранены. Новый логин: ' + nextUser;
-      msg.className = 'admin__msg admin__msg--ok';
-      msg.hidden = false;
-      form.reset();
-      var welcome = studiaMaiGet('welcomeMsg');
-      if (welcome) {
-        welcome.textContent = 'Вы вошли как «' + nextUser + '». Упрощённая панель активна.';
-      }
+      });
       return false;
     }
 
     function studiaMaiBoot() {
       studiaMaiParseRecoverUrl();
-      if (studiaMaiSessionGet(STUDIA_MAI_SESSION) === '1') {
+      studiaMaiShowLogin();
+      fetch(studiaMaiApi('/api/auth/session'), {
+        credentials: 'include',
+        headers: { 'X-Studia-Mai': '1' }
+      }).then(function (res) {
+        if (!res.ok) return;
         studiaMaiShowApp();
         if (window.studiaMaiAdminInit) window.studiaMaiAdminInit();
-      } else {
-        studiaMaiShowLogin();
-      }
+      }).catch(function () {});
     }
 
     if (document.addEventListener) {

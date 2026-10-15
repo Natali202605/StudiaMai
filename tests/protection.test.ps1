@@ -10,7 +10,8 @@ function Read-Text($path) {
 }
 
 $api = Read-Text 'js\site-api.js'
-Assert 'email path remains' ($api.Contains('formsubmit.co/ajax') -and $api.Contains('appendLocalBooking(booking)'))
+Assert 'email path closed' (-not $api.Contains('formsubmit.co/ajax'))
+Assert 'local booking not appended on submit' (-not $api.Contains('appendLocalBooking(booking);'))
 Assert 'web3forms removed' (-not $api.Contains('api.web3forms.com'))
 Assert 'telegram send removed' (-not $api.Contains('api.telegram.org'))
 Assert 'arbitrary booking url removed' (-not $api.Contains('config.bookingsApiUrl'))

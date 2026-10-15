@@ -4,7 +4,7 @@
   var STORAGE_KEY = 'studia_mai_admin_simple_v2';
   var SESSION_KEY = 'studia_mai_admin_ok';
   var DEFAULT_USER = 'admin';
-  var DEFAULT_PASS = 'Mai2026!';
+  var DEFAULT_PASS = '';
   var memoryCreds = null;
 
   var loginScreen = document.getElementById('loginScreen');
@@ -201,7 +201,7 @@
     hideError(loginError);
     updateHint();
     if (loginHint) {
-      loginHint.textContent = 'Пароль сброшен. Логин: admin · Пароль: Mai2026!';
+      loginHint.textContent = 'Сброс пароля в браузере отключён.';
     }
   }
 
@@ -252,7 +252,7 @@
   function updateHint() {
     if (!loginHint) return;
     var creds = loadCreds();
-    loginHint.innerHTML = 'Логин: <strong>admin</strong> · Пароль: <strong>Mai2026!</strong><br>Текущий сохранённый логин: <strong>' + creds.username + '</strong>';
+    loginHint.textContent = 'Вход выполняется на сервере студии.';
   }
 
   function init() {
