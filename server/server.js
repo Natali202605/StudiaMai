@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import multer from 'multer';
+import { isPrivateRequestPath, validateBooking } from './intake-policy.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
@@ -14,9 +15,10 @@ const DB_PATH = path.join(DATA_DIR, 'db.json');
 const UPLOADS_DIR = path.join(ROOT, 'uploads');
 
 const PORT = process.env.PORT || 3000;
-const JWT_SECRET = process.env.JWT_SECRET || 'studia-mai-dev-secret-change-me';
+const JWT_SECRET = process.env.JWT_SECRET || '';
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'mai';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'mai2026';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
+const secretsReady = JWT_SECRET.length >= 24 && ADMIN_PASSWORD.length >= 10;
 
 const DEFAULT_PROCEDURES = [
   { id: 'p1', category: 'Брови / Броволог', name: 'SMART-коррекция бровей', price: 'от 1 500 ₽', duration: '1 час' },
@@ -109,7 +111,16 @@ function saveDb(db) {
   fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), 'utf8');
 }
 
-let db = loadDb();
+let db = secretsReady ? loadDb() : {
+  user: null,
+  setupComplete: false,
+  content: {},
+  images: { ...DEFAULT_IMAGES },
+  procedures: [...DEFAULT_PROCEDURES],
+  leads: [],
+  bookings: [],
+  userReviews: []
+};
 
 function authMiddleware(req, res, next) {
   const header = req.headers.authorization || '';
@@ -117,6 +128,10 @@ function authMiddleware(req, res, next) {
   if (!token) return res.status(401).json({ error: 'Требуется авторизация' });
   try {
     req.user = jwt.verify(token, JWT_SECRET);
+    const currentVersion = db.user && db.user.sessionVersion || 0;
+    if ((req.user.sessionVersion || 0) !== currentVersion) {
+      return res.status(401).json({ error: 'Сессия отозвана. Войдите снова' });
+    }
     next();
   } catch {
     res.status(401).json({ error: 'Сессия истекла, войдите снова' });
@@ -130,15 +145,43 @@ const storage = multer.diskStorage({
     cb(null, `${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`);
   }
 });
-const upload = multer({ storage, limits: { fileSize: 8 * 1024 * 1024 } });
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    const ext = path.extname(file.originalname || '').toLowerCase();
+    cb(null, ['.jpg', '.jpeg', '.png', '.webp', '.gif'].includes(ext));
+  }
+});
 
 const app = express();
-app.use(cors());
-app.use(express.json({ limit: '2mb' }));
+if (process.env.TRUST_PROXY === '1') app.set('trust proxy', 1);
+const allowedOrigins = String(process.env.CORS_ORIGINS || '').split(',').map((item) => item.trim()).filter(Boolean);
+app.use(cors({ origin: allowedOrigins.length ? allowedOrigins : false }));
+app.use(express.json({ limit: '1mb' }));
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  if (req.path.startsWith('/api/')) res.setHeader('Cache-Control', 'no-store');
+  if (isPrivateRequestPath(req.path)) return res.status(404).end();
+  next();
+});
 
-app.use('/uploads', express.static(UPLOADS_DIR));
-app.use('/admin', express.static(path.join(ROOT, 'admin')));
-app.use(express.static(ROOT));
+const hits = new Map();
+function allowHit(key, limit, windowMs) {
+  const now = Date.now();
+  const fresh = (hits.get(key) || []).filter((time) => now - time < windowMs);
+  if (fresh.length >= limit) return false;
+  fresh.push(now);
+  hits.set(key, fresh);
+  return true;
+}
+
+app.use('/uploads', express.static(UPLOADS_DIR, { dotfiles: 'deny', index: false }));
+app.use('/admin', express.static(path.join(ROOT, 'admin'), { dotfiles: 'deny' }));
+app.use(express.static(ROOT, { dotfiles: 'deny', index: ['index.html'] }));
 
 app.get('/api/auth/status', (_req, res) => {
   res.json({
@@ -151,36 +194,28 @@ app.get('/api/auth/session', authMiddleware, (req, res) => {
   res.json({ ok: true, username: req.user.username });
 });
 
-app.post('/api/auth/register', (req, res) => {
-  if (db.setupComplete) {
-    return res.status(403).json({ error: 'Регистрация уже выполнена. Войдите или смените данные в настройках.' });
-  }
-  const { username, password, passwordConfirm } = req.body || {};
-  const usernameError = validateUsername(username);
-  if (usernameError) return res.status(400).json({ error: usernameError });
-  const passwordError = validatePassword(password);
-  if (passwordError) return res.status(400).json({ error: passwordError });
-  if (password !== passwordConfirm) {
-    return res.status(400).json({ error: 'Пароли не совпадают' });
-  }
-  const cleanUsername = String(username).trim();
-  db.user = { username: cleanUsername, passwordHash: bcrypt.hashSync(password, 10) };
-  db.setupComplete = true;
-  saveDb(db);
-  const token = jwt.sign({ role: 'admin', username: cleanUsername }, JWT_SECRET, { expiresIn: '12h' });
-  res.json({ token, username: cleanUsername });
+app.post('/api/auth/register', (_req, res) => {
+  return res.status(403).json({ error: 'Открытая регистрация администратора отключена' });
 });
 
 app.post('/api/auth/login', (req, res) => {
-  if (!db.user?.username) {
-    return res.status(403).json({ error: 'Сначала зарегистрируйте логин и пароль администратора' });
+  const ip = req.ip || 'local';
+  if (!allowHit('login:' + ip, 8, 15 * 60 * 1000)) {
+    return res.status(429).json({ error: 'Слишком много попыток входа. Повторите позже.' });
+  }
+  if (!db.user?.username || !db.user.passwordHash) {
+    return res.status(403).json({ error: 'Администратор ещё не создан на сервере' });
   }
   const { username, password } = req.body || {};
   const cleanUsername = String(username || '').trim();
   if (cleanUsername !== db.user.username || !bcrypt.compareSync(password || '', db.user.passwordHash)) {
     return res.status(401).json({ error: 'Неверный логин или пароль' });
   }
-  const token = jwt.sign({ role: 'admin', username: cleanUsername }, JWT_SECRET, { expiresIn: '12h' });
+  const token = jwt.sign({
+    role: 'admin',
+    username: cleanUsername,
+    sessionVersion: db.user.sessionVersion || 0
+  }, JWT_SECRET, { expiresIn: '12h' });
   res.json({ token, username: cleanUsername });
 });
 
@@ -198,6 +233,7 @@ app.post('/api/auth/change-password', authMiddleware, (req, res) => {
     const passwordError = validatePassword(newPassword);
     if (passwordError) return res.status(400).json({ error: passwordError });
     db.user.passwordHash = bcrypt.hashSync(newPassword, 10);
+    db.user.sessionVersion = (db.user.sessionVersion || 0) + 1;
   }
   if (!newUsername && !newPassword) {
     return res.status(400).json({ error: 'Укажите новый логин и/или новый пароль' });
@@ -241,23 +277,20 @@ app.post('/api/images/:key', authMiddleware, upload.single('file'), (req, res) =
 });
 
 app.post('/api/leads', (req, res) => {
-  const { name, surname, phone, email, consent } = req.body || {};
-  if (!name || !phone) {
-    return res.status(400).json({ error: 'Укажите имя и телефон' });
+  if (!allowHit('lead:' + (req.ip || 'local'), 5, 10 * 60 * 1000)) {
+    return res.status(429).json({ error: 'Слишком много заявок. Повторите позже.' });
   }
+  const checked = validateBooking(req.body);
+  if (!checked.ok) return res.status(checked.status).json({ error: checked.error });
   const lead = {
     id: `l${Date.now()}`,
-    name: String(name).trim(),
-    surname: String(surname || '').trim(),
-    phone: String(phone).trim(),
-    email: String(email || '').trim(),
-    consent: Boolean(consent),
+    ...checked.booking,
     createdAt: new Date().toISOString(),
     status: 'new'
   };
   db.leads.unshift(lead);
   saveDb(db);
-  res.json({ ok: true, lead });
+  res.json({ ok: true });
 });
 
 app.get('/api/leads', authMiddleware, (_req, res) => {
@@ -273,23 +306,20 @@ app.patch('/api/leads/:id', authMiddleware, (req, res) => {
 });
 
 app.post('/api/bookings', (req, res) => {
-  const { name, surname, phone, email, procedureId, procedureName, preferredDate, consent, comment } = req.body || {};
-  if (!name || !phone) {
-    return res.status(400).json({ error: 'Укажите имя и телефон' });
+  if (!allowHit('booking:' + (req.ip || 'local'), 5, 10 * 60 * 1000)) {
+    return res.status(429).json({ error: 'Слишком много заявок. Повторите позже.' });
   }
+  const checked = validateBooking(req.body);
+  if (!checked.ok) return res.status(checked.status).json({ error: checked.error });
+  const procedureId = String((req.body || {}).procedureId || '').slice(0, 40);
   const procedure = procedureId ? db.procedures.find(p => p.id === procedureId) : null;
   const booking = {
     id: `b${Date.now()}`,
-    name: String(name).trim(),
-    surname: String(surname || '').trim(),
-    phone: String(phone).trim(),
-    email: String(email || '').trim(),
-    procedureId: procedureId || '',
-    procedureName: procedureName || procedure?.name || '',
+    ...checked.booking,
+    procedureId,
+    procedureName: String((req.body || {}).procedureName || procedure?.name || '').slice(0, 160),
     category: procedure?.category || '',
-    preferredDate: preferredDate || '',
-    comment: String(comment || '').trim(),
-    consent: Boolean(consent),
+    preferredDate: String((req.body || {}).preferredDate || '').slice(0, 40),
     createdAt: new Date().toISOString(),
     status: 'new'
   };
@@ -308,7 +338,7 @@ app.post('/api/bookings', (req, res) => {
   };
   db.leads.unshift(lead);
   saveDb(db);
-  res.json({ ok: true, booking });
+  res.json({ ok: true });
 });
 
 app.get('/api/bookings', authMiddleware, (_req, res) => {
@@ -333,7 +363,7 @@ app.get('/api/reviews', (_req, res) => {
   res.json({ reviews: db.userReviews || [] });
 });
 
-app.post('/api/reviews', (req, res) => {
+app.post('/api/reviews', authMiddleware, (req, res) => {
   const { author, text } = req.body || {};
   const cleanAuthor = String(author || '').trim();
   const cleanText = String(text || '').trim();
@@ -369,13 +399,12 @@ app.get('/admin', (_req, res) => {
   res.sendFile(path.join(ROOT, 'admin', 'index.html'));
 });
 
+if (!secretsReady) {
+  console.error('Сервер не запущен: задайте JWT_SECRET не короче 24 символов и ADMIN_PASSWORD не короче 10 символов.');
+  process.exit(1);
+}
+
 ensureDirs();
 app.listen(PORT, () => {
-  console.log(`Студия «Май» — сервер: http://localhost:${PORT}`);
-  console.log(`Админ-панель: http://localhost:${PORT}/admin`);
-  if (!db.setupComplete) {
-    console.log('Первый вход: зарегистрируйте логин и пароль на странице входа.');
-  } else {
-    console.log(`Администратор: ${db.user.username}`);
-  }
+  console.log(`Студия «Май» — сервер запущен на порту ${PORT}`);
 });

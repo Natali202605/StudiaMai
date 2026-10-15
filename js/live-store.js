@@ -209,11 +209,9 @@
 
   function publicConfig(config) {
     var out = {};
-    var key;
-    for (key in config || {}) {
-      if (!Object.prototype.hasOwnProperty.call(config, key)) continue;
-      if (key === 'githubToken') continue;
-      out[key] = config[key];
+    var source = config || {};
+    if (typeof source.notificationEmail === 'string' && source.notificationEmail.trim()) {
+      out.notificationEmail = source.notificationEmail.trim();
     }
     return out;
   }

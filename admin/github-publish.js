@@ -123,8 +123,11 @@
   }
 
   function publicConfig(config) {
-    var out = Object.assign({}, config || {});
-    delete out.githubToken;
+    var out = {};
+    var source = config || {};
+    if (typeof source.notificationEmail === 'string' && source.notificationEmail.trim()) {
+      out.notificationEmail = source.notificationEmail.trim();
+    }
     return out;
   }
 

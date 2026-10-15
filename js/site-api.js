@@ -840,43 +840,16 @@
     }
   }
 
-  async function notifyWeb3Forms(config, booking) {
-    if (!config.web3formsAccessKey) return false;
-    const body = new FormData();
-    body.append('access_key', config.web3formsAccessKey);
-    body.append('subject', 'Новая заявка — Студия «Май»');
-    body.append('name', `${booking.name} ${booking.surname}`.trim());
-    body.append('phone', booking.phone);
-    body.append('email', booking.email || 'не указан');
-    body.append('message', formatBookingMessage(booking));
-    if (config.notificationEmail) body.append('replyto', config.notificationEmail);
-    const res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body });
-    const json = await res.json().catch(() => ({}));
-    return res.ok && json.success;
+  async function notifyWeb3Forms() {
+    return false;
   }
 
-  async function notifyTelegram(config, booking) {
-    if (!config.telegramBotToken || !config.telegramChatId) return false;
-    const res = await fetch(`https://api.telegram.org/bot${config.telegramBotToken}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: config.telegramChatId,
-        text: formatBookingMessage(booking)
-      })
-    });
-    return res.ok;
+  async function notifyTelegram() {
+    return false;
   }
 
-  async function saveBookingRemote(config, booking) {
-    if (!config.bookingsApiUrl) return false;
-    const res = await fetch(config.bookingsApiUrl, {
-      method: 'POST',
-      mode: 'cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(booking)
-    });
-    return res.ok;
+  async function saveBookingRemote() {
+    return false;
   }
 
   let bookingSubmitting = false;

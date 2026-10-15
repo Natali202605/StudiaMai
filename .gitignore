@@ -6,6 +6,9 @@ server/node_modules/
 server/data/db.json
 uploads/
 .env
+server/data/
+*.bak
+backups/
 images.lnk
 уход маски.jpg
 images/СЃС‚СѓРґРёСЏ-РјР°Р№-logo.png
