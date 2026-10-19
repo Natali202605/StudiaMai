@@ -2498,6 +2498,25 @@ img[data-cms-img].is-cms-empty {
   background: var(--color-mint);
 }
 
+.reviews-yandex {
+  width: 100%;
+  margin-top: 28px;
+  scroll-margin-top: 120px;
+  background: #ffffff;
+  border: 1px solid rgba(var(--rgb-edge), 0.35);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-float-card);
+}
+
+.reviews-yandex__frame {
+  display: block;
+  width: 100%;
+  min-height: 760px;
+  border: 0;
+  background: #ffffff;
+}
+
 .reviews-slider__actions {
   display: flex;
   flex-direction: column;
