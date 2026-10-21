@@ -1,23 +1,9 @@
 (function () {
   const API = window.STUDIA_MAI_API;
   const DATA_BASE = window.STUDIA_MAI_DATA_BASE || 'data';
-  const STORAGE_CONTENT = 'studia_mai_cms_content';
-  const STORAGE_IMAGES = 'studia_mai_cms_images';
-  const STORAGE_SERVICES = 'studia_mai_cms_services';
-  const STORAGE_CONFIG = 'studia_mai_site_config';
-  const STORAGE_BOOKINGS = 'studia_mai_bookings_local';
   const DEFAULT_ADMIN_EMAIL = 'brow_studia_may@mail.ru';
   const DATA_CACHE_VERSION = 'cms14';
   let cacheBust = DATA_CACHE_VERSION;
-  const IS_ADMIN = /\/admin(?:\/|$)/i.test(location.pathname || '');
-
-  function storageGet(key) {
-    try { return localStorage.getItem(key); } catch { return null; }
-  }
-
-  function storageSet(key, value) {
-    try { localStorage.setItem(key, value); return true; } catch { return false; }
-  }
 
   function apiUrl(path) {
     if (!API) return null;
@@ -131,12 +117,6 @@
     return out;
   }
 
-  function readStorageJson(key) {
-    const raw = storageGet(key);
-    if (!raw) return null;
-    try { return JSON.parse(raw); } catch { return null; }
-  }
-
   let liveBundlePromise = null;
 
   function loadLiveBundle() {
@@ -155,8 +135,7 @@
 
   async function loadSiteConfig() {
     const [fromFile, live] = await Promise.all([fetchDataJson('config.json'), loadLiveBundle()]);
-    const fromStorage = IS_ADMIN ? readStorageJson(STORAGE_CONFIG) : null;
-    const merged = mergeObjects(mergeObjects(fromFile || {}, (live && live.config) || {}), fromStorage || {});
+    const merged = mergeObjects(fromFile || {}, (live && live.config) || {});
     if (!merged.notificationEmail) merged.notificationEmail = DEFAULT_ADMIN_EMAIL;
     return merged;
   }
@@ -173,12 +152,6 @@
     ]);
     const content = mergeObjects(contentFile || {}, (live && live.content) || {});
     const images = mergeImages(imagesFile || {}, (live && live.images) || {});
-    if (IS_ADMIN) {
-      return {
-        content: mergeObjects(content, readStorageJson(STORAGE_CONTENT)),
-        images: mergeImages(images, readStorageJson(STORAGE_IMAGES))
-      };
-    }
     return { content, images };
   }
 
@@ -747,9 +720,7 @@
 
   async function loadServicesData() {
     const [fromFile, live] = await Promise.all([fetchDataJson('services.json'), loadLiveBundle()]);
-    const merged = mergeServices(fromFile || {}, (live && live.services) || {});
-    if (IS_ADMIN) return mergeServices(merged, readStorageJson(STORAGE_SERVICES) || {});
-    return merged;
+    return mergeServices(fromFile || {}, (live && live.services) || {});
   }
 
   async function loadCms() {
@@ -803,20 +774,6 @@
       booking.comment ? `Комментарий: ${booking.comment}` : '',
       `Дата: ${new Date(booking.createdAt).toLocaleString('ru-RU')}`
     ].filter(Boolean).join('\n');
-  }
-
-  function readLocalBookings() {
-    return readStorageJson(STORAGE_BOOKINGS) || [];
-  }
-
-  function saveLocalBookings(bookings) {
-    storageSet(STORAGE_BOOKINGS, JSON.stringify(bookings));
-  }
-
-  function appendLocalBooking(booking) {
-    const list = readLocalBookings();
-    list.unshift(booking);
-    saveLocalBookings(list.slice(0, 200));
   }
 
   async function notifyEmail(config, subject, message) {
@@ -916,15 +873,8 @@
     applyServices,
     mergeImages,
     mergeServices,
-    readLocalBookings,
-    saveLocalBookings,
     sendAdminEmail: (subject, message) => notifyEmail({ notificationEmail: DEFAULT_ADMIN_EMAIL }, subject, message),
-    DEFAULT_ADMIN_EMAIL,
-    STORAGE_CONTENT,
-    STORAGE_IMAGES,
-    STORAGE_SERVICES,
-    STORAGE_CONFIG,
-    STORAGE_BOOKINGS
+    DEFAULT_ADMIN_EMAIL
   };
 
   document.addEventListener('DOMContentLoaded', () => {

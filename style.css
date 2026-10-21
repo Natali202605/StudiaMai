@@ -2577,22 +2577,50 @@ img[data-cms-img].is-cms-empty {
 
 .review-modal__dialog {
   position: relative;
-  width: min(100%, 760px);
+  width: min(100%, 560px);
   max-height: calc(100dvh - 48px - env(safe-area-inset-bottom, 0px));
   overflow-y: auto;
   touch-action: pan-y;
   -webkit-overflow-scrolling: touch;
-  padding: clamp(36px, 5vw, 52px);
+  padding: clamp(32px, 5vw, 44px);
   border-radius: var(--radius-xl);
-  border: var(--border-mint);
-  background-color: var(--review-card-solid);
-  background-image: var(--review-card-bg);
-  box-shadow: 0 8px 18px rgba(var(--rgb-review), 0.38), 0 2px 6px rgba(var(--rgb-review-2), 0.24), var(--shadow-inner);
+  border: 1px solid rgba(70, 76, 84, 0.14);
+  background: #ffffff;
+  box-shadow: 0 12px 36px rgba(26, 31, 36, 0.18), 0 2px 8px rgba(26, 31, 36, 0.08);
 }
 
 .review-modal__dialog .review-card__quote {
-  top: 8px;
-  left: clamp(20px, 3vw, 32px);
+  top: 10px;
+  left: clamp(22px, 4vw, 34px);
+  color: #c5cbd2;
+  opacity: 0.55;
+}
+
+.review-modal__dialog .review-card__stars {
+  margin: 8px 0 22px;
+  color: #8e97a3;
+  letter-spacing: 3px;
+}
+
+.review-modal__yandex-wrap {
+  position: relative;
+  z-index: 1;
+}
+
+.review-modal__yandex-note {
+  margin: 0 0 12px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #3a4048;
+}
+
+.review-modal__yandex {
+  display: block;
+  width: 100%;
+  min-height: 520px;
+  border: 0;
+  border-radius: 16px;
+  background: #ffffff;
 }
 
 .review-modal__title {
@@ -2655,8 +2683,8 @@ img[data-cms-img].is-cms-empty {
   margin: 0 0 8px;
   font-family: var(--font-sans);
   font-size: 16px;
-  font-weight: 500;
-  color: var(--color-text);
+  font-weight: 600;
+  color: #1a1f24;
 }
 
 .review-form__label span {
@@ -2667,7 +2695,7 @@ img[data-cms-img].is-cms-empty {
 .review-form {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   position: relative;
   z-index: 1;
 }
@@ -2676,30 +2704,33 @@ img[data-cms-img].is-cms-empty {
 .review-form textarea {
   width: 100%;
   padding: 16px 18px;
-  border: 1px solid rgba(70, 76, 84, 0.28);
-  border-radius: 12px;
+  border: 1px solid rgba(70, 76, 84, 0.22);
+  border-radius: 14px;
   background: #ffffff;
   font-family: var(--font-serif);
   font-size: 18px;
   font-style: italic;
-  color: var(--color-review-text);
+  color: #1a1f24;
   transition: border-color var(--transition), box-shadow var(--transition);
 }
 
 .review-form textarea {
   resize: vertical;
-  min-height: 140px;
+  min-height: 150px;
   line-height: 1.55;
+  margin-bottom: 4px;
 }
 
 .review-form #publishReview {
   align-self: flex-start;
-  margin-top: 12px;
-  min-width: 160px;
+  margin-top: 10px;
+  min-width: 168px;
   color: #1a1f24;
   -webkit-text-fill-color: #1a1f24;
   background: linear-gradient(180deg, #ffffff 0%, #e7eaee 100%);
+  border: 1px solid rgba(70, 76, 84, 0.16);
   text-shadow: none;
+  box-shadow: 0 4px 14px rgba(26, 31, 36, 0.12);
 }
 
 .review-form input::placeholder,
@@ -2894,13 +2925,22 @@ a.format-card {
 }
 
 .booking-form {
-  background: rgba(var(--rgb-mid), 0.34);
+  background: rgba(236, 238, 241, 0.96);
   border: 1px solid rgba(var(--rgb-edge), 0.42);
   border-radius: var(--radius-xl);
   padding: clamp(32px, 5vw, 44px);
   box-shadow: var(--shadow-float-card-accent), inset 0 1px 0 rgba(255, 255, 255, 0.26);
   position: relative;
-  color: #ffffff;
+  color: #1a1f24;
+}
+
+.booking-form__yandex {
+  display: block;
+  width: 100%;
+  min-height: 640px;
+  border: 0;
+  border-radius: 16px;
+  background: #f4f5f7;
 }
 
 .booking-form__head {
@@ -2916,9 +2956,9 @@ a.format-card {
   width: 52px;
   height: 52px;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(70, 76, 84, 0.18);
+  color: #3a4048;
 }
 
 .booking-form__icon svg {
@@ -2937,11 +2977,11 @@ a.format-card {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin: 10px 0 0 30px;
+  margin: 14px 0 0;
 }
 
 .booking-form__agree-links a {
-  color: #ffffff;
+  color: #1a1f24;
   font-size: 13px;
   line-height: 1.45;
   text-decoration: underline;
@@ -3076,12 +3116,13 @@ a.format-card {
 
 .booking-form__phone {
   font-size: 16px;
-  color: #ffffff;
+  margin-top: 16px;
+  color: #1a1f24;
 }
 
 .booking-form__phone a,
 .booking-form__phone-link {
-  color: #ffffff;
+  color: #1a1f24;
   font-weight: 500;
   text-decoration: underline;
   text-underline-offset: 3px;

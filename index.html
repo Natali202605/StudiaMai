@@ -105,7 +105,7 @@
   <link rel="preload" as="image" href="images/hero-studio.png">
   <link rel="preload" as="image" href="images/logo.png">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=sync38">
+  <link rel="stylesheet" href="style.css?v=sync40">
   <link rel="stylesheet" href="css/themes.css?v=themes5">
 </head>
 <body>
@@ -1171,28 +1171,12 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg>
           </span>
         </div>
-        <form class="contact-form" id="contactForm">
-          <div class="contact-form__fields">
-            <input type="text" id="bookingName" name="name" placeholder="Имя" autocomplete="given-name">
-            <input type="text" id="bookingSurname" name="surname" placeholder="Фамилия" autocomplete="family-name">
-            <input type="tel" id="bookingPhoneField" name="phone" placeholder="Номер телефона" autocomplete="tel">
-            <input type="email" id="bookingEmail" name="email" placeholder="Адрес электронной почты" autocomplete="email">
-            <input type="text" name="comment" id="bookingComment" placeholder="Комментарий (необязательно)">
-          </div>
-          <p class="booking-form__message" id="bookingMessage" hidden></p>
-          <button type="submit" id="submitBooking" class="btn btn--primary btn--wide" data-cms-cta="book">Записаться</button>
-          <p class="booking-form__phone"><span data-cms="booking_phone_prefix">или позвоните:</span> <a href="tel:+79024737800" id="bookingPhone" class="booking-form__phone-link" data-phone="+7 902 473-78-00" title="Нажмите, чтобы скопировать номер">+7 902 473-78-00</a></p>
-          <div class="booking-form__agree">
-            <label>
-              <input type="checkbox" name="pd_consent">
-              <span data-cms="booking_consent">Даю согласие на обработку персональных данных</span>
-            </label>
-            <p class="booking-form__agree-links">
-              <a href="privacy.html">https://studia-mai.ru/privacy.html</a>
-              <a href="personal-data-consent.html">https://studia-mai.ru/personal-data-consent.html</a>
-            </p>
-          </div>
-        </form>
+        <iframe class="booking-form__yandex" src="https://forms.yandex.ru/u/6ad388a795add5e5d6eae07b/?iframe=1" name="ya-form-6ad388a795add5e5d6eae07b" title="Запись в студию «Май»" loading="lazy"></iframe>
+        <p class="booking-form__phone"><span data-cms="booking_phone_prefix">или позвоните:</span> <a href="tel:+79024737800" id="bookingPhone" class="booking-form__phone-link" data-phone="+7 902 473-78-00" title="Нажмите, чтобы скопировать номер">+7 902 473-78-00</a></p>
+        <p class="booking-form__agree-links">
+          <a href="privacy.html">https://studia-mai.ru/privacy.html</a>
+          <a href="personal-data-consent.html">https://studia-mai.ru/personal-data-consent.html</a>
+        </p>
       </div>
       </div>
     </div>
@@ -1256,18 +1240,23 @@
       <h3 class="review-modal__title" id="reviewModalTitle">Добавить отзыв</h3>
       <form class="review-form" id="reviewForm">
         <label class="review-form__label" for="reviewAuthor">Имя Фамилия</label>
-        <input type="text" name="author" id="reviewAuthor" autocomplete="name">
+        <input type="text" name="author" id="reviewAuthor" placeholder="Ваше имя и фамилия" autocomplete="name">
         <label class="review-form__label" for="reviewText"><span aria-hidden="true">*</span> Ваш отзыв</label>
-        <textarea name="text" id="reviewText" rows="5" required></textarea>
+        <textarea name="text" id="reviewText" rows="5" placeholder="Ваш отзыв" required></textarea>
         <p class="review-form__message" id="reviewFormMessage" hidden></p>
-        <button type="button" class="btn btn--primary" id="publishReview">Отправить</button>
+        <button type="submit" class="btn btn--primary" id="publishReview">Отправить</button>
       </form>
+      <div class="review-modal__yandex-wrap" id="reviewYandexWrap" hidden>
+        <p class="review-modal__yandex-note">Чтобы отзыв сохранился для модерации, нажмите «Отправить» в форме ниже.</p>
+        <iframe class="review-modal__yandex" id="reviewYandexFrame" name="ya-form-6ad64997c45c0750253c7ad8" title="Добавить отзыв о студии «Май»" loading="lazy"></iframe>
+      </div>
     </div>
   </div>
 
   <script src="js/config.js"></script>
   <script src="js/live-store.js?v=live2"></script>
-  <script src="js/site-api.js?v=cms32"></script>
+  <script src="js/site-api.js?v=cms33"></script>
+  <script src="https://forms.yandex.ru/_/embed.js"></script>
   <script>
     const burger = document.querySelector('.burger');
     const nav = document.querySelector('.nav');
@@ -1378,21 +1367,12 @@
 
     document.querySelectorAll('.reveal').forEach(el => el.classList.add('is-visible'));
 
-    const REVIEWS_STORAGE_KEY = 'studia_mai_user_reviews';
-    const REVIEW_DRAFT_KEY = 'studia_mai_review_draft';
-
     function escapeReviewHtml(str) {
       return String(str)
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;');
-    }
-
-    function formatReviewDate(date = new Date()) {
-      const day = String(date.getDate()).padStart(2, '0');
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      return `${day}.${month}.${date.getFullYear()}`;
     }
 
     function createReviewCardEl(author, date, text, id) {
@@ -1406,43 +1386,6 @@
         <span class="review-card__author">— ${escapeReviewHtml(author)}, ${escapeReviewHtml(date)}</span>
       `;
       return card;
-    }
-
-    function isValidReview(review) {
-      return Boolean(
-        review &&
-        String(review.author || '').trim() &&
-        String(review.text || '').trim()
-      );
-    }
-
-    function loadStoredReviews() {
-      try {
-        const list = JSON.parse(localStorage.getItem(REVIEWS_STORAGE_KEY) || '[]');
-        return Array.isArray(list) ? list.filter(isValidReview) : [];
-      } catch {
-        return [];
-      }
-    }
-
-    function saveStoredReview() {
-      return;
-    }
-
-    function loadReviewDraft() {
-      try {
-        return JSON.parse(localStorage.getItem(REVIEW_DRAFT_KEY) || 'null');
-      } catch {
-        return null;
-      }
-    }
-
-    function saveReviewDraft() {
-      return null;
-    }
-
-    function clearReviewDraft() {
-      localStorage.removeItem(REVIEW_DRAFT_KEY);
     }
 
     const track = document.getElementById('reviewsTrack');
@@ -1684,33 +1627,35 @@
 
     const reviewModal = document.getElementById('reviewModal');
     const reviewForm = document.getElementById('reviewForm');
-    const reviewFormMessage = document.getElementById('reviewFormMessage');
-    const reviewDraftStatus = document.getElementById('reviewDraftStatus');
     const reviewAuthorInput = document.getElementById('reviewAuthor');
     const reviewTextInput = document.getElementById('reviewText');
-    const continueReviewBtn = document.getElementById('openReviewModalContinue');
-    let draftSaveTimer = null;
+    const reviewFormMessage = document.getElementById('reviewFormMessage');
+    const reviewYandexFrame = document.getElementById('reviewYandexFrame');
+    const reviewYandexWrap = document.getElementById('reviewYandexWrap');
+    const REVIEW_YANDEX_BASE = 'https://forms.yandex.ru/u/6ad64997c45c0750253c7ad8/';
 
-    function hasUserPublishedReview() {
-      return loadStoredReviews().length > 0;
+    function buildReviewYandexUrl(author, text) {
+      const params = new URLSearchParams();
+      params.set('iframe', '1');
+      params.set('answer_long_text_96199', author);
+      params.set('answer_short_text_9008991683293520', text);
+      return `${REVIEW_YANDEX_BASE}?${params.toString()}`;
     }
 
-    function updateContinueButton() {
-      return;
+    function showReviewFormMessage(text, ok) {
+      if (!reviewFormMessage) return;
+      reviewFormMessage.textContent = text;
+      reviewFormMessage.className = 'review-form__message' + (ok ? ' review-form__message--ok' : ' review-form__message--err');
+      reviewFormMessage.hidden = false;
     }
 
-    function showDraftStatus(draft) {
-      if (!reviewDraftStatus || !draft) {
-        if (reviewDraftStatus) reviewDraftStatus.hidden = true;
-        return;
-      }
-      reviewDraftStatus.textContent = `Черновик сохранён · ${formatReviewDate(new Date(draft.savedAt))}`;
-      reviewDraftStatus.hidden = false;
-    }
-
-    function fillReviewForm(author, text) {
-      if (reviewAuthorInput) reviewAuthorInput.value = author || '';
-      if (reviewTextInput) reviewTextInput.value = text || '';
+    function resetReviewModalView() {
+      if (reviewForm) reviewForm.hidden = false;
+      if (reviewYandexWrap) reviewYandexWrap.hidden = true;
+      if (reviewYandexFrame) reviewYandexFrame.removeAttribute('src');
+      if (reviewAuthorInput) reviewAuthorInput.value = '';
+      if (reviewTextInput) reviewTextInput.value = '';
+      if (reviewFormMessage) reviewFormMessage.hidden = true;
     }
 
     function setReviewModalOpen(open, mode = 'add') {
@@ -1724,9 +1669,7 @@
         document.body.classList.add('review-modal-open');
         document.body.style.top = `-${reviewScrollY}px`;
         if (title) title.textContent = mode === 'continue' ? 'Дополнить отзыв' : 'Добавить отзыв';
-        fillReviewForm('', '');
-        if (reviewDraftStatus) reviewDraftStatus.hidden = true;
-        if (reviewFormMessage) reviewFormMessage.hidden = true;
+        resetReviewModalView();
         if (!isMobile() && finePointer.matches) {
           requestAnimationFrame(() => reviewAuthorInput?.focus({ preventScroll: true }));
         }
@@ -1734,30 +1677,11 @@
         document.body.classList.remove('review-modal-open');
         document.body.style.top = '';
         window.scrollTo(0, reviewScrollY);
+        resetReviewModalView();
       }
-    }
-
-    function persistReviewDraft() {
-      const author = reviewAuthorInput?.value || '';
-      const text = reviewTextInput?.value || '';
-      if (!author.trim() && !text.trim()) {
-        clearReviewDraft();
-        if (reviewDraftStatus) reviewDraftStatus.hidden = true;
-        updateContinueButton();
-        return;
-      }
-      const draft = saveReviewDraft(author, text);
-      showDraftStatus(draft);
-      updateContinueButton();
-    }
-
-    function scheduleDraftSave() {
-      clearTimeout(draftSaveTimer);
-      draftSaveTimer = setTimeout(persistReviewDraft, 450);
     }
 
     function closeReviewModal() {
-      clearTimeout(draftSaveTimer);
       const wasOpen = reviewModal && !reviewModal.hidden;
       if (reviewModal) reviewModal.hidden = true;
       document.documentElement.classList.remove('review-modal-open');
@@ -1766,14 +1690,7 @@
         document.body.style.top = '';
         window.scrollTo(0, reviewScrollY);
       }
-      if (reviewFormMessage) reviewFormMessage.hidden = true;
-    }
-
-    function showReviewFormMessage(text, ok) {
-      if (!reviewFormMessage) return;
-      reviewFormMessage.textContent = text;
-      reviewFormMessage.className = 'review-form__message' + (ok ? ' review-form__message--ok' : ' review-form__message--err');
-      reviewFormMessage.hidden = false;
+      resetReviewModalView();
     }
 
     document.getElementById('openReviewModalAdd')?.addEventListener('click', () => setReviewModalOpen(true, 'add'));
@@ -1785,70 +1702,22 @@
       if (e.key === 'Escape' && reviewModal && !reviewModal.hidden) closeReviewModal();
     });
 
-    reviewAuthorInput?.addEventListener('input', scheduleDraftSave);
-    reviewTextInput?.addEventListener('input', scheduleDraftSave);
-
-    reviewForm?.addEventListener('submit', e => e.preventDefault());
-
-    document.getElementById('publishReview')?.addEventListener('click', async () => {
+    reviewForm?.addEventListener('submit', (e) => {
+      e.preventDefault();
       const author = reviewAuthorInput?.value?.trim() || '';
       const text = reviewTextInput?.value?.trim() || '';
-
       if (!text) {
         showReviewFormMessage('Напишите текст отзыва', false);
         return;
       }
-      showReviewFormMessage('Новый отзыв не публикуется, пока владелец не утвердит отдельное согласие на распространение.', false);
-      return;
-
-      const review = {
-        id: `u${Date.now()}`,
-        author,
-        text,
-        date: formatReviewDate()
-      };
-
-      let saved = false;
-      const api = window.STUDIA_MAI_API;
-      if (api) {
-        try {
-          const res = await fetch(`${api}/api/reviews`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ author, text })
-          });
-          const json = await res.json().catch(() => ({}));
-          if (res.ok && json.review) {
-            review.id = json.review.id;
-            review.date = json.review.date;
-            saved = true;
-          }
-        } catch {
-          /* сохраним локально */
-        }
+      if (!reviewYandexFrame || !reviewYandexWrap || !reviewForm) {
+        showReviewFormMessage('Форма отзыва временно недоступна', false);
+        return;
       }
-
-      saveStoredReview(review);
-      reviewSliderApi?.addReviewCard(review.author, review.date, review.text, review.id);
-      clearReviewDraft();
-      updateContinueButton();
-      closeReviewModal();
-      fillReviewForm('', '');
-      if (reviewDraftStatus) reviewDraftStatus.hidden = true;
-
-      const notice = document.getElementById('reviewSuccessNotice');
-      if (notice) {
-        notice.textContent = saved ? 'Спасибо! Ваш отзыв опубликован.' : 'Спасибо! Ваш отзыв добавлен в слайдер.';
-        notice.hidden = false;
-        setTimeout(() => { notice.hidden = true; }, 5000);
-      }
-      document.getElementById('reviews')?.scrollIntoView({
-        behavior: 'auto',
-        block: 'start'
-      });
+      reviewYandexFrame.src = buildReviewYandexUrl(author, text);
+      reviewForm.hidden = true;
+      reviewYandexWrap.hidden = false;
     });
-
-    updateContinueButton();
 
 
     // Телефон в форме: звонок на мобильных, копирование на компьютере
