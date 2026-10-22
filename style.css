@@ -2934,6 +2934,24 @@ a.format-card {
   color: #1a1f24;
 }
 
+.booking-form__yandex-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.booking-form__yandex-wrap[hidden] {
+  display: none !important;
+}
+
+.booking-form__yandex-note {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #3a4048;
+  text-align: center;
+}
+
 .booking-form__yandex {
   display: block;
   width: 100%;
@@ -2941,6 +2959,10 @@ a.format-card {
   border: 0;
   border-radius: 16px;
   background: #f4f5f7;
+}
+
+.booking-form__yandex-back {
+  align-self: center;
 }
 
 .booking-form__head {
@@ -3022,13 +3044,16 @@ a.format-card {
 .booking-form input[type="tel"],
 .booking-form input[type="email"],
 .booking-form input[type="date"],
-.booking-form__select {
+.booking-form__select,
+.booking-form .contact-form input[type="text"],
+.booking-form .contact-form input[type="tel"],
+.booking-form .contact-form input[type="email"] {
   width: 100%;
   padding: 20px 28px;
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  border: 1px solid rgba(70, 76, 84, 0.18);
   border-radius: 100px;
-  background: rgba(255, 255, 255, 0.22);
-  color: #ffffff;
+  background: #ffffff;
+  color: #1a1f24;
   font-family: var(--font-sans);
   font-size: 16px;
   outline: none;
@@ -3037,23 +3062,25 @@ a.format-card {
 }
 
 .contact-form input::placeholder {
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(26, 31, 36, 0.45);
 }
 
-.booking-form input::placeholder {
-  color: rgba(255, 255, 255, 0.72);
+.booking-form input::placeholder,
+.booking-form .contact-form input::placeholder {
+  color: rgba(26, 31, 36, 0.45);
 }
 
 .contact-form input:focus {
-  border-color: rgba(255, 255, 255, 0.65);
-  background: rgba(255, 255, 255, 0.22);
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+  border-color: rgba(70, 76, 84, 0.35);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(70, 76, 84, 0.08);
 }
 
-.booking-form input:focus {
-  border-color: rgba(255, 255, 255, 0.55);
-  background: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.12);
+.booking-form input:focus,
+.booking-form .contact-form input:focus {
+  border-color: rgba(70, 76, 84, 0.35);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(70, 76, 84, 0.08);
 }
 
 .booking-form__select {
@@ -3093,7 +3120,7 @@ a.format-card {
   margin-bottom: 0;
   font-size: 13px;
   line-height: 1.5;
-  color: #ffffff;
+  color: #3a4048;
 }
 
 .booking-form__agree input[type="checkbox"] {
