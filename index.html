@@ -1271,6 +1271,7 @@
             <a href="privacy.html">Политика конфиденциальности</a>
             <a href="personal-data-consent.html">Согласие на обработку персональных данных</a>
           </p>
+          <p class="review-form__agree-links">На сайте распространяются имя (подпись) и текст отзыва. Отозвать согласие на распространение: +7 902 473-78-00, brow_studia_may@mail.ru.</p>
         </div>
         <p class="review-form__message" id="reviewFormMessage" hidden></p>
         <button type="submit" class="btn btn--primary" id="publishReview">Отправить</button>
@@ -1285,7 +1286,6 @@
   <script src="js/config.js"></script>
   <script src="js/live-store.js?v=live2"></script>
   <script src="js/site-api.js?v=cms34"></script>
-  <script src="https://forms.yandex.ru/_/embed.js"></script>
   <script>
     const burger = document.querySelector('.burger');
     const nav = document.querySelector('.nav');
@@ -1662,6 +1662,32 @@
     const reviewYandexFrame = document.getElementById('reviewYandexFrame');
     const reviewYandexWrap = document.getElementById('reviewYandexWrap');
     const REVIEW_YANDEX_BASE = 'https://forms.yandex.ru/u/6ad64997c45c0750253c7ad8/';
+    const YANDEX_EMBED_SRC = 'https://forms.yandex.ru/_/embed.js';
+
+    function loadYandexEmbed() {
+      return new Promise((resolve, reject) => {
+        if (window.__yaFormsEmbedLoaded) {
+          resolve();
+          return;
+        }
+        const existing = document.querySelector('script[data-yandex-forms-embed]');
+        if (existing) {
+          existing.addEventListener('load', () => resolve(), { once: true });
+          existing.addEventListener('error', () => reject(new Error('yandex embed')), { once: true });
+          return;
+        }
+        const script = document.createElement('script');
+        script.src = YANDEX_EMBED_SRC;
+        script.async = true;
+        script.dataset.yandexFormsEmbed = '1';
+        script.onload = () => {
+          window.__yaFormsEmbedLoaded = true;
+          resolve();
+        };
+        script.onerror = () => reject(new Error('yandex embed'));
+        document.body.appendChild(script);
+      });
+    }
 
     function buildReviewYandexUrl(author, text) {
       const params = new URLSearchParams();
@@ -1750,9 +1776,13 @@
         showReviewFormMessage('Форма отзыва временно недоступна', false);
         return;
       }
-      reviewYandexFrame.src = buildReviewYandexUrl(author, text);
-      reviewForm.hidden = true;
-      reviewYandexWrap.hidden = false;
+      loadYandexEmbed()
+        .catch(() => {})
+        .then(() => {
+          reviewYandexFrame.src = buildReviewYandexUrl(author, text);
+          reviewForm.hidden = true;
+          reviewYandexWrap.hidden = false;
+        });
     });
 
 
@@ -1774,12 +1804,16 @@
         showBookingMessage('Форма записи временно недоступна. Позвоните: +7 902 473-78-00', false);
         return;
       }
-      /* Тот же URL Яндекс.Формы, что был подключён ранее. */
-      bookingYandexFrame.src = `${BOOKING_YANDEX_BASE}?iframe=1`;
-      contactForm.hidden = true;
-      bookingYandexWrap.hidden = false;
-      if (bookingMessage) bookingMessage.hidden = true;
-      bookingYandexWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      loadYandexEmbed()
+        .catch(() => {})
+        .then(() => {
+          /* Тот же URL Яндекс.Формы, что был подключён ранее. */
+          bookingYandexFrame.src = `${BOOKING_YANDEX_BASE}?iframe=1`;
+          contactForm.hidden = true;
+          bookingYandexWrap.hidden = false;
+          if (bookingMessage) bookingMessage.hidden = true;
+          bookingYandexWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
     }
 
     function resetBookingView() {
