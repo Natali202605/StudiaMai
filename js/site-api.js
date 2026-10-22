@@ -517,7 +517,7 @@
       if (footerBook) bookLink.href = bookingHref(footerBook) || footerBook;
       if (content.footer_booking_label) bookLink.textContent = content.footer_booking_label;
     }
-    const siteLink = document.querySelector('.footer__contact-item a[href*="StudiaMai"], .footer__contact-item a[data-cms-footer-site]');
+    const siteLink = document.querySelector('.footer__contact-item a[href*="studia-mai.ru"], .footer__contact-item a[data-cms-footer-site]');
     if (siteLink) {
       if (content.footer_site_url) siteLink.href = content.footer_site_url;
       if (content.footer_site_label) siteLink.textContent = content.footer_site_label;
@@ -845,8 +845,8 @@
           email: data.email,
           comment: data.comment,
           consent: true,
-          consentVersion: 'draft-2026-10-15',
-          policyVersion: 'draft-2026-10-15'
+          consentVersion: '2026-10-22',
+          policyVersion: '2026-10-22'
         })
       });
       const json = await res.json().catch(() => ({}));

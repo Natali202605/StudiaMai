@@ -1,6 +1,6 @@
 import { execSync } from 'child_process';
 
-const SITE = 'https://natali202605.github.io/StudiaMai/';
+const SITE = 'https://studia-mai.ru/';
 const SITEMAP = `${SITE}sitemap.xml`;
 
 const links = [
@@ -55,7 +55,7 @@ console.log('Название: Студия красоты «Май»');
 console.log('Адрес: г. Пермь, ул. Ласьвинская, 32');
 console.log('Уточнение: Вход с крыльца РЕНО, 2-й этаж');
 console.log('Телефон: +7 902 473-78-00');
-console.log('Сайт: https://natali202605.github.io/StudiaMai/');
+console.log('Сайт: https://studia-mai.ru/');
 console.log('ВКонтакте: https://vk.ru/brow_studia_may');
 console.log('Запись: https://mst.link/bolotova_galina');
 console.log('Координаты: 58.003946, 55.941012');

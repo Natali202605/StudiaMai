@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, '..');
 
-const SITE_URL = 'https://natali202605.github.io/StudiaMai/';
+const SITE_URL = 'https://studia-mai.ru/';
 const GEO = { lat: 58.003946, lon: 55.941012 };
 const PHONE = '+79024737800';
 const ADDRESS = {
@@ -159,7 +159,7 @@ function validateRobots() {
     return;
   }
   const robots = read('robots.txt');
-  if (!/Sitemap:\s*https:\/\/natali202605\.github\.io\/StudiaMai\/sitemap\.xml/i.test(robots)) {
+  if (!/Sitemap:\s*https:\/\/studia-mai\.ru\/sitemap\.xml/i.test(robots)) {
     fail('robots.txt: отсутствует корректная директива Sitemap');
   }
   if (!/Disallow:\s*\/admin\//i.test(robots)) {

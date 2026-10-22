@@ -4,9 +4,12 @@ desktop.ini
 *.log
 server/node_modules/
 server/data/db.json
+backend/node_modules/
+backend/data/db.json
 uploads/
 .env
 server/data/
+backend/data/
 *.bak
 backups/
 images.lnk

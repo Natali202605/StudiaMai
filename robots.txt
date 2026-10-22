@@ -1,5 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /admin/
+Disallow: /server/
+Disallow: /backend/
 
-Sitemap: https://natali202605.github.io/StudiaMai/sitemap.xml
+Sitemap: https://studia-mai.ru/sitemap.xml

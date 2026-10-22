@@ -183,8 +183,8 @@ const content = {
   footer_vk_url: 'https://vk.ru/brow_studia_may',
   footer_booking_label: 'Онлайн-запись',
   footer_booking_url: 'https://mst.link/bolotova_galina',
-  footer_site_label: 'Сайт: natali202605.github.io/StudiaMai',
-  footer_site_url: 'https://natali202605.github.io/StudiaMai/',
+  footer_site_label: 'Сайт: studia-mai.ru',
+  footer_site_url: 'https://studia-mai.ru/',
   footer_hours: 'пн 11:00–20:00 · вт 10:00–20:00 · ср 12:00–20:00 · чт выходной · пт 12:00–20:00 · сб 15:00–20:00 · вс выходной',
   footer_legal_note: 'Правовые документы действуют на территории Российской Федерации.'
 };

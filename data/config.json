@@ -4,7 +4,7 @@
     "telegramBotToken":  "",
     "telegramChatId":  "",
     "bookingsApiUrl":  "",
-    "githubOwner":  "Natali202605",
-    "githubRepo":  "StudiaMai",
-    "githubBranch":  "main"
+    "githubOwner":  "",
+    "githubRepo":  "",
+    "githubBranch":  ""
 }
