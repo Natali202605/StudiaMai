@@ -2785,6 +2785,13 @@ img[data-cms-img].is-cms-empty {
   margin-top: 8px;
 }
 
+.review-form__hint {
+  margin: 4px 0 10px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #5a6169;
+}
+
 .review-form__agree input[type="checkbox"] {
   flex-shrink: 0;
   width: 18px;
