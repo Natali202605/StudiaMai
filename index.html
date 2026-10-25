@@ -1141,22 +1141,28 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg>
           </span>
         </div>
-        <div class="booking-form__yandex-wrap" id="bookingYandexWrap">
-          <iframe
-            class="booking-form__yandex"
-            id="bookingYandexFrame"
-            name="ya-form-6ad643dd852af364ddc7a26c"
-            title="Запись в студию «Май»"
-            src="https://forms.yandex.ru/u/6ad643dd852af364ddc7a26c/?iframe=1"
-            loading="lazy"></iframe>
-        </div>
-        <p class="booking-form__phone"><span data-cms="booking_phone_prefix">или позвоните:</span> <a href="tel:+79024737800" id="bookingPhone" class="booking-form__phone-link" data-phone="+7 902 473-78-00" title="Нажмите, чтобы скопировать номер">+7 902 473-78-00</a></p>
-        <div class="booking-form__agree">
-          <p class="booking-form__agree-links">
-            <a href="privacy.html">https://studia-mai.ru/privacy.html</a>
-            <a href="personal-data-consent.html">https://studia-mai.ru/personal-data-consent.html</a>
-          </p>
-        </div>
+        <form class="contact-form" id="contactForm">
+          <div class="contact-form__fields">
+            <input type="text" id="bookingName" name="name" placeholder="Имя" autocomplete="given-name">
+            <input type="text" id="bookingSurname" name="surname" placeholder="Фамилия" autocomplete="family-name">
+            <input type="tel" id="bookingPhoneField" name="phone" placeholder="Номер телефона" autocomplete="tel">
+            <input type="email" id="bookingEmail" name="email" placeholder="Адрес электронной почты" autocomplete="email">
+            <input type="text" name="comment" id="bookingComment" placeholder="Комментарий (необязательно)">
+          </div>
+          <p class="booking-form__message" id="bookingMessage" hidden></p>
+          <button type="submit" id="submitBooking" class="btn btn--primary btn--wide" data-cms-cta="book">Записаться</button>
+          <p class="booking-form__phone"><span data-cms="booking_phone_prefix">или позвоните:</span> <a href="tel:+79024737800" id="bookingPhone" class="booking-form__phone-link" data-phone="+7 902 473-78-00" title="Нажмите, чтобы скопировать номер">+7 902 473-78-00</a></p>
+          <div class="booking-form__agree">
+            <label>
+              <input type="checkbox" name="pd_consent">
+              <span data-cms="booking_consent">Даю согласие на обработку персональных данных</span>
+            </label>
+            <p class="booking-form__agree-links">
+              <a href="privacy.html">https://studia-mai.ru/privacy.html</a>
+              <a href="personal-data-consent.html">https://studia-mai.ru/personal-data-consent.html</a>
+            </p>
+          </div>
+        </form>
       </div>
       </div>
     </div>
@@ -1798,8 +1804,31 @@
     });
 
 
-    /* Запись: только встроенная Яндекс.Форма (старая заявка отключена). */
-    loadYandexEmbed().catch(() => {});
+    const contactForm = document.getElementById('contactForm');
+    const bookingMessage = document.getElementById('bookingMessage');
+
+    function showBookingMessage(text, ok) {
+      if (!bookingMessage) return;
+      bookingMessage.textContent = text;
+      bookingMessage.className = 'booking-form__message' + (ok ? ' booking-form__message--ok' : ' booking-form__message--err');
+      bookingMessage.hidden = false;
+    }
+
+    contactForm?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const phone = document.getElementById('bookingPhoneField')?.value?.trim() || '';
+      const consent = contactForm.querySelector('[name="pd_consent"]')?.checked === true;
+      if (!phone) {
+        showBookingMessage('Укажите телефон', false);
+        return;
+      }
+      if (!consent) {
+        showBookingMessage('Подтвердите согласие на обработку данных', false);
+        return;
+      }
+      showBookingMessage('Спасибо за заявку!', true);
+    });
 
     // Телефон в форме: звонок на мобильных, копирование на компьютере
     const bookingPhone = document.getElementById('bookingPhone');
