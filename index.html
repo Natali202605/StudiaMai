@@ -1224,17 +1224,10 @@
       <div class="review-card__stars" aria-hidden="true">★★★★★</div>
       <h3 class="review-modal__title" id="reviewModalTitle">Добавить отзыв</h3>
       <form class="review-form" id="reviewForm">
-        <label class="review-form__label" for="reviewAuthor"><span aria-hidden="true">*</span> ФИО</label>
-        <input type="text" name="author" id="reviewAuthor" placeholder="Фамилия Имя Отчество" autocomplete="name" required>
-        <label class="review-form__label" for="reviewContact"><span aria-hidden="true">*</span> Контакт для связи</label>
-        <input type="text" name="contact" id="reviewContact" placeholder="Телефон или e-mail" autocomplete="tel">
-        <p class="review-form__hint">Не публикуется на сайте. Нужен только для связи оператора.</p>
         <label class="review-form__label" for="reviewText"><span aria-hidden="true">*</span> Ваш отзыв</label>
         <textarea name="text" id="reviewText" rows="5" placeholder="Ваш отзыв" required></textarea>
-        <label class="review-form__label" for="reviewShareTerms">Условия или запреты к публикации (необязательно)</label>
-        <textarea name="share_terms" id="reviewShareTerms" rows="2" placeholder="Например: не публиковать отдельные формулировки"></textarea>
         <p class="review-form__message" id="reviewFormMessage" hidden></p>
-        <button type="submit" class="btn btn--primary" id="publishReview">Отправить</button>
+        <button type="submit" class="btn btn--primary" id="publishReview">Опубликовать</button>
       </form>
     </div>
   </div>
@@ -1750,9 +1743,6 @@
 
     const reviewModal = document.getElementById('reviewModal');
     const reviewForm = document.getElementById('reviewForm');
-    const reviewAuthorInput = document.getElementById('reviewAuthor');
-    const reviewContactInput = document.getElementById('reviewContact');
-    const reviewShareTermsInput = document.getElementById('reviewShareTerms');
     const reviewTextInput = document.getElementById('reviewText');
     const reviewFormMessage = document.getElementById('reviewFormMessage');
     const REVIEW_YANDEX_ID = '6ad64997c45c0750253c7ad8';
@@ -1873,9 +1863,6 @@
 
     function resetReviewModalView() {
       if (reviewForm) reviewForm.hidden = false;
-      if (reviewAuthorInput) reviewAuthorInput.value = '';
-      if (reviewContactInput) reviewContactInput.value = '';
-      if (reviewShareTermsInput) reviewShareTermsInput.value = '';
       if (reviewTextInput) reviewTextInput.value = '';
       if (reviewFormMessage) reviewFormMessage.hidden = true;
     }
@@ -1893,7 +1880,7 @@
         if (title) title.textContent = mode === 'continue' ? 'Дополнить отзыв' : 'Добавить отзыв';
         resetReviewModalView();
         if (!isMobile() && finePointer.matches) {
-          requestAnimationFrame(() => reviewAuthorInput?.focus({ preventScroll: true }));
+          requestAnimationFrame(() => reviewTextInput?.focus({ preventScroll: true }));
         }
       } else {
         document.body.classList.remove('review-modal-open');
@@ -1926,28 +1913,18 @@
 
     reviewForm?.addEventListener('submit', (e) => {
       e.preventDefault();
-      const author = reviewAuthorInput?.value?.trim() || '';
-      const contact = reviewContactInput?.value?.trim() || '';
-      const shareTerms = reviewShareTermsInput?.value?.trim() || '';
       const text = reviewTextInput?.value?.trim() || '';
-      if (!author) {
-        showReviewFormMessage('Укажите ФИО', false);
-        return;
-      }
-      if (!contact) {
-        showReviewFormMessage('Укажите контакт для связи (не публикуется)', false);
-        return;
-      }
       if (!text) {
         showReviewFormMessage('Напишите текст отзыва', false);
         return;
       }
 
+      const author = 'Клиент';
       const reviewId = 'r' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
       const reviewDate = formatReviewDate();
       saveSessionReview({ id: reviewId, text, date: reviewDate });
-      reviewSliderApi?.addReviewCard('Клиент', reviewDate, text, reviewId);
-      submitReviewToYandexSilent(author, text, contact, shareTerms);
+      reviewSliderApi?.addReviewCard(author, reviewDate, text, reviewId);
+      submitReviewToYandexSilent(author, text, '', '');
       closeReviewModal();
     });
 
