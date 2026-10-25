@@ -185,7 +185,7 @@
               </div>
               <div class="hero__stat-divider"></div>
               <div class="hero__stat">
-                <span class="hero__stat-value" data-reviews-count>50+</span>
+                <span class="hero__stat-value" data-reviews-count>49</span>
                 <span class="hero__stat-label">отзывов клиентов</span>
               </div>
             </div>
@@ -1255,7 +1255,7 @@
         <button type="submit" class="btn btn--primary" id="publishReview">Отправить</button>
       </form>
       <div class="review-modal__yandex-wrap" id="reviewYandexWrap" hidden>
-        <p class="review-modal__yandex-note">Чтобы отзыв сохранился для модерации, нажмите «Отправить» в форме ниже. Подтверждения согласий с сайта передаются вместе с текстом отзыва.</p>
+        <p class="review-modal__yandex-note">Отзыв уже показан на сайте. Нажмите «Отправить» в форме ниже, чтобы сохранить его у студии. Нежелательный отзыв владелец может удалить в Яндекс.Формах — с сайта он снимается без следа.</p>
         <iframe class="review-modal__yandex" id="reviewYandexFrame" name="ya-form-6ad64997c45c0750253c7ad8" title="Добавить отзыв о студии «Май»" loading="lazy"></iframe>
       </div>
     </div>
@@ -1382,16 +1382,88 @@
         .replace(/"/g, '&quot;');
     }
 
+    function formatReviewDate(date = new Date()) {
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      return `${day}.${month}.${date.getFullYear()}`;
+    }
+
+    const OWN_REVIEWS_KEY = 'studia_mai_own_review_ids';
+    const SESSION_REVIEWS_KEY = 'studia_mai_session_reviews';
+
+    function readOwnReviewIds() {
+      try {
+        const raw = sessionStorage.getItem(OWN_REVIEWS_KEY);
+        const list = raw ? JSON.parse(raw) : [];
+        return Array.isArray(list) ? list.map(String) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function writeOwnReviewIds(ids) {
+      try {
+        sessionStorage.setItem(OWN_REVIEWS_KEY, JSON.stringify(ids.slice(0, 50)));
+      } catch { /* ignore */ }
+    }
+
+    function markOwnReviewId(id) {
+      if (!id) return;
+      const ids = readOwnReviewIds();
+      if (!ids.includes(id)) {
+        ids.unshift(id);
+        writeOwnReviewIds(ids);
+      }
+    }
+
+    function unmarkOwnReviewId(id) {
+      writeOwnReviewIds(readOwnReviewIds().filter((item) => item !== id));
+    }
+
+    function readSessionReviews() {
+      try {
+        const raw = sessionStorage.getItem(SESSION_REVIEWS_KEY);
+        const list = raw ? JSON.parse(raw) : [];
+        return Array.isArray(list) ? list : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function writeSessionReviews(list) {
+      try {
+        sessionStorage.setItem(SESSION_REVIEWS_KEY, JSON.stringify(list.slice(0, 50)));
+      } catch { /* ignore */ }
+    }
+
+    function saveSessionReview(review) {
+      const list = readSessionReviews().filter((item) => item.id !== review.id);
+      list.unshift(review);
+      writeSessionReviews(list);
+      markOwnReviewId(review.id);
+    }
+
+    function removeSessionReview(id) {
+      writeSessionReviews(readSessionReviews().filter((item) => item.id !== id));
+      unmarkOwnReviewId(id);
+    }
+
     function createReviewCardEl(author, date, text, id) {
       const card = document.createElement('div');
       card.className = 'review-card';
       if (id) card.dataset.reviewId = id;
+      const dateLabel = date ? `, ${escapeReviewHtml(date)}` : '';
       card.innerHTML = `
+        <button type="button" class="review-card__delete" hidden aria-label="Удалить мой отзыв">Удалить</button>
         <span class="review-card__quote" aria-hidden="true">"</span>
         <div class="review-card__stars">★★★★★</div>
         <p class="review-card__text">«${escapeReviewHtml(text)}»</p>
-        <span class="review-card__author">— Клиент</span>
+        <span class="review-card__author">— Клиент${dateLabel}</span>
       `;
+      const deleteBtn = card.querySelector('.review-card__delete');
+      if (deleteBtn && id && readOwnReviewIds().includes(String(id))) {
+        deleteBtn.hidden = false;
+      }
       return card;
     }
 
@@ -1426,16 +1498,42 @@
       }
 
       function updateHeroReviewsCount() {
+        const total = reviewCards.length;
         const el = document.querySelector('[data-reviews-count]');
-        if (el) el.textContent = '50+';
+        if (el) el.textContent = String(total);
       }
 
       function updateReviewCounter() {
-        if (counterEl && reviewCards.length) {
-          counterEl.textContent = `${reviewIndex + 1} / ${reviewCards.length}`;
+        const total = reviewCards.length;
+        if (counterEl) {
+          counterEl.textContent = total ? `${reviewIndex + 1} / ${total}` : '0 / 0';
         }
         updateHeroReviewsCount();
       }
+
+      function removeReviewCardById(id) {
+        if (!id) return false;
+        const card = track.querySelector(`[data-review-id="${id}"]`);
+        if (!card) return false;
+        card.remove();
+        removeSessionReview(id);
+        refreshReviewCards();
+        if (reviewIndex >= reviewCards.length) reviewIndex = Math.max(0, reviewCards.length - 1);
+        syncReviewSlider();
+        updateReviewCounter();
+        stopAutoplay();
+        startAutoplay();
+        return true;
+      }
+
+      track.addEventListener('click', (e) => {
+        const btn = e.target.closest('.review-card__delete');
+        if (!btn || !track.contains(btn)) return;
+        const card = btn.closest('.review-card');
+        const id = card?.dataset?.reviewId;
+        if (!id || !readOwnReviewIds().includes(String(id))) return;
+        removeReviewCardById(id);
+      });
 
       function getReviewSlideWidth() {
         const measureEl = viewport || track.parentElement || track;
@@ -1507,17 +1605,21 @@
       }
 
       function addReviewCard(author, date, text, id) {
+        if (id && track.querySelector(`[data-review-id="${id}"]`)) {
+          return track.querySelector(`[data-review-id="${id}"]`);
+        }
         const card = createReviewCardEl(author, date, text, id);
         track.insertBefore(card, track.firstChild);
         reviewIndex = 0;
         refreshReviewCards();
         syncReviewSlider();
+        updateReviewCounter();
         stopAutoplay();
         startAutoplay();
         return card;
       }
 
-      reviewSliderApi = { addReviewCard, goToReview, syncReviewSlider };
+      reviewSliderApi = { addReviewCard, goToReview, syncReviewSlider, removeReviewCardById, updateReviewCounter };
       window.reviewSliderApi = reviewSliderApi;
 
       document.addEventListener('studia-mai-cms-applied', () => {
@@ -1532,11 +1634,33 @@
       });
 
       sanitizeReviewCards();
-      /* Новые отзывы из браузера не показываются как опубликованные. */
-      sanitizeReviewCards();
+
+      function restoreSessionReviews() {
+        const saved = readSessionReviews();
+        if (!saved.length) return;
+        prependUserReviews(saved);
+        refreshReviewCards();
+        track.querySelectorAll('.review-card[data-review-id]').forEach((card) => {
+          const btn = card.querySelector('.review-card__delete');
+          if (!btn) return;
+          btn.hidden = !readOwnReviewIds().includes(String(card.dataset.reviewId || ''));
+        });
+        updateReviewCounter();
+      }
+
+      restoreSessionReviews();
 
       function loadRemoteReviews() {
-        return;
+        const api = String(window.STUDIA_MAI_API || '').replace(/\/$/, '');
+        if (!api) return;
+        fetch(`${api}/api/reviews`, { credentials: 'omit', cache: 'no-store' })
+          .then((res) => (res.ok ? res.json() : null))
+          .then((data) => {
+            if (!data || !Array.isArray(data.reviews) || !data.reviews.length) return;
+            prependUserReviews(data.reviews);
+            updateReviewCounter();
+          })
+          .catch(() => {});
       }
 
       const reviewsSection = document.getElementById('reviews');
@@ -1673,26 +1797,24 @@
     const REVIEW_DISSEMINATION_VERSION = '2026-10-25';
     const REVIEW_POLICY_VERSION = '2026-10-25';
 
-    function buildReviewConsentProof(contact, shareTerms) {
+    function buildOperatorMeta(contact, shareTerms) {
       const lines = [
-        '---',
-        'Подтверждения с сайта studia-mai.ru (не для публикации на сайте):',
-        'Согласие на обработку персональных данных: да (версия ' + REVIEW_CONSENT_VERSION + ').',
-        'Согласие на распространение персональных данных (ст. 10.1): да (версия ' + REVIEW_DISSEMINATION_VERSION + '; политика ' + REVIEW_POLICY_VERSION + ').',
-        'Ресурс публикации: https://studia-mai.ru/',
-        'Публикуемые данные: ФИО (подпись) и текст отзыва.',
-        'Контакт автора (НЕ ПУБЛИКОВАТЬ): ' + (contact || 'не указан') + '.',
-        'Условия/запреты к публикации: ' + (shareTerms || 'не указаны') + '.'
+        'Служебно (не публиковать на сайте):',
+        'Контакт: ' + (contact || 'не указан'),
+        'Согласие на обработку: да (' + REVIEW_CONSENT_VERSION + ')',
+        'Согласие на распространение: да (' + REVIEW_DISSEMINATION_VERSION + ' / политика ' + REVIEW_POLICY_VERSION + ')',
+        'Условия/запреты: ' + (shareTerms || 'не указаны')
       ];
       return lines.join('\n');
     }
 
     function buildReviewYandexUrl(author, text, contact, shareTerms) {
       const params = new URLSearchParams();
-      const textWithConsent = String(text || '').trim() + '\n\n' + buildReviewConsentProof(contact, shareTerms);
+      const cleanText = String(text || '').trim();
+      const authorWithMeta = String(author || '').trim() + '\n\n' + buildOperatorMeta(contact, shareTerms);
       params.set('iframe', '1');
-      params.set('answer_long_text_96199', author);
-      params.set('answer_short_text_9008991683293520', textWithConsent);
+      params.set('answer_long_text_96199', authorWithMeta);
+      params.set('answer_short_text_9008991683293520', cleanText);
       return `${REVIEW_YANDEX_BASE}?${params.toString()}`;
     }
 
@@ -1794,6 +1916,17 @@
         showReviewFormMessage('Форма отзыва временно недоступна', false);
         return;
       }
+
+      const reviewId = 'r' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+      const reviewDate = formatReviewDate();
+      saveSessionReview({ id: reviewId, text, date: reviewDate });
+      reviewSliderApi?.addReviewCard('Клиент', reviewDate, text, reviewId);
+      const notice = document.getElementById('reviewSuccessNotice');
+      if (notice) {
+        notice.hidden = false;
+        notice.textContent = 'Спасибо! Ваш отзыв опубликован.';
+      }
+
       loadYandexEmbed()
         .catch(() => {})
         .then(() => {

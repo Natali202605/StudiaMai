@@ -2385,6 +2385,34 @@ img[data-cms-img].is-cms-empty {
   flex-shrink: 0;
 }
 
+.review-card__delete {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  margin: 0;
+  padding: 6px 10px;
+  border: 1px solid rgba(var(--rgb-edge), 0.45);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #3a4048;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  line-height: 1.2;
+}
+
+.review-card__delete:hover {
+  background: #fff;
+  color: #1a1f24;
+}
+
+.review-card__delete[hidden] {
+  display: none !important;
+}
+
 .reviews-slider__progress {
   width: 100%;
   height: 3px;
