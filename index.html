@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru" data-theme="pearl">
 <head>
   <meta charset="UTF-8">
@@ -758,7 +758,7 @@
         </div>
         <div class="faq-item">
           <h3>Как записаться?</h3>
-          <p>Нажмите «Записаться»: откроется онлайн-запись. Можно оставить заявку в форме на сайте или позвонить +7 902 473-78-00.</p>
+          <p>Нажмите «Записаться»: откроется блок записи на сайте. Можно заполнить форму или позвонить +7 902 473-78-00.</p>
         </div>
         <div class="faq-item">
           <h3>Где находится студия?</h3>
@@ -1169,32 +1169,21 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg>
           </span>
         </div>
-        <form class="contact-form" id="contactForm" data-booking-yandex="1">
-          <div class="contact-form__fields">
-            <input type="text" id="bookingName" name="name" placeholder="Имя" autocomplete="given-name">
-            <input type="text" id="bookingSurname" name="surname" placeholder="Фамилия" autocomplete="family-name">
-            <input type="tel" id="bookingPhoneField" name="phone" placeholder="Номер телефона" autocomplete="tel">
-            <input type="email" id="bookingEmail" name="email" placeholder="Адрес электронной почты" autocomplete="email">
-            <input type="text" name="comment" id="bookingComment" placeholder="Комментарий (необязательно)">
-          </div>
-          <p class="booking-form__message" id="bookingMessage" hidden></p>
-          <button type="submit" id="submitBooking" class="btn btn--primary btn--wide" data-cms-cta="book">Записаться</button>
-          <p class="booking-form__phone"><span data-cms="booking_phone_prefix">или позвоните:</span> <a href="tel:+79024737800" id="bookingPhone" class="booking-form__phone-link" data-phone="+7 902 473-78-00" title="Нажмите, чтобы скопировать номер">+7 902 473-78-00</a></p>
-          <div class="booking-form__agree">
-            <label>
-              <input type="checkbox" name="pd_consent">
-              <span data-cms="booking_consent">Даю согласие на обработку персональных данных</span>
-            </label>
-            <p class="booking-form__agree-links">
-              <a href="privacy.html">https://studia-mai.ru/privacy.html</a>
-              <a href="personal-data-consent.html">https://studia-mai.ru/personal-data-consent.html</a>
-            </p>
-          </div>
-        </form>
-        <div class="booking-form__yandex-wrap" id="bookingYandexWrap" hidden>
-          <p class="booking-form__yandex-note">Чтобы заявка сохранилась, нажмите «Отправить» в форме ниже.</p>
-          <iframe class="booking-form__yandex" id="bookingYandexFrame" name="ya-form-6ad388a795add5e5d6eae07b" title="Запись в студию «Май»" loading="lazy"></iframe>
-          <button type="button" class="btn btn--ghost booking-form__yandex-back" id="bookingYandexBack">← Вернуться к форме</button>
+        <div class="booking-form__yandex-wrap" id="bookingYandexWrap">
+          <iframe
+            class="booking-form__yandex"
+            id="bookingYandexFrame"
+            name="ya-form-6ad643dd852af364ddc7a26c"
+            title="Запись в студию «Май»"
+            src="https://forms.yandex.ru/u/6ad643dd852af364ddc7a26c/?iframe=1"
+            loading="lazy"></iframe>
+        </div>
+        <p class="booking-form__phone"><span data-cms="booking_phone_prefix">или позвоните:</span> <a href="tel:+79024737800" id="bookingPhone" class="booking-form__phone-link" data-phone="+7 902 473-78-00" title="Нажмите, чтобы скопировать номер">+7 902 473-78-00</a></p>
+        <div class="booking-form__agree">
+          <p class="booking-form__agree-links">
+            <a href="privacy.html">https://studia-mai.ru/privacy.html</a>
+            <a href="personal-data-consent.html">https://studia-mai.ru/personal-data-consent.html</a>
+          </p>
         </div>
       </div>
       </div>
@@ -1296,7 +1285,7 @@
 
   <script src="js/config.js"></script>
   <script src="js/live-store.js?v=live2"></script>
-  <script src="js/site-api.js?v=cms35"></script>
+  <script src="js/site-api.js?v=cms36"></script>
   <script>
     const burger = document.querySelector('.burger');
     const nav = document.querySelector('.nav');
@@ -1837,66 +1826,10 @@
     });
 
 
-    const BOOKING_YANDEX_BASE = 'https://forms.yandex.ru/u/6ad388a795add5e5d6eae07b/';
-    const contactForm = document.getElementById('contactForm');
-    const bookingMessage = document.getElementById('bookingMessage');
-    const bookingYandexWrap = document.getElementById('bookingYandexWrap');
-    const bookingYandexFrame = document.getElementById('bookingYandexFrame');
+    /* Запись: только встроенная Яндекс.Форма (старая заявка отключена). */
+    loadYandexEmbed().catch(() => {});
 
-    function showBookingMessage(text, ok) {
-      if (!bookingMessage) return;
-      bookingMessage.textContent = text;
-      bookingMessage.className = 'booking-form__message' + (ok ? ' booking-form__message--ok' : ' booking-form__message--err');
-      bookingMessage.hidden = false;
-    }
-
-    function showBookingYandex() {
-      if (!bookingYandexFrame || !bookingYandexWrap || !contactForm) {
-        showBookingMessage('Форма записи временно недоступна. Позвоните: +7 902 473-78-00', false);
-        return;
-      }
-      loadYandexEmbed()
-        .catch(() => {})
-        .then(() => {
-          /* Тот же URL Яндекс.Формы, что был подключён ранее. */
-          bookingYandexFrame.src = `${BOOKING_YANDEX_BASE}?iframe=1`;
-          contactForm.hidden = true;
-          bookingYandexWrap.hidden = false;
-          if (bookingMessage) bookingMessage.hidden = true;
-          bookingYandexWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        });
-    }
-
-    function resetBookingView() {
-      if (contactForm) contactForm.hidden = false;
-      if (bookingYandexWrap) bookingYandexWrap.hidden = true;
-      if (bookingYandexFrame) bookingYandexFrame.removeAttribute('src');
-      if (bookingMessage) bookingMessage.hidden = true;
-    }
-
-    contactForm?.addEventListener('submit', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const name = document.getElementById('bookingName')?.value?.trim() || '';
-      const surname = document.getElementById('bookingSurname')?.value?.trim() || '';
-      const phone = document.getElementById('bookingPhoneField')?.value?.trim() || '';
-      const email = document.getElementById('bookingEmail')?.value?.trim() || '';
-      const comment = document.getElementById('bookingComment')?.value?.trim() || '';
-      const consent = contactForm.querySelector('[name="pd_consent"]')?.checked === true;
-      if (!phone) {
-        showBookingMessage('Укажите телефон', false);
-        return;
-      }
-      if (!consent) {
-        showBookingMessage('Подтвердите согласие на обработку данных', false);
-        return;
-      }
-      showBookingYandex();
-    });
-
-    document.getElementById('bookingYandexBack')?.addEventListener('click', resetBookingView);
-
-    // Телефон в форме: звонок на мобильных, копирование на компьютере
+    // Телефон в блоке записи: звонок на мобильных, копирование на компьютере
     const bookingPhone = document.getElementById('bookingPhone');
 
     bookingPhone?.addEventListener('click', async (e) => {

@@ -887,15 +887,6 @@
 
   document.addEventListener('DOMContentLoaded', () => {
     loadCms();
-    const form = document.getElementById('contactForm');
-    const msgEl = document.getElementById('bookingMessage');
-    if (!form) return;
-    /* Заявки через Яндекс.Формы обрабатывает страница (data-booking-yandex). */
-    if (form.getAttribute('data-booking-yandex') === '1') return;
-
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      submitBooking(form, msgEl);
-    });
+    /* Запись: встроенная Яндекс.Форма в #booking; собственной HTML-формы заявки нет. */
   });
 })();
