@@ -517,10 +517,18 @@
       if (footerBook) bookLink.href = bookingHref(footerBook) || footerBook;
       if (content.footer_booking_label) bookLink.textContent = content.footer_booking_label;
     }
-    const siteLink = document.querySelector('.footer__contact-item a[href*="studia-mai.ru"], .footer__contact-item a[data-cms-footer-site]');
+    const siteLink = document.querySelector('.footer__contact-item a[data-cms-footer-site], .footer__contact-item a[href*="studia-mai.ru"], .footer__contact-item a[href*="github.io"]');
     if (siteLink) {
-      if (content.footer_site_url) siteLink.href = content.footer_site_url;
-      if (content.footer_site_label) siteLink.textContent = content.footer_site_label;
+      const OFFICIAL_SITE = 'https://studia-mai.ru/';
+      const OFFICIAL_SITE_LABEL = 'Сайт: studia-mai.ru';
+      let siteUrl = content.footer_site_url || siteLink.getAttribute('href') || OFFICIAL_SITE;
+      let siteLabel = content.footer_site_label || siteLink.textContent || OFFICIAL_SITE_LABEL;
+      if (/github\.io/i.test(String(siteUrl)) || /github\.io/i.test(String(siteLabel))) {
+        siteUrl = OFFICIAL_SITE;
+        siteLabel = OFFICIAL_SITE_LABEL;
+      }
+      siteLink.href = siteUrl;
+      siteLink.textContent = siteLabel;
     }
 
     function setPlaceholder(id, text) {

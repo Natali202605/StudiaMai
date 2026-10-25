@@ -103,7 +103,7 @@
   <link rel="preload" as="image" href="images/hero-studio.png">
   <link rel="preload" as="image" href="images/logo.png">
   <link rel="stylesheet" href="css/fonts.css?v=fonts1">
-  <link rel="stylesheet" href="style.css?v=sync43">
+  <link rel="stylesheet" href="style.css?v=sync44">
   <link rel="stylesheet" href="css/themes.css?v=themes5">
 </head>
 <body>
@@ -1265,19 +1265,23 @@
         <div class="review-form__agree">
           <label>
             <input type="checkbox" name="review_pd_consent" id="reviewPdConsent">
-            <span>Даю согласие на обработку персональных данных и на распространение (публикацию) имени и текста отзыва на сайте</span>
+            <span>Даю согласие на обработку персональных данных</span>
+          </label>
+          <label>
+            <input type="checkbox" name="review_share_consent" id="reviewShareConsent">
+            <span>Отдельно даю согласие на распространение (публикацию) имени (подписи) и текста отзыва на сайте https://studia-mai.ru/</span>
           </label>
           <p class="review-form__agree-links">
             <a href="privacy.html">Политика конфиденциальности</a>
             <a href="personal-data-consent.html">Согласие на обработку персональных данных</a>
           </p>
-          <p class="review-form__agree-links">На сайте распространяются имя (подпись) и текст отзыва. Отозвать согласие на распространение: +7 902 473-78-00, brow_studia_may@mail.ru.</p>
+          <p class="review-form__agree-links">Распространяются: имя (подпись) и текст отзыва. Отозвать согласие на распространение: +7 902 473-78-00, brow_studia_may@mail.ru.</p>
         </div>
         <p class="review-form__message" id="reviewFormMessage" hidden></p>
         <button type="submit" class="btn btn--primary" id="publishReview">Отправить</button>
       </form>
       <div class="review-modal__yandex-wrap" id="reviewYandexWrap" hidden>
-        <p class="review-modal__yandex-note">Чтобы отзыв сохранился для модерации, нажмите «Отправить» в форме ниже.</p>
+        <p class="review-modal__yandex-note">Чтобы отзыв сохранился для модерации, нажмите «Отправить» в форме ниже. Подтверждения согласий с сайта передаются вместе с текстом отзыва.</p>
         <iframe class="review-modal__yandex" id="reviewYandexFrame" name="ya-form-6ad64997c45c0750253c7ad8" title="Добавить отзыв о студии «Май»" loading="lazy"></iframe>
       </div>
     </div>
@@ -1285,7 +1289,7 @@
 
   <script src="js/config.js"></script>
   <script src="js/live-store.js?v=live2"></script>
-  <script src="js/site-api.js?v=cms34"></script>
+  <script src="js/site-api.js?v=cms35"></script>
   <script>
     const burger = document.querySelector('.burger');
     const nav = document.querySelector('.nav');
@@ -1689,11 +1693,24 @@
       });
     }
 
+    const REVIEW_CONSENT_VERSION = '2026-10-25';
+    const REVIEW_POLICY_VERSION = '2026-10-25';
+
+    function buildReviewConsentProof() {
+      return [
+        '---',
+        'Подтверждения с сайта studia-mai.ru:',
+        'Согласие на обработку персональных данных: да (версия согласия ' + REVIEW_CONSENT_VERSION + ').',
+        'Согласие на распространение имени (подписи) и текста отзыва на https://studia-mai.ru/: да (версия политики ' + REVIEW_POLICY_VERSION + ').'
+      ].join('\n');
+    }
+
     function buildReviewYandexUrl(author, text) {
       const params = new URLSearchParams();
+      const textWithConsent = String(text || '').trim() + '\n\n' + buildReviewConsentProof();
       params.set('iframe', '1');
       params.set('answer_long_text_96199', author);
-      params.set('answer_short_text_9008991683293520', text);
+      params.set('answer_short_text_9008991683293520', textWithConsent);
       return `${REVIEW_YANDEX_BASE}?${params.toString()}`;
     }
 
@@ -1712,6 +1729,8 @@
       if (reviewTextInput) reviewTextInput.value = '';
       const reviewConsent = document.getElementById('reviewPdConsent');
       if (reviewConsent) reviewConsent.checked = false;
+      const reviewShare = document.getElementById('reviewShareConsent');
+      if (reviewShare) reviewShare.checked = false;
       if (reviewFormMessage) reviewFormMessage.hidden = true;
     }
 
@@ -1764,12 +1783,17 @@
       const author = reviewAuthorInput?.value?.trim() || '';
       const text = reviewTextInput?.value?.trim() || '';
       const reviewConsent = document.getElementById('reviewPdConsent')?.checked === true;
+      const reviewShare = document.getElementById('reviewShareConsent')?.checked === true;
       if (!text) {
         showReviewFormMessage('Напишите текст отзыва', false);
         return;
       }
       if (!reviewConsent) {
-        showReviewFormMessage('Подтвердите согласие на обработку и публикацию отзыва', false);
+        showReviewFormMessage('Подтвердите согласие на обработку персональных данных', false);
+        return;
+      }
+      if (!reviewShare) {
+        showReviewFormMessage('Подтвердите отдельное согласие на публикацию имени и текста отзыва', false);
         return;
       }
       if (!reviewYandexFrame || !reviewYandexWrap || !reviewForm) {
