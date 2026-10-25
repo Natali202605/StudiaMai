@@ -1,13 +1,13 @@
 /**
  * Удаляет служебные каталоги из артефакта деплоя (Timeweb).
- * Исходники остаются в private GitHub; на публичном диске /docs и /ops не раздаются.
+ * Исходники остаются в private GitHub; на публичном диске не раздаются.
  */
 import { rmSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const targets = ['docs', 'ops'];
+const targets = ['docs', 'ops', 'operator-docs', 'operator-ops'];
 
 for (const name of targets) {
   const dir = join(root, name);
@@ -19,4 +19,4 @@ for (const name of targets) {
   console.log(`[strip] removed: ${name}/`);
 }
 
-console.log('[strip] hosting artifact ready (docs/ and ops/ not published)');
+console.log('[strip] hosting artifact ready (internal paths not published)');

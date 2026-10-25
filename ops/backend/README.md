@@ -1,6 +1,1 @@
-# Серверная часть (не веб-корень)
-
-Исходники Node API для будущего запуска вне статической раздачи сайта.
-
-На Timeweb в настройках деплоя укажите команду сборки `npm run build` (или `rm -rf ops docs`), чтобы каталоги `ops` и `docs` не копировались на публичный диск приложения (код остаётся в private GitHub).  
-Дополнительно пути `/ops/*`, `/docs/*`, `/backend/*`, `/server/*` → 404 (см. Caddyfile).
+<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>404</title><meta name="robots" content="noindex"></head><body><p>Not found</p></body></html>

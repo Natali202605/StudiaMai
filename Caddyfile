@@ -7,7 +7,7 @@
 }
 
 :80, :443 {
-	@blocked path /server/* /backend/* /ops/* /docs/* /server /backend /ops /docs
+	@blocked path /server/* /backend/* /ops/* /docs/* /operator-docs/* /operator-ops/* /server /backend /ops /docs /operator-docs /operator-ops
 	respond @blocked 404
 
 	header {
