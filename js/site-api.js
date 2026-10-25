@@ -428,7 +428,10 @@
       if (track) {
         const html = content.reviews.map((r) => {
           const stars = '★'.repeat(Math.min(5, Math.max(1, Number(r.stars) || 5)));
-          return `<div class="review-card"><span class="review-card__quote" aria-hidden="true">"</span><div class="review-card__stars">${stars}</div><p class="review-card__text">${escapeHtml(r.text || '')}</p><span class="review-card__author">${escapeHtml(r.author || '')}</span></div>`;
+          const rawAuthor = String(r.author || '');
+          const dateMatch = rawAuthor.match(/(\d{2}\.\d{2}\.\d{4})/);
+          const publicAuthor = dateMatch ? `— Клиент, ${dateMatch[1]}` : '— Клиент';
+          return `<div class="review-card"><span class="review-card__quote" aria-hidden="true">"</span><div class="review-card__stars">${stars}</div><p class="review-card__text">${escapeHtml(r.text || '')}</p><span class="review-card__author">${escapeHtml(publicAuthor)}</span></div>`;
         }).join('');
         const staticCards = [...track.querySelectorAll('.review-card:not([data-review-id])')];
         const current = staticCards.map((card) => plainText(card.textContent)).join('|');
