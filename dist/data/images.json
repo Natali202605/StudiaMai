@@ -1,0 +1,15 @@
+{
+  "logo": "images/logo.png",
+  "hero_logo": "images/logo.png",
+  "brand_title": "images/brand-title-composed.png?v=shadow3",
+  "hero_studio": "images/hero-studio.png",
+  "service_brows": "images/бровьи.png?v=photo3",
+  "service_cosmetology": "images/космитология.jpg?v=photo1",
+  "service_massage": "images/массаж.png?v=photo2",
+  "service_trichology": "images/волосьи.png?v=photo3",
+  "service_depilation": "images/ноги.png?v=photo3",
+  "service_rituals": "images/руки.png?v=photo2",
+  "master_portrait": "images/galina-portret.png",
+  "master_card": "images/galina-bolotova.png",
+  "master_certificates": "images/sertifikaty.png"
+}

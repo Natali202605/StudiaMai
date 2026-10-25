@@ -2,7 +2,8 @@
   "name": "studia-mai-site",
   "private": true,
   "version": "1.0.0",
-  "description": "Статический сайт studia-mai.ru. Сборка убирает служебные каталоги с публичного диска.",
+  "description": "Статический сайт studia-mai.ru. npm run build собирает dist/ без служебных каталогов.",
+  "type": "module",
   "scripts": {
     "build": "node scripts/strip-internal-for-hosting.mjs"
   },
