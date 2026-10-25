@@ -4,5 +4,6 @@ Disallow: /admin/
 Disallow: /server/
 Disallow: /backend/
 Disallow: /ops/
+Disallow: /docs/
 
 Sitemap: https://studia-mai.ru/sitemap.xml
