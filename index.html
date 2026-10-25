@@ -1078,7 +1078,6 @@
             <button type="button" class="btn btn--ghost reviews-write-btn" id="openReviewModalAdd" data-cms="reviews_add_label">Добавить отзыв</button>
             <button type="button" class="btn btn--ghost reviews-write-btn reviews-write-btn--continue" id="openReviewModalContinue" data-cms="reviews_continue_label">Дополнить отзыв</button>
           </div>
-          <p class="reviews-write-notice" id="reviewSuccessNotice" data-cms="reviews_success" hidden>Спасибо! Ваш отзыв опубликован.</p>
         </div>
       </div>
         </div>
@@ -1233,32 +1232,18 @@
         <label class="review-form__label" for="reviewText"><span aria-hidden="true">*</span> Ваш отзыв</label>
         <textarea name="text" id="reviewText" rows="5" placeholder="Ваш отзыв" required></textarea>
         <label class="review-form__label" for="reviewShareTerms">Условия или запреты к публикации (необязательно)</label>
-        <textarea name="share_terms" id="reviewShareTerms" rows="2" placeholder="Например: публиковать только имя, без фамилии"></textarea>
-        <div class="review-form__agree">
-          <label>
-            <input type="checkbox" name="review_pd_consent" id="reviewPdConsent">
-            <span>Даю согласие на обработку персональных данных</span>
-          </label>
-          <label>
-            <input type="checkbox" name="review_share_consent" id="reviewShareConsent">
-            <span>Отдельно даю согласие на распространение персональных данных</span>
-          </label>
-          <p class="review-form__agree-links">
-            <a href="personal-data-dissemination-consent.html">Согласие на распространение персональных данных</a>
-            <a href="personal-data-consent.html">Согласие на обработку персональных данных</a>
-            <a href="privacy.html">Политика конфиденциальности</a>
-          </p>
-          <p class="review-form__agree-links">На сайте публикуются текст отзыва и подпись «Клиент» с датой. ФИО и контакт не публикуются. Отзыв согласия на распространение: +7 902 473-78-00, brow_studia_may@mail.ru.</p>
-        </div>
+        <textarea name="share_terms" id="reviewShareTerms" rows="2" placeholder="Например: не публиковать отдельные формулировки"></textarea>
         <p class="review-form__message" id="reviewFormMessage" hidden></p>
         <button type="submit" class="btn btn--primary" id="publishReview">Отправить</button>
       </form>
-      <div class="review-modal__yandex-wrap" id="reviewYandexWrap" hidden>
-        <p class="review-modal__yandex-note">Отзыв уже показан на сайте. Нажмите «Отправить» в форме ниже, чтобы сохранить его у студии. Нежелательный отзыв владелец может удалить в Яндекс.Формах — с сайта он снимается без следа.</p>
-        <iframe class="review-modal__yandex" id="reviewYandexFrame" name="ya-form-6ad64997c45c0750253c7ad8" title="Добавить отзыв о студии «Май»" loading="lazy"></iframe>
-      </div>
     </div>
   </div>
+
+  <iframe name="reviewYandexSilentFrame" id="reviewYandexSilentFrame" title="" hidden style="position:absolute;width:0;height:0;border:0;clip:rect(0,0,0,0)" aria-hidden="true" tabindex="-1"></iframe>
+  <form id="reviewYandexSilentForm" action="https://forms.yandex.ru/u/6ad64997c45c0750253c7ad8/" method="post" target="reviewYandexSilentFrame" hidden aria-hidden="true" style="display:none">
+    <input type="hidden" name="answer_long_text_96199" id="yaReviewAuthorField">
+    <input type="hidden" name="answer_short_text_9008991683293520" id="yaReviewTextField">
+  </form>
 
   <script src="js/config.js"></script>
   <script src="js/live-store.js?v=live2"></script>
@@ -1762,59 +1747,63 @@
     const reviewShareTermsInput = document.getElementById('reviewShareTerms');
     const reviewTextInput = document.getElementById('reviewText');
     const reviewFormMessage = document.getElementById('reviewFormMessage');
-    const reviewYandexFrame = document.getElementById('reviewYandexFrame');
-    const reviewYandexWrap = document.getElementById('reviewYandexWrap');
-    const REVIEW_YANDEX_BASE = 'https://forms.yandex.ru/u/6ad64997c45c0750253c7ad8/';
-    const YANDEX_EMBED_SRC = 'https://forms.yandex.ru/_/embed.js';
-
-    function loadYandexEmbed() {
-      return new Promise((resolve, reject) => {
-        if (window.__yaFormsEmbedLoaded) {
-          resolve();
-          return;
-        }
-        const existing = document.querySelector('script[data-yandex-forms-embed]');
-        if (existing) {
-          existing.addEventListener('load', () => resolve(), { once: true });
-          existing.addEventListener('error', () => reject(new Error('yandex embed')), { once: true });
-          return;
-        }
-        const script = document.createElement('script');
-        script.src = YANDEX_EMBED_SRC;
-        script.async = true;
-        script.dataset.yandexFormsEmbed = '1';
-        script.onload = () => {
-          window.__yaFormsEmbedLoaded = true;
-          resolve();
-        };
-        script.onerror = () => reject(new Error('yandex embed'));
-        document.body.appendChild(script);
-      });
-    }
-
-    const REVIEW_CONSENT_VERSION = '2026-10-25';
-    const REVIEW_DISSEMINATION_VERSION = '2026-10-25';
-    const REVIEW_POLICY_VERSION = '2026-10-25';
+    const REVIEW_YANDEX_ID = '6ad64997c45c0750253c7ad8';
+    const REVIEW_YANDEX_BASE = 'https://forms.yandex.ru/u/' + REVIEW_YANDEX_ID + '/';
+    const REVIEW_YANDEX_API = 'https://api.forms.yandex.net/v1/surveys/' + REVIEW_YANDEX_ID + '/form';
+    const reviewYandexSilentForm = document.getElementById('reviewYandexSilentForm');
+    const yaReviewAuthorField = document.getElementById('yaReviewAuthorField');
+    const yaReviewTextField = document.getElementById('yaReviewTextField');
 
     function buildOperatorMeta(contact, shareTerms) {
       const lines = [
         'Служебно (не публиковать на сайте):',
         'Контакт: ' + (contact || 'не указан'),
-        'Согласие на обработку: да (' + REVIEW_CONSENT_VERSION + ')',
-        'Согласие на распространение: да (' + REVIEW_DISSEMINATION_VERSION + ' / политика ' + REVIEW_POLICY_VERSION + ')',
         'Условия/запреты: ' + (shareTerms || 'не указаны')
       ];
       return lines.join('\n');
     }
 
-    function buildReviewYandexUrl(author, text, contact, shareTerms) {
-      const params = new URLSearchParams();
+    function buildReviewYandexPayload(author, text, contact, shareTerms) {
       const cleanText = String(text || '').trim();
       const authorWithMeta = String(author || '').trim() + '\n\n' + buildOperatorMeta(contact, shareTerms);
-      params.set('iframe', '1');
-      params.set('answer_long_text_96199', authorWithMeta);
-      params.set('answer_short_text_9008991683293520', cleanText);
-      return `${REVIEW_YANDEX_BASE}?${params.toString()}`;
+      return {
+        answer_long_text_96199: authorWithMeta,
+        answer_short_text_9008991683293520: cleanText
+      };
+    }
+
+    function submitReviewToYandexSilent(author, text, contact, shareTerms) {
+      const payload = buildReviewYandexPayload(author, text, contact, shareTerms);
+
+      fetch(REVIEW_YANDEX_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        mode: 'cors',
+        credentials: 'omit',
+        keepalive: true
+      }).catch(() => {});
+
+      try {
+        const fd = new FormData();
+        fd.append('answer_long_text_96199', payload.answer_long_text_96199);
+        fd.append('answer_short_text_9008991683293520', payload.answer_short_text_9008991683293520);
+        fetch(REVIEW_YANDEX_BASE, {
+          method: 'POST',
+          body: fd,
+          mode: 'no-cors',
+          credentials: 'omit',
+          keepalive: true
+        }).catch(() => {});
+      } catch { /* ignore */ }
+
+      if (reviewYandexSilentForm && yaReviewAuthorField && yaReviewTextField) {
+        yaReviewAuthorField.value = payload.answer_long_text_96199;
+        yaReviewTextField.value = payload.answer_short_text_9008991683293520;
+        try {
+          reviewYandexSilentForm.submit();
+        } catch { /* ignore */ }
+      }
     }
 
     function showReviewFormMessage(text, ok) {
@@ -1826,16 +1815,10 @@
 
     function resetReviewModalView() {
       if (reviewForm) reviewForm.hidden = false;
-      if (reviewYandexWrap) reviewYandexWrap.hidden = true;
-      if (reviewYandexFrame) reviewYandexFrame.removeAttribute('src');
       if (reviewAuthorInput) reviewAuthorInput.value = '';
       if (reviewContactInput) reviewContactInput.value = '';
       if (reviewShareTermsInput) reviewShareTermsInput.value = '';
       if (reviewTextInput) reviewTextInput.value = '';
-      const reviewConsent = document.getElementById('reviewPdConsent');
-      if (reviewConsent) reviewConsent.checked = false;
-      const reviewShare = document.getElementById('reviewShareConsent');
-      if (reviewShare) reviewShare.checked = false;
       if (reviewFormMessage) reviewFormMessage.hidden = true;
     }
 
@@ -1889,8 +1872,6 @@
       const contact = reviewContactInput?.value?.trim() || '';
       const shareTerms = reviewShareTermsInput?.value?.trim() || '';
       const text = reviewTextInput?.value?.trim() || '';
-      const reviewConsent = document.getElementById('reviewPdConsent')?.checked === true;
-      const reviewShare = document.getElementById('reviewShareConsent')?.checked === true;
       if (!author) {
         showReviewFormMessage('Укажите ФИО', false);
         return;
@@ -1903,36 +1884,13 @@
         showReviewFormMessage('Напишите текст отзыва', false);
         return;
       }
-      if (!reviewConsent) {
-        showReviewFormMessage('Подтвердите согласие на обработку персональных данных', false);
-        return;
-      }
-      if (!reviewShare) {
-        showReviewFormMessage('Подтвердите согласие на распространение персональных данных', false);
-        return;
-      }
-      if (!reviewYandexFrame || !reviewYandexWrap || !reviewForm) {
-        showReviewFormMessage('Форма отзыва временно недоступна', false);
-        return;
-      }
 
       const reviewId = 'r' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
       const reviewDate = formatReviewDate();
       saveSessionReview({ id: reviewId, text, date: reviewDate });
       reviewSliderApi?.addReviewCard('Клиент', reviewDate, text, reviewId);
-      const notice = document.getElementById('reviewSuccessNotice');
-      if (notice) {
-        notice.hidden = false;
-        notice.textContent = 'Спасибо! Ваш отзыв опубликован.';
-      }
-
-      loadYandexEmbed()
-        .catch(() => {})
-        .then(() => {
-          reviewYandexFrame.src = buildReviewYandexUrl(author, text, contact, shareTerms);
-          reviewForm.hidden = true;
-          reviewYandexWrap.hidden = false;
-        });
+      submitReviewToYandexSilent(author, text, contact, shareTerms);
+      closeReviewModal();
     });
 
 
