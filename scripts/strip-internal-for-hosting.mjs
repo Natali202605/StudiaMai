@@ -10,7 +10,8 @@ import {
   cpSync,
   readdirSync,
   statSync,
-  writeFileSync
+  writeFileSync,
+  unlinkSync
 } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -53,6 +54,28 @@ function shouldSkip(name) {
   return false;
 }
 
+function purgeUnsafeFiles(dir) {
+  for (const name of readdirSync(dir)) {
+    const full = join(dir, name);
+    const st = statSync(full);
+    if (st.isDirectory()) {
+      purgeUnsafeFiles(full);
+      continue;
+    }
+    const lower = name.toLowerCase();
+    if (
+      lower === '.env' ||
+      lower.startsWith('.env.') ||
+      lower.endsWith('.ps1') ||
+      lower.endsWith('.pem') ||
+      lower.endsWith('.key')
+    ) {
+      unlinkSync(full);
+      console.log(`[build] purge: ${full.slice(dist.length + 1)}`);
+    }
+  }
+}
+
 if (existsSync(dist)) {
   rmSync(dist, { recursive: true, force: true });
 }
@@ -75,10 +98,12 @@ for (const name of readdirSync(root)) {
   }
 }
 
+purgeUnsafeFiles(dist);
+
 writeFileSync(
   join(dist, '.build-stamp'),
-  `studia-mai public artifact\nbuilt=${new Date().toISOString()}\nexcluded=docs,ops,operator-docs,operator-ops\n`,
+  `studia-mai public artifact\nbuilt=${new Date().toISOString()}\nexcluded=docs,ops,operator-docs,operator-ops,.env\n`,
   'utf8'
 );
 
-console.log('[build] dist/ ready — without docs/, ops/, operator-docs/, operator-ops/');
+console.log('[build] dist/ ready — without docs/, ops/, operator-docs/, operator-ops/, .env');
