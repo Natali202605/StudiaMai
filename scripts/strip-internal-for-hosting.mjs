@@ -100,6 +100,29 @@ for (const name of readdirSync(root)) {
 
 purgeUnsafeFiles(dist);
 
+const distApiPhp = join(dist, 'api', 'yandex-form.php');
+if (existsSync(distApiPhp)) {
+  unlinkSync(distApiPhp);
+  console.log('[build] purge: api/yandex-form.php (Timeweb Node proxy only in dist)');
+}
+
+writeFileSync(
+  join(dist, 'package.json'),
+  JSON.stringify(
+    {
+      name: 'studia-mai-public',
+      private: true,
+      type: 'module',
+      engines: { node: '>=18' },
+      scripts: { start: 'node api/timeweb-server.mjs' },
+      dependencies: { express: '^4.21.2' }
+    },
+    null,
+    2
+  ) + '\n',
+  'utf8'
+);
+
 writeFileSync(
   join(dist, '.build-stamp'),
   `studia-mai public artifact\nbuilt=${new Date().toISOString()}\nexcluded=docs,ops,operator-docs,operator-ops,.env\n`,

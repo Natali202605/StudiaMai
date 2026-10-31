@@ -5,7 +5,7 @@
 - [ ] Приём ответов **открыт**
 - [ ] В форме: согласие на обработку ПДн и ссылки на https://studia-mai.ru/privacy.html и https://studia-mai.ru/personal-data-consent.html
 - [ ] Владелец формы — ИП Болотова Г. И.
-- [ ] На сайте блок `#booking` с собственной вёрсткой; отправка идёт через `/api/yandex-form.php` в gateway Яндекс.Форм
+- [ ] На сайте блок `#booking` с собственной вёрсткой; отправка — POST `/api/yandex-form` (Node на Timeweb, gateway Яндекс.Форм)
 
 ## Форма отзыва `https://forms.yandex.ru/u/6ad64997c45c0750253c7ad8/`
 
