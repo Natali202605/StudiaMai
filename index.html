@@ -1233,20 +1233,6 @@
     </div>
   </div>
 
-  <iframe name="reviewYandexSilentFrame" id="reviewYandexSilentFrame" title="" hidden style="position:absolute;width:0;height:0;border:0;clip:rect(0,0,0,0)" aria-hidden="true" tabindex="-1"></iframe>
-  <form id="reviewYandexSilentForm" action="https://forms.yandex.ru/u/6ad64997c45c0750253c7ad8/" method="post" target="reviewYandexSilentFrame" hidden aria-hidden="true" style="display:none">
-    <input type="hidden" name="answer_long_text_96199" id="yaReviewAuthorField">
-    <input type="hidden" name="answer_short_text_9008991683293520" id="yaReviewTextField">
-  </form>
-  <iframe name="bookingYandexSilentFrame" id="bookingYandexSilentFrame" title="" hidden style="position:absolute;width:0;height:0;border:0;clip:rect(0,0,0,0)" aria-hidden="true" tabindex="-1"></iframe>
-  <form id="bookingYandexSilentForm" action="https://forms.yandex.ru/u/6ad643dd852af364ddc7a26c/" method="post" target="bookingYandexSilentFrame" hidden aria-hidden="true" style="display:none">
-    <input type="hidden" name="answer_short_text_9008991681738688" id="yaBookNameField">
-    <input type="hidden" name="answer_short_text_9008991681800748" id="yaBookSurnameField">
-    <input type="hidden" name="answer_short_text_9008991681939734" id="yaBookPhoneField">
-    <input type="hidden" name="answer_short_text_9008991681974672" id="yaBookEmailField">
-    <input type="hidden" name="answer_boolean_9008991682017890" id="yaBookConsentField" value="true">
-  </form>
-
   <script src="js/config.js"></script>
   <script src="js/live-store.js?v=live2"></script>
   <script src="js/site-api.js?v=cms36"></script>
@@ -1746,12 +1732,8 @@
     const reviewForm = document.getElementById('reviewForm');
     const reviewTextInput = document.getElementById('reviewText');
     const reviewFormMessage = document.getElementById('reviewFormMessage');
-    const REVIEW_YANDEX_ID = '6ad64997c45c0750253c7ad8';
-    const REVIEW_YANDEX_BASE = 'https://forms.yandex.ru/u/' + REVIEW_YANDEX_ID + '/';
-    const REVIEW_YANDEX_API = 'https://api.forms.yandex.net/v1/surveys/' + REVIEW_YANDEX_ID + '/form';
-    const reviewYandexSilentForm = document.getElementById('reviewYandexSilentForm');
-    const yaReviewAuthorField = document.getElementById('yaReviewAuthorField');
-    const yaReviewTextField = document.getElementById('yaReviewTextField');
+    const YANDEX_FORM_PROXY = '/api/yandex-form.php';
+    const yandexFormStartedAt = { booking: Date.now(), review: Date.now() };
 
     function buildOperatorMeta(contact, shareTerms) {
       const lines = [
@@ -1771,61 +1753,30 @@
       };
     }
 
-    function submitYandexSilent(apiUrl, formUrl, payload, formEl, fieldMap) {
-      fetch(apiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-        mode: 'cors',
-        credentials: 'omit',
-        keepalive: true
-      }).catch(() => {});
-
+    async function submitToYandexForm(formKey, values) {
       try {
-        const fd = new FormData();
-        Object.keys(payload).forEach((key) => {
-          const value = payload[key];
-          fd.append(key, value === true ? 'true' : value === false ? 'false' : String(value ?? ''));
-        });
-        fetch(formUrl, {
+        const res = await fetch(YANDEX_FORM_PROXY, {
           method: 'POST',
-          body: fd,
-          mode: 'no-cors',
-          credentials: 'omit',
-          keepalive: true
-        }).catch(() => {});
-      } catch { /* ignore */ }
-
-      if (formEl && fieldMap) {
-        Object.keys(fieldMap).forEach((key) => {
-          const el = fieldMap[key];
-          if (!el) return;
-          const value = payload[key];
-          el.value = value === true ? 'true' : value === false ? 'false' : String(value ?? '');
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
+          body: JSON.stringify({
+            form: formKey,
+            values,
+            parent: location.href,
+            startedAt: yandexFormStartedAt[formKey] || Date.now()
+          })
         });
-        try {
-          formEl.submit();
-        } catch { /* ignore */ }
+        const data = await res.json().catch(() => ({}));
+        return res.ok && data.ok === true;
+      } catch {
+        return false;
       }
     }
 
-    function submitReviewToYandexSilent(author, text, contact, shareTerms) {
+    async function submitReviewToYandex(author, text, contact, shareTerms) {
       const payload = buildReviewYandexPayload(author, text, contact, shareTerms);
-      submitYandexSilent(REVIEW_YANDEX_API, REVIEW_YANDEX_BASE, payload, reviewYandexSilentForm, {
-        answer_long_text_96199: yaReviewAuthorField,
-        answer_short_text_9008991683293520: yaReviewTextField
-      });
+      return submitToYandexForm('review', payload);
     }
-
-    const BOOKING_YANDEX_ID = '6ad643dd852af364ddc7a26c';
-    const BOOKING_YANDEX_BASE = 'https://forms.yandex.ru/u/' + BOOKING_YANDEX_ID + '/';
-    const BOOKING_YANDEX_API = 'https://api.forms.yandex.net/v1/surveys/' + BOOKING_YANDEX_ID + '/form';
-    const bookingYandexSilentForm = document.getElementById('bookingYandexSilentForm');
-    const yaBookNameField = document.getElementById('yaBookNameField');
-    const yaBookSurnameField = document.getElementById('yaBookSurnameField');
-    const yaBookPhoneField = document.getElementById('yaBookPhoneField');
-    const yaBookEmailField = document.getElementById('yaBookEmailField');
-    const yaBookConsentField = document.getElementById('yaBookConsentField');
 
     function buildBookingYandexPayload(name, surname, phone, email, comment, consent) {
       let emailValue = String(email || '').trim();
@@ -1844,15 +1795,9 @@
       };
     }
 
-    function submitBookingToYandexSilent(name, surname, phone, email, comment, consent) {
+    async function submitBookingToYandex(name, surname, phone, email, comment, consent) {
       const payload = buildBookingYandexPayload(name, surname, phone, email, comment, consent);
-      submitYandexSilent(BOOKING_YANDEX_API, BOOKING_YANDEX_BASE, payload, bookingYandexSilentForm, {
-        answer_short_text_9008991681738688: yaBookNameField,
-        answer_short_text_9008991681800748: yaBookSurnameField,
-        answer_short_text_9008991681939734: yaBookPhoneField,
-        answer_short_text_9008991681974672: yaBookEmailField,
-        answer_boolean_9008991682017890: yaBookConsentField
-      });
+      return submitToYandexForm('booking', payload);
     }
 
     function showReviewFormMessage(text, ok) {
@@ -1912,7 +1857,7 @@
       if (e.key === 'Escape' && reviewModal && !reviewModal.hidden) closeReviewModal();
     });
 
-    reviewForm?.addEventListener('submit', (e) => {
+    reviewForm?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const text = reviewTextInput?.value?.trim() || '';
       if (!text) {
@@ -1921,11 +1866,19 @@
       }
 
       const author = 'Клиент';
+      const publishBtn = document.getElementById('publishReview');
+      if (publishBtn) publishBtn.disabled = true;
+      const sent = await submitReviewToYandex(author, text, '', '');
+      if (publishBtn) publishBtn.disabled = false;
+      if (!sent) {
+        showReviewFormMessage('Не удалось отправить отзыв. Попробуйте позже или напишите нам по телефону.', false);
+        return;
+      }
+
       const reviewId = 'r' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
       const reviewDate = formatReviewDate();
       saveSessionReview({ id: reviewId, text, date: reviewDate });
       reviewSliderApi?.addReviewCard(author, reviewDate, text, reviewId);
-      submitReviewToYandexSilent(author, text, '', '');
       closeReviewModal();
     });
 
@@ -1940,7 +1893,7 @@
       bookingMessage.hidden = false;
     }
 
-    contactForm?.addEventListener('submit', (e) => {
+    contactForm?.addEventListener('submit', async (e) => {
       e.preventDefault();
       e.stopPropagation();
       const name = document.getElementById('bookingName')?.value?.trim() || '';
@@ -1965,7 +1918,14 @@
         showBookingMessage('Подтвердите согласие на обработку данных', false);
         return;
       }
-      submitBookingToYandexSilent(name, surname, phone, email, comment, true);
+      const submitBtn = contactForm.querySelector('button[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
+      const sent = await submitBookingToYandex(name, surname, phone, email, comment, true);
+      if (submitBtn) submitBtn.disabled = false;
+      if (!sent) {
+        showBookingMessage('Не удалось отправить заявку. Попробуйте позже или позвоните нам.', false);
+        return;
+      }
       showBookingMessage('Спасибо за заявку!', true);
       contactForm.reset();
     });

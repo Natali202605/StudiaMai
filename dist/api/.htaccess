@@ -1,0 +1,4 @@
+Options -Indexes
+<Files "yandex-form.php">
+  Require all granted
+</Files>
