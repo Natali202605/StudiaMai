@@ -5,6 +5,7 @@
   "engines": {
     "node": ">=18"
   },
+  "main": "app.js",
   "scripts": {
     "start": "node api/timeweb-server.mjs"
   },

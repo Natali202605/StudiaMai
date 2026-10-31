@@ -33,8 +33,16 @@ const rateBuckets = new Map();
 const RATE_WINDOW_MS = 60_000;
 const RATE_MAX = 8;
 
+function requestHost(req) {
+  const raw =
+    req.headers['x-forwarded-host'] ||
+    req.headers.host ||
+    '';
+  return String(raw).split(',')[0].split(':')[0].trim().toLowerCase();
+}
+
 export function isAllowedRequest(req) {
-  const host = String(req.headers.host || '').split(':')[0].toLowerCase();
+  const host = requestHost(req);
   if (ALLOWED_HOSTS.has(host)) return true;
   const origin = req.headers.origin || '';
   if (origin === 'https://studia-mai.ru' || origin === 'https://www.studia-mai.ru') return true;

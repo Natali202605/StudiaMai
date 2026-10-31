@@ -100,12 +100,6 @@ for (const name of readdirSync(root)) {
 
 purgeUnsafeFiles(dist);
 
-const distApiPhp = join(dist, 'api', 'yandex-form.php');
-if (existsSync(distApiPhp)) {
-  unlinkSync(distApiPhp);
-  console.log('[build] purge: api/yandex-form.php (Timeweb Node proxy only in dist)');
-}
-
 writeFileSync(
   join(dist, 'package.json'),
   JSON.stringify(

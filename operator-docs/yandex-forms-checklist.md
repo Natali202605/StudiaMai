@@ -5,7 +5,8 @@
 - [ ] Приём ответов **открыт**
 - [ ] В форме: согласие на обработку ПДн и ссылки на https://studia-mai.ru/privacy.html и https://studia-mai.ru/personal-data-consent.html
 - [ ] Владелец формы — ИП Болотова Г. И.
-- [ ] На сайте блок `#booking` с собственной вёрсткой; отправка — POST `/api/yandex-form` (Node на Timeweb, gateway Яндекс.Форм)
+- [ ] На сайте блок `#booking` с собственной вёрсткой; отправка — POST `/api/yandex-form` (server-side прокси в РФ → gateway Яндекс.Форм)
+- [ ] **Timeweb: тип проекта Node.js**, путь `dist`, `npm start`. Если в ответах сервера `Server: Caddy` и POST `/api/yandex-form` даёт **405** — включён только статический хостинг, заявки не доходят (нужен Node или PHP с исполнением `api/yandex-form.php`).
 
 ## Форма отзыва `https://forms.yandex.ru/u/6ad64997c45c0750253c7ad8/`
 

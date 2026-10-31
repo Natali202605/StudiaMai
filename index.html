@@ -659,22 +659,22 @@
           <p class="service-card__desc" data-service-desc="rituals">Уход за руками и обёртывание: парафиновая ванночка, французский моделирующий массаж рук и антицеллюлитное обёртывание.</p>
           <div class="rituals__prices">
             <ul class="price-list" data-service-prices="rituals">
-              <li class="price-item">
+          <li class="price-item">
                 <div class="price-item__row"><span class="price-item__name">Парафиновая ванночка кистей рук «Бархатные ручки»</span><span class="price-item__price">1 000 ₽</span></div>
-                <span class="price-item__time">1 час</span>
-                <details class="price-item__details"><summary>Подробнее</summary><p>Парафиновая ванночка для кистей рук «Бархатные ручки».</p></details>
-              </li>
-              <li class="price-item">
+            <span class="price-item__time">1 час</span>
+            <details class="price-item__details"><summary>Подробнее</summary><p>Парафиновая ванночка для кистей рук «Бархатные ручки».</p></details>
+          </li>
+          <li class="price-item">
                 <div class="price-item__row"><span class="price-item__name">Французский моделирующий массаж рук</span><span class="price-item__price">1 000 ₽</span></div>
-                <span class="price-item__time">1 час</span>
-                <details class="price-item__details"><summary>Подробнее</summary><p>Французский моделирующий массаж рук.</p></details>
-              </li>
-              <li class="price-item">
+            <span class="price-item__time">1 час</span>
+            <details class="price-item__details"><summary>Подробнее</summary><p>Французский моделирующий массаж рук.</p></details>
+          </li>
+          <li class="price-item">
                 <div class="price-item__row"><span class="price-item__name">Антицеллюлитное обертывание</span><span class="price-item__price">1 500 ₽</span></div>
-                <span class="price-item__time">1 час</span>
-                <details class="price-item__details"><summary>Подробнее</summary><p>Антицеллюлитное обертывание тела.</p></details>
-              </li>
-            </ul>
+            <span class="price-item__time">1 час</span>
+            <details class="price-item__details"><summary>Подробнее</summary><p>Антицеллюлитное обертывание тела.</p></details>
+          </li>
+        </ul>
           </div>
         </div>
       </div>
@@ -732,7 +732,7 @@
         <div class="faq-item">
           <h3>Как записаться?</h3>
           <p>Нажмите «Записаться»: откроется блок записи на сайте. Можно заполнить форму или позвонить +7 902 473-78-00.</p>
-        </div>
+      </div>
         <div class="faq-item">
           <h3>Где находится студия?</h3>
           <p>Пермь, Кировский район, Закамск, ул. Ласьвинская, 32, офис 28, второй этаж. Вход с крыльца РЕНО.</p>
@@ -1154,9 +1154,9 @@
           <p class="booking-form__phone"><span data-cms="booking_phone_prefix">или позвоните:</span> <a href="tel:+79024737800" id="bookingPhone" class="booking-form__phone-link" data-phone="+7 902 473-78-00" title="Нажмите, чтобы скопировать номер">+7 902 473-78-00</a></p>
           <div class="booking-form__agree">
             <label>
-              <input type="checkbox" name="pd_consent">
+            <input type="checkbox" name="pd_consent">
               <span data-cms="booking_consent">Даю согласие на обработку персональных данных</span>
-            </label>
+          </label>
             <p class="booking-form__agree-links">
               <a href="privacy.html">https://studia-mai.ru/privacy.html</a>
               <a href="personal-data-consent.html">https://studia-mai.ru/personal-data-consent.html</a>
@@ -1595,7 +1595,7 @@
       window.reviewSliderApi = reviewSliderApi;
 
       document.addEventListener('studia-mai-cms-applied', () => {
-        sanitizeReviewCards();
+      sanitizeReviewCards();
         reviewSlideWidth = 0;
         refreshReviewCards();
         syncReviewSlider();
@@ -1732,7 +1732,7 @@
     const reviewForm = document.getElementById('reviewForm');
     const reviewTextInput = document.getElementById('reviewText');
     const reviewFormMessage = document.getElementById('reviewFormMessage');
-    const YANDEX_FORM_PROXY = '/api/yandex-form';
+    const YANDEX_FORM_PROXY_PATHS = ['/api/yandex-form', '/api/yandex-form.php'];
     const yandexFormStartedAt = { booking: Date.now(), review: Date.now() };
 
     function buildOperatorMeta(contact, shareTerms) {
@@ -1754,23 +1754,29 @@
     }
 
     async function submitToYandexForm(formKey, values) {
-      try {
-        const res = await fetch(YANDEX_FORM_PROXY, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'same-origin',
-          body: JSON.stringify({
-            form: formKey,
-            values,
-            parent: location.href,
-            startedAt: yandexFormStartedAt[formKey] || Date.now()
-          })
-        });
-        const data = await res.json().catch(() => ({}));
-        return res.ok && data.ok === true;
-      } catch {
-        return false;
+      const payload = JSON.stringify({
+        form: formKey,
+        values,
+        parent: location.href,
+        startedAt: yandexFormStartedAt[formKey] || Date.now()
+      });
+      for (const proxyPath of YANDEX_FORM_PROXY_PATHS) {
+        try {
+          const res = await fetch(proxyPath, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            credentials: 'same-origin',
+            body: payload
+          });
+          const ct = res.headers.get('content-type') || '';
+          if (!ct.includes('application/json')) continue;
+          const data = await res.json().catch(() => ({}));
+          if (res.ok && data.ok === true) return true;
+        } catch {
+          /* try next endpoint */
+        }
       }
+      return false;
     }
 
     async function submitReviewToYandex(author, text, contact, shareTerms) {

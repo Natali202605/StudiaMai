@@ -1,4 +1,8 @@
 Options -Indexes
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule ^yandex-form$ yandex-form.php [L,QSA]
+</IfModule>
 <Files "yandex-form.php">
   Require all granted
 </Files>
