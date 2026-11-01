@@ -104,9 +104,8 @@
   <link rel="preload" as="image" href="images/logo.png">
   <link rel="preload" as="image" href="images/brand-title-composed.png?v=shadow3">
   <link rel="stylesheet" href="css/fonts.css?v=fonts1">
-  <link rel="stylesheet" href="style.css?v=sync47">
+  <link rel="stylesheet" href="style.css?v=sync48">
   <link rel="stylesheet" href="css/themes.css?v=themes6">
-  <script src="https://forms.yandex.ru/_static/embed.js"></script>
 </head>
 <body>
 
@@ -1143,17 +1142,8 @@
           </span>
         </div>
         <div class="booking-form__yandex-wrap" id="bookingYandexWrap">
-          <iframe
-            class="booking-form__yandex"
-            id="bookingYandexFrame"
-            src="https://forms.yandex.ru/u/6ad643dd852af364ddc7a26c?iframe=1"
-            frameborder="0"
-            name="ya-form-6ad643dd852af364ddc7a26c"
-            width="650"
-            title="Форма заявки — запись в студию «Май»"
-          ></iframe>
+          <iframe class="booking-form__yandex" src="https://forms.yandex.ru/u/6ad643dd852af364ddc7a26c?iframe=1" title="Форма заявки — студия «Май»" frameborder="0" name="ya-form-6ad643dd852af364ddc7a26c" width="650" loading="lazy"></iframe>
         </div>
-        <p class="booking-form__message" id="bookingMessage" hidden></p>
         <p class="booking-form__phone"><span data-cms="booking_phone_prefix">или позвоните:</span> <a href="tel:+79024737800" id="bookingPhone" class="booking-form__phone-link" data-phone="+7 902 473-78-00" title="Нажмите, чтобы скопировать номер">+7 902 473-78-00</a></p>
       </div>
       </div>
@@ -1217,20 +1207,12 @@
       <div class="review-card__stars" aria-hidden="true">★★★★★</div>
       <h3 class="review-modal__title" id="reviewModalTitle">Добавить отзыв</h3>
       <div class="review-modal__yandex-wrap" id="reviewYandexWrap">
-        <iframe
-          class="review-modal__yandex"
-          id="reviewYandexFrame"
-          src="https://forms.yandex.ru/u/6ad64997c45c0750253c7ad8?iframe=1"
-          frameborder="0"
-          name="ya-form-6ad64997c45c0750253c7ad8"
-          width="650"
-          title="Форма отзыва — студия «Май»"
-        ></iframe>
+        <iframe class="review-modal__yandex" src="https://forms.yandex.ru/u/6ad64997c45c0750253c7ad8?iframe=1" title="Форма отзыва — студия «Май»" frameborder="0" name="ya-form-6ad64997c45c0750253c7ad8" width="650" loading="lazy"></iframe>
       </div>
-      <p class="review-form__message" id="reviewFormMessage" hidden></p>
     </div>
   </div>
 
+  <script src="https://forms.yandex.ru/_static/embed.js"></script>
   <script src="js/config.js"></script>
   <script src="js/live-store.js?v=live2"></script>
   <script src="js/site-api.js?v=cms36"></script>
@@ -1727,22 +1709,6 @@
     }
 
     const reviewModal = document.getElementById('reviewModal');
-    const reviewFormMessage = document.getElementById('reviewFormMessage');
-    const reviewYandexFrame = document.getElementById('reviewYandexFrame');
-    const bookingYandexFrame = document.getElementById('bookingYandexFrame');
-    const bookingMessage = document.getElementById('bookingMessage');
-    const bookingYandexWrap = document.getElementById('bookingYandexWrap');
-
-    function showReviewFormMessage(text, ok) {
-      if (!reviewFormMessage) return;
-      reviewFormMessage.textContent = text;
-      reviewFormMessage.className = 'review-form__message' + (ok ? ' review-form__message--ok' : ' review-form__message--err');
-      reviewFormMessage.hidden = false;
-    }
-
-    function resetReviewModalView() {
-      if (reviewFormMessage) reviewFormMessage.hidden = true;
-    }
 
     function setReviewModalOpen(open, mode = 'add') {
       if (!reviewModal) return;
@@ -1755,12 +1721,10 @@
         document.body.classList.add('review-modal-open');
         document.body.style.top = `-${reviewScrollY}px`;
         if (title) title.textContent = mode === 'continue' ? 'Дополнить отзыв' : 'Добавить отзыв';
-        resetReviewModalView();
       } else {
         document.body.classList.remove('review-modal-open');
         document.body.style.top = '';
         window.scrollTo(0, reviewScrollY);
-        resetReviewModalView();
       }
     }
 
@@ -1773,7 +1737,6 @@
         document.body.style.top = '';
         window.scrollTo(0, reviewScrollY);
       }
-      resetReviewModalView();
     }
 
     document.getElementById('openReviewModalAdd')?.addEventListener('click', () => setReviewModalOpen(true, 'add'));
@@ -1784,72 +1747,6 @@
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape' && reviewModal && !reviewModal.hidden) closeReviewModal();
     });
-
-    function showBookingMessage(text, ok) {
-      if (!bookingMessage) return;
-      bookingMessage.textContent = text;
-      bookingMessage.className = 'booking-form__message' + (ok ? ' booking-form__message--ok' : ' booking-form__message--err');
-      bookingMessage.hidden = false;
-    }
-
-    function onBookingSubmittedSuccess() {
-      if (bookingYandexWrap) bookingYandexWrap.hidden = true;
-      showBookingMessage('Ваша заявка принята. Спасибо за заявку!', true);
-    }
-
-    function onReviewSubmittedSuccess() {
-      showReviewFormMessage('Спасибо! Отзыв отправлен в Яндекс.Форму.', true);
-      window.setTimeout(closeReviewModal, 2200);
-    }
-
-    function isYandexFormSuccessMessage(data) {
-      if (!data || typeof data !== 'object') return false;
-      const type = String(data.type || data.event || data.name || '').toLowerCase();
-      if (type.includes('success') || type.includes('submit')) return true;
-      if (data.status === 'success' || data.ok === true) return true;
-      return false;
-    }
-
-    function handleYandexPostMessage(event) {
-      const origin = String(event.origin || '');
-      if (!origin.includes('forms.yandex.ru') && !origin.includes('yandex.ru')) return;
-      const fromBooking = bookingYandexFrame?.contentWindow && event.source === bookingYandexFrame.contentWindow;
-      const fromReview = reviewYandexFrame?.contentWindow && event.source === reviewYandexFrame.contentWindow;
-      let payload = event.data;
-      if (typeof payload === 'string') {
-        try {
-          payload = JSON.parse(payload);
-        } catch {
-          if (/success|отправлен|спасибо/i.test(payload)) {
-            if (fromReview || (reviewModal && !reviewModal.hidden)) onReviewSubmittedSuccess();
-            else onBookingSubmittedSuccess();
-          }
-          return;
-        }
-      }
-      if (!isYandexFormSuccessMessage(payload)) return;
-      if (fromReview) onReviewSubmittedSuccess();
-      else if (fromBooking) onBookingSubmittedSuccess();
-      else if (reviewModal && !reviewModal.hidden) onReviewSubmittedSuccess();
-      else onBookingSubmittedSuccess();
-    }
-
-    window.addEventListener('message', handleYandexPostMessage);
-
-    function watchYandexFrameSuccess(frame, onSuccess) {
-      if (!frame || typeof onSuccess !== 'function') return;
-      frame.addEventListener('load', () => {
-        try {
-          const bodyText = frame.contentDocument?.body?.innerText || '';
-          if (/ваше сообщение отправлено|спасибо|отправлен/i.test(bodyText)) onSuccess();
-        } catch {
-          /* cross-origin — успех через postMessage от forms.yandex.ru */
-        }
-      });
-    }
-
-    watchYandexFrameSuccess(bookingYandexFrame, onBookingSubmittedSuccess);
-    watchYandexFrameSuccess(reviewYandexFrame, onReviewSubmittedSuccess);
 
     // Телефон в форме: звонок на мобильных, копирование на компьютере
     const bookingPhone = document.getElementById('bookingPhone');
