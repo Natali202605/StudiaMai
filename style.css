@@ -3003,6 +3003,75 @@ a.format-card {
   background: var(--color-mint-light);
 }
 
+.cta-row--intro {
+  grid-template-columns: 1fr;
+  max-width: 640px;
+  margin-inline: auto;
+  gap: 28px;
+}
+
+.cta-row--intro .cta-row__info {
+  text-align: center;
+}
+
+.cta-row--intro .section__title--left {
+  text-align: center;
+}
+
+.cta-row--intro .cta-principles {
+  align-items: center;
+}
+
+.cta-row--intro .cta-principles li {
+  padding-left: 0;
+  text-align: center;
+}
+
+.cta-row--intro .cta-principles li::before {
+  display: none;
+}
+
+.cta-row__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.cta-row__phone {
+  margin: 0;
+  text-align: center;
+}
+
+.cta-row--with-form {
+  grid-template-columns: 1fr 1fr;
+  max-width: none;
+}
+
+.cta-row--with-form .cta-row__info {
+  text-align: left;
+}
+
+.cta-row--with-form .section__title--left {
+  text-align: left;
+}
+
+.cta-row--with-form .cta-principles li {
+  padding-left: 18px;
+  text-align: left;
+}
+
+.cta-row--with-form .cta-principles li::before {
+  display: block;
+}
+
+#bookingSuccessMessage {
+  text-align: center;
+  font-size: 17px;
+  margin: 12px 0 0;
+}
+
 .booking-form {
   background: rgba(236, 238, 241, 0.96);
   border: 1px solid rgba(var(--rgb-edge), 0.42);

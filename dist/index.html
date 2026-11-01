@@ -1125,7 +1125,7 @@
   <!-- Запись -->
   <section class="section section--cta" id="booking">
     <div class="container reveal">
-      <div class="cta-row">
+      <div class="cta-row cta-row--intro" id="bookingCtaRow">
         <div class="cta-row__info">
           <h2 class="section__title section__title--light section__title--left">Готовы <span class="accent accent--light">познакомиться?</span></h2>
           <p>Если вы давно ищете специалиста, который внимательно выслушает и поможет подобрать подходящий уход — начните с консультации.</p>
@@ -1134,16 +1134,21 @@
             <li>Без давления</li>
             <li>С уважением к вашим пожеланиям</li>
           </ul>
+          <div class="cta-row__actions">
+            <button type="button" class="btn btn--light btn--glow" id="openBookingForm">Отправить заявку</button>
+            <p class="booking-form__phone cta-row__phone"><span data-cms="booking_phone_prefix">или позвоните:</span> <a href="tel:+79024737800" id="bookingPhoneIntro" class="booking-form__phone-link" data-phone="+7 902 473-78-00" title="Нажмите, чтобы скопировать номер">+7 902 473-78-00</a></p>
+          </div>
         </div>
-      <div class="booking-form">
+      <div class="booking-form" id="bookingFormPanel" hidden>
         <div class="booking-form__head" aria-hidden="true">
           <span class="booking-form__icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg>
           </span>
         </div>
         <div class="booking-form__yandex-wrap" id="bookingYandexWrap">
-          <iframe class="booking-form__yandex" src="https://forms.yandex.ru/u/6ad643dd852af364ddc7a26c?iframe=1" title="Форма заявки — студия «Май»" frameborder="0" name="ya-form-6ad643dd852af364ddc7a26c" width="650" loading="lazy"></iframe>
+          <iframe class="booking-form__yandex" src="about:blank" data-src="https://forms.yandex.ru/u/6ad643dd852af364ddc7a26c?iframe=1" title="Форма заявки — студия «Май»" frameborder="0" name="ya-form-6ad643dd852af364ddc7a26c" width="650" loading="lazy"></iframe>
         </div>
+        <p class="booking-form__message booking-form__message--ok" id="bookingSuccessMessage" role="status" hidden>Ваша заявка принята. Спасибо за заявку!</p>
         <p class="booking-form__phone"><span data-cms="booking_phone_prefix">или позвоните:</span> <a href="tel:+79024737800" id="bookingPhone" class="booking-form__phone-link" data-phone="+7 902 473-78-00" title="Нажмите, чтобы скопировать номер">+7 902 473-78-00</a></p>
       </div>
       </div>
@@ -1903,22 +1908,77 @@
       }
     });
 
-    // Телефон в форме: звонок на мобильных, копирование на компьютере
-    const bookingPhone = document.getElementById('bookingPhone');
+    function bindBookingPhoneCopy(link) {
+      link?.addEventListener('click', async (e) => {
+        if (!finePointer.matches) return;
+        e.preventDefault();
+        const phoneNumber = link.dataset.phone || '+7 902 473-78-00';
+        try {
+          await navigator.clipboard.writeText(phoneNumber);
+          link.classList.add('is-copied');
+          setTimeout(() => link.classList.remove('is-copied'), 2000);
+        } catch {
+          window.prompt('Скопируйте номер:', phoneNumber);
+        }
+      });
+    }
 
-    bookingPhone?.addEventListener('click', async (e) => {
-      if (!finePointer.matches) return;
+    bindBookingPhoneCopy(document.getElementById('bookingPhone'));
+    bindBookingPhoneCopy(document.getElementById('bookingPhoneIntro'));
 
-      e.preventDefault();
-      const phoneNumber = bookingPhone.dataset.phone || '+7 902 473-78-00';
+    const bookingCtaRow = document.getElementById('bookingCtaRow');
+    const bookingFormPanel = document.getElementById('bookingFormPanel');
+    const openBookingFormBtn = document.getElementById('openBookingForm');
+    const bookingYandexWrap = document.getElementById('bookingYandexWrap');
+    const bookingSuccessMessage = document.getElementById('bookingSuccessMessage');
+    const bookingIframe = document.querySelector('#bookingYandexWrap .booking-form__yandex');
+    const BOOKING_FORM_SRC = 'https://forms.yandex.ru/u/6ad643dd852af364ddc7a26c?iframe=1';
+    let bookingFormOpened = false;
+    let bookingFormSubmitted = false;
 
-      try {
-        await navigator.clipboard.writeText(phoneNumber);
-        bookingPhone.classList.add('is-copied');
-        setTimeout(() => bookingPhone.classList.remove('is-copied'), 2000);
-      } catch {
-        window.prompt('Скопируйте номер:', phoneNumber);
+    function showBookingSuccessMessage() {
+      if (bookingFormSubmitted) return;
+      bookingFormSubmitted = true;
+      if (bookingYandexWrap) bookingYandexWrap.hidden = true;
+      if (bookingSuccessMessage) bookingSuccessMessage.hidden = false;
+    }
+
+    function isYandexBookingSuccess(data) {
+      if (data == null) return false;
+      if (typeof data === 'string') {
+        return /submit|success|sent|complete|спасибо/i.test(data);
       }
+      if (typeof data === 'object') {
+        const type = String(data.type || data.event || data.action || data.name || '');
+        if (/submit|success|sent|complete|form/i.test(type)) return true;
+        if (data.status === 'success' || data.ok === true) return true;
+      }
+      return false;
+    }
+
+    window.addEventListener('message', (event) => {
+      if (bookingFormSubmitted || !bookingFormOpened) return;
+      if (!/^https:\/\/([a-z0-9-]+\.)?yandex\.(ru|com)$/.test(event.origin)) return;
+      if (isYandexBookingSuccess(event.data)) showBookingSuccessMessage();
+      if (typeof event.data === 'object' && event.data && isYandexBookingSuccess(event.data.data)) {
+        showBookingSuccessMessage();
+      }
+    });
+
+    openBookingFormBtn?.addEventListener('click', () => {
+      if (!bookingFormPanel) return;
+      bookingFormPanel.hidden = false;
+      bookingCtaRow?.classList.remove('cta-row--intro');
+      bookingCtaRow?.classList.add('cta-row--with-form');
+      openBookingFormBtn.hidden = true;
+      bookingFormOpened = true;
+      if (bookingIframe) {
+        const src = bookingIframe.getAttribute('data-src') || BOOKING_FORM_SRC;
+        if (!bookingIframe.src || bookingIframe.src === 'about:blank') {
+          bookingIframe.src = src;
+        }
+      }
+      bookingFormPanel.scrollIntoView({ behavior: 'auto', block: 'nearest' });
     });
 
     window.addEventListener('resize', handleViewportChange, { passive: true });
