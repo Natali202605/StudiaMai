@@ -1213,6 +1213,24 @@
       <h3 class="review-modal__title" id="reviewModalTitle">Добавить отзыв</h3>
       <div class="review-modal__yandex-wrap" id="reviewYandexWrap">
         <p class="review-modal__lead" id="reviewModalLead" data-cms="review_modal_lead">Поделитесь впечатлениями о визите в студию «Май»</p>
+        <form class="review-form" id="reviewForm" novalidate>
+          <label class="review-form__label" for="reviewText">
+            <span>Ваш отзыв</span>
+            <textarea id="reviewText" name="text" rows="6" maxlength="4000" required placeholder="Ваш отзыв"></textarea>
+          </label>
+          <div class="review-form__agree">
+            <label>
+              <input type="checkbox" id="reviewConsentProcess" name="consent_process" required value="1">
+              <span>Даю <a href="personal-data-consent.html" target="_blank" rel="noopener">согласие на обработку персональных данных</a> и ознакомлен(а) с <a href="privacy.html" target="_blank" rel="noopener">политикой конфиденциальности</a></span>
+            </label>
+            <label>
+              <input type="checkbox" id="reviewConsentDissemination" name="consent_dissemination" required value="1">
+              <span>Даю <a href="personal-data-dissemination-consent.html" target="_blank" rel="noopener">согласие на распространение</a> (публикация текста отзыва на сайте как «Клиент» и дата)</span>
+            </label>
+          </div>
+          <button type="submit" class="btn btn--primary" id="publishReview" data-cms="review_publish_label">Опубликовать</button>
+          <p class="review-form__message" id="reviewFormMessage" role="status" aria-live="polite" hidden></p>
+        </form>
         <iframe class="review-modal__yandex" id="reviewYandexIframe" src="https://forms.yandex.ru/u/6ad64997c45c0750253c7ad8?iframe=1" frameborder="0" name="ya-form-6ad64997c45c0750253c7ad8" width="650" title="Форма отзыва — студия «Май»"></iframe>
       </div>
     </div>
@@ -1779,7 +1797,7 @@
         document.body.classList.add('review-modal-open');
         document.body.style.top = `-${reviewScrollY}px`;
         if (title) title.textContent = mode === 'continue' ? 'Дополнить отзыв' : 'Добавить отзыв';
-        const reviewYandexIframe = document.getElementById('reviewYandexIframe');
+        reviewIframeSubmitHandled = false;
         if (reviewYandexIframe && !reviewYandexIframe.src.includes('6ad64997c45c0750253c7ad8')) {
           reviewYandexIframe.src = 'https://forms.yandex.ru/u/6ad64997c45c0750253c7ad8?iframe=1';
         }
@@ -1809,6 +1827,144 @@
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape' && reviewModal && !reviewModal.hidden) closeReviewModal();
     });
+
+    const reviewForm = document.getElementById('reviewForm');
+    const reviewFormMessage = document.getElementById('reviewFormMessage');
+    const reviewYandexIframe = document.getElementById('reviewYandexIframe');
+    let reviewSubmitting = false;
+    let reviewIframeSubmitHandled = false;
+
+    function showReviewFormMessage(text, ok) {
+      if (!reviewFormMessage) return;
+      if (!text) {
+        reviewFormMessage.hidden = true;
+        reviewFormMessage.textContent = '';
+        reviewFormMessage.classList.remove('review-form__message--ok', 'review-form__message--err');
+        return;
+      }
+      reviewFormMessage.hidden = false;
+      reviewFormMessage.textContent = text;
+      reviewFormMessage.classList.toggle('review-form__message--ok', ok === true);
+      reviewFormMessage.classList.toggle('review-form__message--err', ok === false);
+    }
+
+    function readReviewFormPayload() {
+      const textEl = document.getElementById('reviewText');
+      const text = String(textEl?.value || '').trim();
+      const consentProcess = document.getElementById('reviewConsentProcess');
+      const consentDissemination = document.getElementById('reviewConsentDissemination');
+      return { textEl, text, consentProcess, consentDissemination };
+    }
+
+    function validateReviewFormForPublish() {
+      const { textEl, text, consentProcess, consentDissemination } = readReviewFormPayload();
+      if (!text) {
+        showReviewFormMessage('Напишите текст отзыва', false);
+        textEl?.focus();
+        return null;
+      }
+      if (!consentProcess?.checked || !consentDissemination?.checked) {
+        showReviewFormMessage('Подтвердите согласия для публикации отзыва', false);
+        return null;
+      }
+      return { text };
+    }
+
+    function finishReviewPublication(review, deleteToken) {
+      if (deleteToken) writeDeleteToken(review.id, deleteToken);
+      saveSessionReview({
+        id: review.id,
+        author: review.author || 'Клиент',
+        text: review.text,
+        date: review.date
+      });
+      window.reviewSliderApi?.addReviewCard(review.author || 'Клиент', review.date, review.text, review.id);
+      const card = document.querySelector(`[data-review-id="${review.id}"]`);
+      const deleteBtn = card?.querySelector('.review-card__delete');
+      if (deleteBtn) deleteBtn.hidden = false;
+      reviewForm?.reset();
+      showReviewFormMessage('Спасибо! Ваш отзыв опубликован.', true);
+      setTimeout(() => {
+        closeReviewModal();
+        showReviewFormMessage('', null);
+        document.getElementById('reviews')?.scrollIntoView({ behavior: 'auto', block: 'start' });
+      }, 900);
+    }
+
+    async function submitReviewFromModal({ yandexViaIframe = false } = {}) {
+      if (reviewSubmitting) return;
+      const payload = validateReviewFormForPublish();
+      if (!payload) return;
+
+      reviewSubmitting = true;
+      const publishBtn = document.getElementById('publishReview');
+      if (publishBtn) publishBtn.disabled = true;
+      showReviewFormMessage('', null);
+
+      const clientId = `r${Date.now()}-${Math.random().toString(16).slice(2, 10)}`;
+      const dateLabel = formatReviewDate();
+      const { text } = payload;
+
+      try {
+        const res = await fetch(reviewApiPath('/api/reviews/submit'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Studia-Mai': '1' },
+          body: JSON.stringify({
+            id: clientId,
+            text,
+            date: dateLabel,
+            parent: `${location.origin}${location.pathname}`,
+            startedAt: Date.now(),
+            yandexViaIframe: yandexViaIframe === true
+          })
+        });
+        const json = await res.json().catch(() => ({}));
+        if (res.ok && json.ok === true && json.review) {
+          finishReviewPublication(json.review, json.deleteToken);
+          return;
+        }
+        if (res.status >= 400 && res.status < 500) {
+          showReviewFormMessage('Не удалось опубликовать отзыв. Попробуйте позже или позвоните: +7 902 473-78-00', false);
+          return;
+        }
+        const localReview = {
+          id: clientId,
+          author: 'Клиент',
+          text,
+          date: dateLabel
+        };
+        finishReviewPublication(localReview, null);
+      } catch {
+        const localReview = {
+          id: clientId,
+          author: 'Клиент',
+          text,
+          date: dateLabel
+        };
+        finishReviewPublication(localReview, null);
+      } finally {
+        reviewSubmitting = false;
+        if (publishBtn) publishBtn.disabled = false;
+      }
+    }
+
+    reviewForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      await submitReviewFromModal({ yandexViaIframe: false });
+    });
+
+    function isYandexFormSuccess(data) {
+      if (data == null) return false;
+      if (typeof data === 'string') {
+        return /submit|success|sent|complete|спасибо/i.test(data);
+      }
+      if (typeof data === 'object') {
+        const type = String(data.type || data.event || data.action || data.name || '');
+        if (/submit|success|sent|complete|form/i.test(type)) return true;
+        if (data.status === 'success' || data.ok === true) return true;
+      }
+      return false;
+    }
 
     function bindBookingPhoneCopy(link) {
       link?.addEventListener('click', async (e) => {
@@ -1845,24 +2001,33 @@
       if (bookingSuccessMessage) bookingSuccessMessage.hidden = false;
     }
 
-    function isYandexBookingSuccess(data) {
-      if (data == null) return false;
-      if (typeof data === 'string') {
-        return /submit|success|sent|complete|спасибо/i.test(data);
-      }
-      if (typeof data === 'object') {
-        const type = String(data.type || data.event || data.action || data.name || '');
-        if (/submit|success|sent|complete|form/i.test(type)) return true;
-        if (data.status === 'success' || data.ok === true) return true;
-      }
-      return false;
-    }
-
     window.addEventListener('message', (event) => {
-      if (bookingFormSubmitted || !bookingFormOpened) return;
       if (!/^https:\/\/([a-z0-9-]+\.)?yandex\.(ru|com)$/.test(event.origin)) return;
-      if (isYandexBookingSuccess(event.data)) showBookingSuccessMessage();
-      if (typeof event.data === 'object' && event.data && isYandexBookingSuccess(event.data.data)) {
+
+      const fromReviewIframe =
+        reviewYandexIframe?.contentWindow && event.source === reviewYandexIframe.contentWindow;
+      if (
+        fromReviewIframe &&
+        reviewModal &&
+        !reviewModal.hidden &&
+        !reviewIframeSubmitHandled &&
+        isYandexFormSuccess(event.data)
+      ) {
+        reviewIframeSubmitHandled = true;
+        submitReviewFromModal({ yandexViaIframe: true });
+        return;
+      }
+      if (typeof event.data === 'object' && event.data && fromReviewIframe && !reviewIframeSubmitHandled) {
+        if (isYandexFormSuccess(event.data.data)) {
+          reviewIframeSubmitHandled = true;
+          submitReviewFromModal({ yandexViaIframe: true });
+          return;
+        }
+      }
+
+      if (bookingFormSubmitted || !bookingFormOpened) return;
+      if (isYandexFormSuccess(event.data)) showBookingSuccessMessage();
+      if (typeof event.data === 'object' && event.data && isYandexFormSuccess(event.data.data)) {
         showBookingSuccessMessage();
       }
     });

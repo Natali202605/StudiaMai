@@ -87,14 +87,18 @@ app.post('/api/reviews/submit', async (req, res) => {
   const clientId = String(req.body?.id || '').trim();
   if (!text) return res.status(400).json({ ok: false, error: 'text' });
 
-  const yandexResult = await handleYandexFormSubmit({
-    form: 'review',
-    values: buildReviewYandexValues(text),
-    parent: String(req.body?.parent || req.headers.referer || 'https://studia-mai.ru/'),
-    startedAt: req.body?.startedAt || Date.now()
-  });
-  if (!yandexResult.ok) {
-    return res.status(yandexResult.status || 502).json({ ok: false, error: yandexResult.error || 'yandex' });
+  const yandexViaIframe = req.body?.yandexViaIframe === true;
+  let yandexResult = { ok: true, answerKey: null };
+  if (!yandexViaIframe) {
+    yandexResult = await handleYandexFormSubmit({
+      form: 'review',
+      values: buildReviewYandexValues(text),
+      parent: String(req.body?.parent || req.headers.referer || 'https://studia-mai.ru/'),
+      startedAt: req.body?.startedAt || Date.now()
+    });
+    if (!yandexResult.ok) {
+      return res.status(yandexResult.status || 502).json({ ok: false, error: yandexResult.error || 'yandex' });
+    }
   }
 
   const saved = addPublishedReview(ROOT, {
