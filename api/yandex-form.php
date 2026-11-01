@@ -134,7 +134,7 @@ $body = $response['body'];
 $parsed = json_decode($body, true);
 
 if ($status >= 200 && $status < 300 && is_array($parsed) && !empty($parsed['answer_key'])) {
-    echo json_encode(['ok' => true], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['ok' => true, 'answerKey' => (string) $parsed['answer_key']], JSON_UNESCAPED_UNICODE);
     exit;
 }
 

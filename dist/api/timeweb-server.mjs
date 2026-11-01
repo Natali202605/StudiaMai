@@ -9,6 +9,12 @@ import {
   isAllowedRequest,
   rateLimitOk
 } from './yandex-gateway.mjs';
+import {
+  addPublishedReview,
+  buildReviewYandexValues,
+  deletePublishedReview,
+  listPublicReviews
+} from './reviews-store.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
@@ -50,7 +56,9 @@ async function yandexHandler(req, res) {
     const result = await handleYandexFormSubmit(req.body);
     if (result.ok) {
       res.setHeader('Cache-Control', 'no-store');
-      return res.json({ ok: true });
+      const body = { ok: true };
+      if (result.answerKey) body.answerKey = result.answerKey;
+      return res.json(body);
     }
     res.setHeader('Cache-Control', 'no-store');
     return res.status(result.status).json({ ok: false, error: result.error });
@@ -61,6 +69,75 @@ async function yandexHandler(req, res) {
 
 app.post('/api/yandex-form.php', yandexHandler);
 app.post('/api/yandex-form', yandexHandler);
+
+app.get('/api/reviews', (_req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.json({ reviews: listPublicReviews(ROOT) });
+});
+
+app.post('/api/reviews/submit', async (req, res) => {
+  if (!isAllowedRequest(req)) {
+    return res.status(403).json({ ok: false, error: 'origin' });
+  }
+  const ip = req.ip || req.socket?.remoteAddress || '0';
+  if (!rateLimitOk(ip)) {
+    return res.status(429).json({ ok: false, error: 'rate_limit' });
+  }
+  const text = String(req.body?.text || '').trim();
+  const clientId = String(req.body?.id || '').trim();
+  if (!text) return res.status(400).json({ ok: false, error: 'text' });
+
+  const yandexResult = await handleYandexFormSubmit({
+    form: 'review',
+    values: buildReviewYandexValues(text),
+    parent: String(req.body?.parent || req.headers.referer || 'https://studia-mai.ru/'),
+    startedAt: req.body?.startedAt || Date.now()
+  });
+  if (!yandexResult.ok) {
+    return res.status(yandexResult.status || 502).json({ ok: false, error: yandexResult.error || 'yandex' });
+  }
+
+  const saved = addPublishedReview(ROOT, {
+    id: clientId || undefined,
+    text,
+    date: req.body?.date,
+    yandexAnswerKey: yandexResult.answerKey
+  });
+  if (!saved.ok) {
+    return res.status(400).json({ ok: false, error: saved.error || 'save' });
+  }
+  res.setHeader('Cache-Control', 'no-store');
+  return res.json({
+    ok: true,
+    review: saved.review,
+    deleteToken: saved.deleteToken
+  });
+});
+
+app.delete('/api/reviews/:id', (req, res) => {
+  if (!isAllowedRequest(req)) {
+    return res.status(403).json({ ok: false, error: 'origin' });
+  }
+  const ip = req.ip || req.socket?.remoteAddress || '0';
+  if (!rateLimitOk(ip)) {
+    return res.status(429).json({ ok: false, error: 'rate_limit' });
+  }
+  const result = deletePublishedReview(ROOT, req.params.id, {
+    deleteToken: req.headers['x-review-delete-token'],
+    adminKey: req.headers['x-reviews-admin-key']
+  });
+  if (!result.ok) {
+    return res.status(result.status || 400).json({ ok: false, error: result.error });
+  }
+  res.setHeader('Cache-Control', 'no-store');
+  return res.json({
+    ok: true,
+    yandexAnswerKey: result.yandexAnswerKey,
+    yandexSurveyId: result.surveyId,
+    yandexHint:
+      'Удалите ответ в кабинете Яндекс.Форм по ключу answer_key, если требуется снять данные у оператора формы.'
+  });
+});
 
 app.use(
   express.static(ROOT, {

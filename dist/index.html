@@ -1362,10 +1362,31 @@
 
     const OWN_REVIEWS_KEY = 'studia_mai_own_review_ids';
     const SESSION_REVIEWS_KEY = 'studia_mai_session_reviews';
+    const REVIEW_DELETE_TOKENS_KEY = 'studia_mai_review_delete_tokens';
+
+    function reviewsApiBase() {
+      return String(window.STUDIA_MAI_API ?? '').replace(/\/$/, '');
+    }
+
+    function migrateReviewStorageFromSession() {
+      try {
+        const legacyReviews = sessionStorage.getItem(SESSION_REVIEWS_KEY);
+        if (legacyReviews && !localStorage.getItem(SESSION_REVIEWS_KEY)) {
+          localStorage.setItem(SESSION_REVIEWS_KEY, legacyReviews);
+          sessionStorage.removeItem(SESSION_REVIEWS_KEY);
+        }
+        const legacyOwn = sessionStorage.getItem(OWN_REVIEWS_KEY);
+        if (legacyOwn && !localStorage.getItem(OWN_REVIEWS_KEY)) {
+          localStorage.setItem(OWN_REVIEWS_KEY, legacyOwn);
+          sessionStorage.removeItem(OWN_REVIEWS_KEY);
+        }
+      } catch { /* ignore */ }
+    }
+    migrateReviewStorageFromSession();
 
     function readOwnReviewIds() {
       try {
-        const raw = sessionStorage.getItem(OWN_REVIEWS_KEY);
+        const raw = localStorage.getItem(OWN_REVIEWS_KEY);
         const list = raw ? JSON.parse(raw) : [];
         return Array.isArray(list) ? list.map(String) : [];
       } catch {
@@ -1375,8 +1396,37 @@
 
     function writeOwnReviewIds(ids) {
       try {
-        sessionStorage.setItem(OWN_REVIEWS_KEY, JSON.stringify(ids.slice(0, 50)));
+        localStorage.setItem(OWN_REVIEWS_KEY, JSON.stringify(ids.slice(0, 50)));
       } catch { /* ignore */ }
+    }
+
+    function readDeleteTokens() {
+      try {
+        const raw = localStorage.getItem(REVIEW_DELETE_TOKENS_KEY);
+        const map = raw ? JSON.parse(raw) : {};
+        return map && typeof map === 'object' ? map : {};
+      } catch {
+        return {};
+      }
+    }
+
+    function writeDeleteTokens(map) {
+      try {
+        localStorage.setItem(REVIEW_DELETE_TOKENS_KEY, JSON.stringify(map));
+      } catch { /* ignore */ }
+    }
+
+    function saveDeleteToken(reviewId, token) {
+      if (!reviewId || !token) return;
+      const map = readDeleteTokens();
+      map[String(reviewId)] = String(token);
+      writeDeleteTokens(map);
+    }
+
+    function clearDeleteToken(reviewId) {
+      const map = readDeleteTokens();
+      delete map[String(reviewId)];
+      writeDeleteTokens(map);
     }
 
     function markOwnReviewId(id) {
@@ -1394,7 +1444,7 @@
 
     function readSessionReviews() {
       try {
-        const raw = sessionStorage.getItem(SESSION_REVIEWS_KEY);
+        const raw = localStorage.getItem(SESSION_REVIEWS_KEY);
         const list = raw ? JSON.parse(raw) : [];
         return Array.isArray(list) ? list : [];
       } catch {
@@ -1404,13 +1454,18 @@
 
     function writeSessionReviews(list) {
       try {
-        sessionStorage.setItem(SESSION_REVIEWS_KEY, JSON.stringify(list.slice(0, 50)));
+        localStorage.setItem(SESSION_REVIEWS_KEY, JSON.stringify(list.slice(0, 50)));
       } catch { /* ignore */ }
     }
 
     function saveSessionReview(review) {
       const list = readSessionReviews().filter((item) => item.id !== review.id);
-      list.unshift(review);
+      list.unshift({
+        id: review.id,
+        author: review.author || 'Клиент',
+        text: review.text,
+        date: review.date
+      });
       writeSessionReviews(list);
       markOwnReviewId(review.id);
     }
@@ -1483,12 +1538,29 @@
         updateHeroReviewsCount();
       }
 
-      function removeReviewCardById(id) {
+      async function removeReviewCardById(id, options = {}) {
         if (!id) return false;
-        const card = track.querySelector(`[data-review-id="${id}"]`);
+        const safeId = String(id).replace(/[^\w-]/g, '');
+        const card = track.querySelector(`[data-review-id="${safeId}"]`);
         if (!card) return false;
+
+        const tokens = readDeleteTokens();
+        const token = tokens[String(id)];
+        const base = reviewsApiBase();
+        try {
+          const headers = { Accept: 'application/json' };
+          if (options.adminKey) headers['X-Reviews-Admin-Key'] = String(options.adminKey);
+          else if (token) headers['X-Review-Delete-Token'] = token;
+          await fetch(`${base}/api/reviews/${encodeURIComponent(String(id))}`, {
+            method: 'DELETE',
+            headers,
+            credentials: 'same-origin'
+          });
+        } catch { /* локально всё равно снимаем с сайта */ }
+
         card.remove();
         removeSessionReview(id);
+        clearDeleteToken(id);
         refreshReviewCards();
         if (reviewIndex >= reviewCards.length) reviewIndex = Math.max(0, reviewCards.length - 1);
         syncReviewSlider();
@@ -1623,9 +1695,8 @@
       restoreSessionReviews();
 
       function loadRemoteReviews() {
-        const api = String(window.STUDIA_MAI_API || '').replace(/\/$/, '');
-        if (!api) return;
-        fetch(`${api}/api/reviews`, { credentials: 'omit', cache: 'no-store' })
+        const base = reviewsApiBase();
+        fetch(`${base}/api/reviews`, { credentials: 'same-origin', cache: 'no-store' })
           .then((res) => (res.ok ? res.json() : null))
           .then((data) => {
             if (!data || !Array.isArray(data.reviews) || !data.reviews.length) return;
@@ -1757,6 +1828,42 @@
       };
     }
 
+    async function publishReviewOnSite(text, reviewId, reviewDate) {
+      const author = 'Клиент';
+      saveSessionReview({ id: reviewId, author, text, date: reviewDate });
+      reviewSliderApi?.addReviewCard(author, reviewDate, text, reviewId);
+      closeReviewModal();
+
+      const base = reviewsApiBase();
+      try {
+        const res = await fetch(`${base}/api/reviews/submit`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          credentials: 'same-origin',
+          body: JSON.stringify({
+            text,
+            id: reviewId,
+            date: reviewDate,
+            parent: location.href,
+            startedAt: yandexFormStartedAt.review || Date.now()
+          })
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || !data.ok) {
+          reviewSliderApi?.removeReviewCardById(reviewId);
+          alert('Не удалось опубликовать отзыв. Попробуйте позже или позвоните нам.');
+          return false;
+        }
+        if (data.deleteToken) saveDeleteToken(reviewId, data.deleteToken);
+        markOwnReviewId(reviewId);
+        return true;
+      } catch {
+        reviewSliderApi?.removeReviewCardById(reviewId);
+        alert('Не удалось опубликовать отзыв. Проверьте соединение и попробуйте снова.');
+        return false;
+      }
+    }
+
     async function submitToYandexForm(formKey, values) {
       const payload = JSON.stringify({
         form: formKey,
@@ -1875,22 +1982,18 @@
         return;
       }
 
-      const author = 'Клиент';
       const publishBtn = document.getElementById('publishReview');
       if (publishBtn) publishBtn.disabled = true;
-      const sent = await submitReviewToYandex(author, text, '', '');
-      if (publishBtn) publishBtn.disabled = false;
-      if (!sent) {
-        showReviewFormMessage('Не удалось отправить отзыв. Попробуйте позже или напишите нам по телефону.', false);
-        return;
-      }
-
       const reviewId = 'r' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
       const reviewDate = formatReviewDate();
-      saveSessionReview({ id: reviewId, text, date: reviewDate });
-      reviewSliderApi?.addReviewCard(author, reviewDate, text, reviewId);
-      closeReviewModal();
+      await publishReviewOnSite(text, reviewId, reviewDate);
+      if (publishBtn) publishBtn.disabled = false;
     });
+
+    window.studiaMaiAdminDeleteReview = function (reviewId, adminKey) {
+      if (!reviewId || !adminKey) return Promise.resolve(false);
+      return reviewSliderApi?.removeReviewCardById(String(reviewId), { adminKey: String(adminKey) }) || Promise.resolve(false);
+    };
 
 
     const contactForm = document.getElementById('contactForm');
