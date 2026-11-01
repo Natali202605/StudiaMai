@@ -1137,7 +1137,7 @@
           <div class="cta-row__actions">
             <button type="button" class="btn btn--light btn--glow" id="openBookingForm">Отправить заявку</button>
             <p class="booking-form__phone cta-row__phone"><span data-cms="booking_phone_prefix">или позвоните:</span> <a href="tel:+79024737800" id="bookingPhoneIntro" class="booking-form__phone-link" data-phone="+7 902 473-78-00" title="Нажмите, чтобы скопировать номер">+7 902 473-78-00</a></p>
-          </div>
+        </div>
         </div>
       <div class="booking-form" id="bookingFormPanel" hidden>
         <div class="booking-form__head" aria-hidden="true">
@@ -1147,7 +1147,7 @@
         </div>
         <div class="booking-form__yandex-wrap" id="bookingYandexWrap">
           <iframe class="booking-form__yandex" src="about:blank" data-src="https://forms.yandex.ru/u/6ad643dd852af364ddc7a26c?iframe=1" title="Форма заявки — студия «Май»" frameborder="0" name="ya-form-6ad643dd852af364ddc7a26c" width="650" loading="lazy"></iframe>
-        </div>
+          </div>
         <p class="booking-form__message booking-form__message--ok" id="bookingSuccessMessage" role="status" hidden>Ваша заявка принята. Спасибо за заявку!</p>
         <p class="booking-form__phone"><span data-cms="booking_phone_prefix">или позвоните:</span> <a href="tel:+79024737800" id="bookingPhone" class="booking-form__phone-link" data-phone="+7 902 473-78-00" title="Нажмите, чтобы скопировать номер">+7 902 473-78-00</a></p>
       </div>
@@ -1213,24 +1213,7 @@
       <h3 class="review-modal__title" id="reviewModalTitle">Добавить отзыв</h3>
       <div class="review-modal__yandex-wrap" id="reviewYandexWrap">
         <p class="review-modal__lead" id="reviewModalLead" data-cms="review_modal_lead">Поделитесь впечатлениями о визите в студию «Май»</p>
-        <form class="review-form" id="reviewForm" novalidate>
-          <label class="review-form__label" for="reviewText">
-            <span>Ваш отзыв</span>
-            <textarea id="reviewText" name="text" rows="6" maxlength="4000" required placeholder="Ваш отзыв"></textarea>
-          </label>
-          <div class="review-form__agree">
-            <label>
-              <input type="checkbox" id="reviewConsentProcess" name="consent_process" required value="1">
-              <span>Даю <a href="personal-data-consent.html" target="_blank" rel="noopener">согласие на обработку персональных данных</a> и ознакомлен(а) с <a href="privacy.html" target="_blank" rel="noopener">политикой конфиденциальности</a></span>
-            </label>
-            <label>
-              <input type="checkbox" id="reviewConsentDissemination" name="consent_dissemination" required value="1">
-              <span>Даю <a href="personal-data-dissemination-consent.html" target="_blank" rel="noopener">согласие на распространение</a> (публикация текста отзыва на сайте как «Клиент» и дата)</span>
-            </label>
-          </div>
-          <button type="submit" class="btn btn--primary" id="publishReview" data-cms="review_publish_label">Опубликовать</button>
-          <p class="review-form__message" id="reviewFormMessage" role="status" aria-live="polite" hidden></p>
-        </form>
+        <iframe class="review-modal__yandex" src="https://forms.yandex.ru/u/6ad64997c45c0750253c7ad8?iframe=1" frameborder="0" name="ya-form-6ad64997c45c0750253c7ad8" width="650" title="Форма отзыва — студия «Май»" loading="lazy"></iframe>
       </div>
     </div>
   </div>
@@ -1796,7 +1779,7 @@
         document.body.classList.add('review-modal-open');
         document.body.style.top = `-${reviewScrollY}px`;
         if (title) title.textContent = mode === 'continue' ? 'Дополнить отзыв' : 'Добавить отзыв';
-      } else {
+        } else {
         document.body.classList.remove('review-modal-open');
         document.body.style.top = '';
         window.scrollTo(0, reviewScrollY);
@@ -1823,103 +1806,18 @@
       if (e.key === 'Escape' && reviewModal && !reviewModal.hidden) closeReviewModal();
     });
 
-    const reviewForm = document.getElementById('reviewForm');
-    const reviewFormMessage = document.getElementById('reviewFormMessage');
-    let reviewSubmitting = false;
-
-    function showReviewFormMessage(text, ok) {
-      if (!reviewFormMessage) return;
-      if (!text) {
-        reviewFormMessage.hidden = true;
-        reviewFormMessage.textContent = '';
-        reviewFormMessage.classList.remove('review-form__message--ok', 'review-form__message--err');
-        return;
-      }
-      reviewFormMessage.hidden = false;
-      reviewFormMessage.textContent = text;
-      reviewFormMessage.classList.toggle('review-form__message--ok', ok === true);
-      reviewFormMessage.classList.toggle('review-form__message--err', ok === false);
-    }
-
-    reviewForm?.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if (reviewSubmitting) return;
-      const textEl = document.getElementById('reviewText');
-      const text = String(textEl?.value || '').trim();
-      const consentProcess = document.getElementById('reviewConsentProcess');
-      const consentDissemination = document.getElementById('reviewConsentDissemination');
-      const publishBtn = document.getElementById('publishReview');
-
-      if (!text) {
-        showReviewFormMessage('Напишите текст отзыва', false);
-        textEl?.focus();
-        return;
-      }
-      if (!consentProcess?.checked || !consentDissemination?.checked) {
-        showReviewFormMessage('Подтвердите согласия для публикации отзыва', false);
-        return;
-      }
-
-      reviewSubmitting = true;
-      if (publishBtn) publishBtn.disabled = true;
-      showReviewFormMessage('', null);
-
-      const clientId = `r${Date.now()}-${Math.random().toString(16).slice(2, 10)}`;
-      const dateLabel = formatReviewDate();
-
-      try {
-        const res = await fetch(reviewApiPath('/api/reviews/submit'), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-Studia-Mai': '1' },
-          body: JSON.stringify({
-            id: clientId,
-            text,
-            date: dateLabel,
-            parent: `${location.origin}${location.pathname}`,
-            startedAt: Date.now()
-          })
-        });
-        const json = await res.json().catch(() => ({}));
-        if (!res.ok || json.ok !== true || !json.review) {
-          showReviewFormMessage('Не удалось опубликовать отзыв. Попробуйте позже или позвоните: +7 902 473-78-00', false);
-          return;
-        }
-
-        const review = json.review;
-        if (json.deleteToken) writeDeleteToken(review.id, json.deleteToken);
-        saveSessionReview({ id: review.id, author: review.author || 'Клиент', text: review.text, date: review.date || dateLabel });
-        window.reviewSliderApi?.addReviewCard(review.author || 'Клиент', review.date || dateLabel, review.text, review.id);
-        const card = document.querySelector(`[data-review-id="${review.id}"]`);
-        const deleteBtn = card?.querySelector('.review-card__delete');
-        if (deleteBtn) deleteBtn.hidden = false;
-
-        reviewForm.reset();
-        showReviewFormMessage('Спасибо! Ваш отзыв опубликован.', true);
-        setTimeout(() => {
-          closeReviewModal();
-          showReviewFormMessage('', null);
-          document.getElementById('reviews')?.scrollIntoView({ behavior: 'auto', block: 'start' });
-        }, 900);
-      } catch {
-        showReviewFormMessage('Сеть недоступна. Проверьте интернет или позвоните: +7 902 473-78-00', false);
-      } finally {
-        reviewSubmitting = false;
-        if (publishBtn) publishBtn.disabled = false;
-      }
-    });
-
     function bindBookingPhoneCopy(link) {
       link?.addEventListener('click', async (e) => {
-        if (!finePointer.matches) return;
-        e.preventDefault();
+      if (!finePointer.matches) return;
+      e.preventDefault();
         const phoneNumber = link.dataset.phone || '+7 902 473-78-00';
-        try {
-          await navigator.clipboard.writeText(phoneNumber);
+      try {
+        await navigator.clipboard.writeText(phoneNumber);
           link.classList.add('is-copied');
           setTimeout(() => link.classList.remove('is-copied'), 2000);
-        } catch {
-          window.prompt('Скопируйте номер:', phoneNumber);
-        }
+      } catch {
+        window.prompt('Скопируйте номер:', phoneNumber);
+      }
       });
     }
 
