@@ -3191,6 +3191,17 @@ a.format-card {
   color: var(--color-emerald-deep);
 }
 
+.contact-form.is-submitted .contact-form__fields,
+.contact-form.is-submitted .booking-form__agree,
+.contact-form.is-submitted button[type="submit"] {
+  display: none;
+}
+
+.contact-form.is-submitted .booking-form__message {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
 .booking-form__message--err {
   background: rgba(254, 226, 226, 0.85);
   color: #991b1b;
