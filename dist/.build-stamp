@@ -1,4 +1,4 @@
 ﻿studia-mai public artifact
-built=2026-11-01T17:50:00+03:00
+built=2026-11-01T18:15:00+03:00
 excluded=docs,ops,operator-docs,operator-ops,.env
-deploy=4dbb135+legal-iframe+timeweb-redeploy
+deploy=audit-closed+legal-2026-11-01+timeweb-redeploy
