@@ -196,7 +196,7 @@ export async function handleYandexFormSubmit(reqBody) {
 
   const result = await postSurvey(session, config.id, config.page, payload);
   if (result.status >= 200 && result.status < 300 && result.parsed?.answer_key) {
-    return { ok: true };
+    return { ok: true, answerKey: String(result.parsed.answer_key) };
   }
   return { ok: false, status: 502, error: 'yandex' };
 }
