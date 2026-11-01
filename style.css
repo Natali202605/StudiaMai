@@ -2645,6 +2645,8 @@ img[data-cms-img].is-cms-empty {
 .review-modal__yandex {
   display: block;
   width: 100%;
+  max-width: 650px;
+  margin-inline: auto;
   min-height: 520px;
   border: 0;
   border-radius: 16px;
@@ -3032,6 +3034,8 @@ a.format-card {
 .booking-form__yandex {
   display: block;
   width: 100%;
+  max-width: 650px;
+  margin-inline: auto;
   min-height: 640px;
   border: 0;
   border-radius: 16px;
