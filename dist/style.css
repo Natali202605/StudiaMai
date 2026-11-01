@@ -2653,10 +2653,6 @@ img[data-cms-img].is-cms-empty {
   background: #ffffff;
 }
 
-.review-modal__yandex-wrap .review-form + .review-modal__yandex {
-  margin-top: 20px;
-}
-
 .review-modal__title {
   position: absolute;
   width: 1px;
