@@ -106,6 +106,7 @@
   <link rel="stylesheet" href="css/fonts.css?v=fonts1">
   <link rel="stylesheet" href="style.css?v=sync47">
   <link rel="stylesheet" href="css/themes.css?v=themes6">
+  <script src="https://forms.yandex.ru/_static/embed.js"></script>
 </head>
 <body>
 
@@ -1141,28 +1142,19 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg>
           </span>
         </div>
-        <form class="contact-form" id="contactForm">
-          <div class="contact-form__fields">
-            <input type="text" id="bookingName" name="name" placeholder="Имя" autocomplete="given-name">
-            <input type="text" id="bookingSurname" name="surname" placeholder="Фамилия" autocomplete="family-name">
-            <input type="tel" id="bookingPhoneField" name="phone" placeholder="Номер телефона" autocomplete="tel">
-            <input type="email" id="bookingEmail" name="email" placeholder="Адрес электронной почты" autocomplete="email">
-            <input type="text" name="comment" id="bookingComment" placeholder="Комментарий (необязательно)">
-          </div>
-          <p class="booking-form__message" id="bookingMessage" hidden></p>
-          <button type="submit" id="submitBooking" class="btn btn--primary btn--wide" data-cms-cta="book">Записаться</button>
-          <p class="booking-form__phone"><span data-cms="booking_phone_prefix">или позвоните:</span> <a href="tel:+79024737800" id="bookingPhone" class="booking-form__phone-link" data-phone="+7 902 473-78-00" title="Нажмите, чтобы скопировать номер">+7 902 473-78-00</a></p>
-          <div class="booking-form__agree">
-            <label>
-            <input type="checkbox" name="pd_consent">
-              <span data-cms="booking_consent">Даю согласие на обработку персональных данных</span>
-          </label>
-            <p class="booking-form__agree-links">
-              <a href="privacy.html">https://studia-mai.ru/privacy.html</a>
-              <a href="personal-data-consent.html">https://studia-mai.ru/personal-data-consent.html</a>
-            </p>
-          </div>
-        </form>
+        <div class="booking-form__yandex-wrap" id="bookingYandexWrap">
+          <iframe
+            class="booking-form__yandex"
+            id="bookingYandexFrame"
+            src="https://forms.yandex.ru/u/6ad643dd852af364ddc7a26c?iframe=1"
+            frameborder="0"
+            name="ya-form-6ad643dd852af364ddc7a26c"
+            width="650"
+            title="Форма заявки — запись в студию «Май»"
+          ></iframe>
+        </div>
+        <p class="booking-form__message" id="bookingMessage" hidden></p>
+        <p class="booking-form__phone"><span data-cms="booking_phone_prefix">или позвоните:</span> <a href="tel:+79024737800" id="bookingPhone" class="booking-form__phone-link" data-phone="+7 902 473-78-00" title="Нажмите, чтобы скопировать номер">+7 902 473-78-00</a></p>
       </div>
       </div>
     </div>
@@ -1996,8 +1988,8 @@
     };
 
 
-    const contactForm = document.getElementById('contactForm');
     const bookingMessage = document.getElementById('bookingMessage');
+    const bookingYandexWrap = document.getElementById('bookingYandexWrap');
 
     function showBookingMessage(text, ok) {
       if (!bookingMessage) return;
@@ -2006,49 +1998,53 @@
       bookingMessage.hidden = false;
     }
 
-    function setBookingFormSubmitted(submitted) {
-      if (!contactForm) return;
-      contactForm.classList.toggle('is-submitted', submitted);
+    function onBookingSubmittedSuccess() {
+      if (bookingYandexWrap) bookingYandexWrap.hidden = true;
+      showBookingMessage('Ваша заявка принята. Спасибо за заявку!', true);
     }
 
-    contactForm?.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setBookingFormSubmitted(false);
-      const name = document.getElementById('bookingName')?.value?.trim() || '';
-      const surname = document.getElementById('bookingSurname')?.value?.trim() || '';
-      const phone = document.getElementById('bookingPhoneField')?.value?.trim() || '';
-      const email = document.getElementById('bookingEmail')?.value?.trim() || '';
-      const comment = document.getElementById('bookingComment')?.value?.trim() || '';
-      const consent = contactForm.querySelector('[name="pd_consent"]')?.checked === true;
-      if (!name) {
-        showBookingMessage('Укажите имя', false);
-        return;
+    function isYandexFormSuccessMessage(data) {
+      if (!data || typeof data !== 'object') return false;
+      const type = String(data.type || data.event || data.name || '').toLowerCase();
+      if (type.includes('success') || type.includes('submit')) return true;
+      if (data.status === 'success' || data.ok === true) return true;
+      return false;
+    }
+
+    window.addEventListener('message', (event) => {
+      const origin = String(event.origin || '');
+      if (!origin.includes('forms.yandex.ru') && !origin.includes('yandex.ru')) return;
+      let payload = event.data;
+      if (typeof payload === 'string') {
+        try {
+          payload = JSON.parse(payload);
+        } catch {
+          if (/success|отправлен|спасибо/i.test(payload)) {
+            onBookingSubmittedSuccess();
+          }
+          return;
+        }
       }
-      if (!surname) {
-        showBookingMessage('Укажите фамилию', false);
-        return;
-      }
-      if (!phone) {
-        showBookingMessage('Укажите телефон', false);
-        return;
-      }
-      if (!consent) {
-        showBookingMessage('Подтвердите согласие на обработку данных', false);
-        return;
-      }
-      const submitBtn = contactForm.querySelector('button[type="submit"]');
-      if (submitBtn) submitBtn.disabled = true;
-      const sent = await submitBookingToYandex(name, surname, phone, email, comment, true);
-      if (submitBtn) submitBtn.disabled = false;
-      if (!sent) {
-        showBookingMessage('Не удалось отправить заявку. Попробуйте позже или позвоните нам.', false);
-        return;
-      }
-      contactForm.reset();
-      setBookingFormSubmitted(true);
-      showBookingMessage('Ваша заявка принята. Спасибо за заявку!', true);
+      if (isYandexFormSuccessMessage(payload)) onBookingSubmittedSuccess();
     });
+
+    (function watchBookingFrameSuccess() {
+      const frame = document.getElementById('bookingYandexFrame');
+      if (!frame) return;
+      let loads = 0;
+      frame.addEventListener('load', () => {
+        loads += 1;
+        if (loads >= 2) onBookingSubmittedSuccess();
+        try {
+          const bodyText = frame.contentDocument?.body?.innerText || '';
+          if (/ваше сообщение отправлено|спасибо/i.test(bodyText)) {
+            onBookingSubmittedSuccess();
+          }
+        } catch {
+          /* cross-origin */
+        }
+      });
+    })();
 
     // Телефон в форме: звонок на мобильных, копирование на компьютере
     const bookingPhone = document.getElementById('bookingPhone');
