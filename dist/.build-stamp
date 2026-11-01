@@ -1,4 +1,4 @@
 ﻿studia-mai public artifact
-built=2026-11-01T17:22:02+03:00
+built=2026-11-01T17:50:00+03:00
 excluded=docs,ops,operator-docs,operator-ops,.env
-deploy=iframe-yandex-forms
+deploy=4dbb135+legal-iframe+timeweb-redeploy
