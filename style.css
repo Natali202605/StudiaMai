@@ -2645,8 +2645,6 @@ img[data-cms-img].is-cms-empty {
 .review-modal__yandex {
   display: block;
   width: 100%;
-  max-width: 650px;
-  margin-inline: auto;
   min-height: 520px;
   border: 0;
   border-radius: 16px;
@@ -3034,8 +3032,6 @@ a.format-card {
 .booking-form__yandex {
   display: block;
   width: 100%;
-  max-width: 650px;
-  margin-inline: auto;
   min-height: 640px;
   border: 0;
   border-radius: 16px;
@@ -3189,17 +3185,6 @@ a.format-card {
 .booking-form__message--ok {
   background: rgba(var(--rgb-mint-bright), 0.45);
   color: var(--color-emerald-deep);
-}
-
-.contact-form.is-submitted .contact-form__fields,
-.contact-form.is-submitted .booking-form__agree,
-.contact-form.is-submitted button[type="submit"] {
-  display: none;
-}
-
-.contact-form.is-submitted .booking-form__message {
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
 }
 
 .booking-form__message--err {
