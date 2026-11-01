@@ -1213,7 +1213,7 @@
       <h3 class="review-modal__title" id="reviewModalTitle">Добавить отзыв</h3>
       <div class="review-modal__yandex-wrap" id="reviewYandexWrap">
         <p class="review-modal__lead" id="reviewModalLead" data-cms="review_modal_lead">Поделитесь впечатлениями о визите в студию «Май»</p>
-        <iframe class="review-modal__yandex" src="https://forms.yandex.ru/u/6ad64997c45c0750253c7ad8?iframe=1" frameborder="0" name="ya-form-6ad64997c45c0750253c7ad8" width="650" title="Форма отзыва — студия «Май»" loading="lazy"></iframe>
+        <iframe class="review-modal__yandex" id="reviewYandexIframe" src="https://forms.yandex.ru/u/6ad64997c45c0750253c7ad8?iframe=1" frameborder="0" name="ya-form-6ad64997c45c0750253c7ad8" width="650" title="Форма отзыва — студия «Май»"></iframe>
       </div>
     </div>
   </div>
@@ -1779,7 +1779,11 @@
         document.body.classList.add('review-modal-open');
         document.body.style.top = `-${reviewScrollY}px`;
         if (title) title.textContent = mode === 'continue' ? 'Дополнить отзыв' : 'Добавить отзыв';
-        } else {
+        const reviewYandexIframe = document.getElementById('reviewYandexIframe');
+        if (reviewYandexIframe && !reviewYandexIframe.src.includes('6ad64997c45c0750253c7ad8')) {
+          reviewYandexIframe.src = 'https://forms.yandex.ru/u/6ad64997c45c0750253c7ad8?iframe=1';
+        }
+      } else {
         document.body.classList.remove('review-modal-open');
         document.body.style.top = '';
         window.scrollTo(0, reviewScrollY);
