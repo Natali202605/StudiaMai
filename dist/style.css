@@ -134,28 +134,29 @@
   --card-gradient-warm: linear-gradient(155deg, rgba(255, 255, 255, 0.48) 0%, rgba(240, 241, 243, 0.36) 30%, rgba(206, 210, 216, 0.28) 65%, rgba(246, 247, 248, 0.34) 100%);
   --card-gradient-hero: linear-gradient(158deg, rgba(255, 255, 255, 0.50) 0%, rgba(242, 243, 245, 0.38) 22%, rgba(206, 210, 216, 0.28) 55%, rgba(248, 248, 249, 0.36) 100%);
 
-  --chrome-sheen-flow: linear-gradient(
-    118deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.94) 7%,
-    rgba(238, 240, 243, 0.58) 16%,
-    rgba(255, 255, 255, 0.82) 28%,
-    rgba(197, 203, 210, 0.68) 40%,
-    rgba(255, 255, 255, 0.9) 52%,
-    rgba(228, 231, 235, 0.56) 64%,
-    rgba(255, 255, 255, 0.76) 76%,
-    rgba(206, 210, 216, 0.5) 88%,
-    rgba(255, 255, 255, 0) 100%
+  --chrome-ambient: radial-gradient(
+    ellipse 125% 85% at 48% -18%,
+    rgba(255, 255, 255, 0.38) 0%,
+    rgba(255, 255, 255, 0) 58%
+  ),
+  radial-gradient(
+    ellipse 95% 70% at 100% 100%,
+    rgba(238, 240, 243, 0.22) 0%,
+    rgba(255, 255, 255, 0) 52%
+  ),
+  linear-gradient(
+    168deg,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(238, 240, 243, 0.08) 38%,
+    rgba(255, 255, 255, 0.1) 72%,
+    rgba(246, 247, 248, 0.06) 100%
   );
-  --chrome-brushed-lines: repeating-linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.14) 0 1px,
-    rgba(255, 255, 255, 0) 1px 3px
-  );
-  --chrome-specular: radial-gradient(
-    ellipse 62% 72% at 84% 8%,
-    rgba(255, 255, 255, 0.62) 0%,
-    rgba(255, 255, 255, 0) 70%
+  --chrome-surface-sheen: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.26) 0%,
+    rgba(255, 255, 255, 0.06) 42%,
+    rgba(238, 240, 243, 0.1) 68%,
+    rgba(255, 255, 255, 0.18) 100%
   );
 }
 
@@ -5212,29 +5213,8 @@ a.format-card {
 }
 
 /* ============================================
-   Chrome-переливы (референс «80», без чёрного)
+   Chrome-переливы: статичный фон, без полос
    ============================================ */
-
-@keyframes chrome-sheen-shift {
-  0% {
-    background-position: 165% 50%;
-  }
-  100% {
-    background-position: -65% 50%;
-  }
-}
-
-@keyframes chrome-sheen-drift {
-  0%,
-  100% {
-    opacity: 0.42;
-    transform: translate3d(-1%, 0, 0) scale(1);
-  }
-  50% {
-    opacity: 0.62;
-    transform: translate3d(1.2%, -0.8%, 0) scale(1.04);
-  }
-}
 
 html::before {
   content: '';
@@ -5242,197 +5222,40 @@ html::before {
   inset: 0;
   pointer-events: none;
   z-index: -1;
-  background-image:
-    var(--chrome-specular),
-    var(--chrome-brushed-lines),
-    var(--chrome-sheen-flow);
-  background-size: 100% 100%, auto, 280% 120%;
-  background-position: center, center, 120% 50%;
-  mix-blend-mode: soft-light;
-  opacity: 0.48;
-  animation: chrome-sheen-shift 22s linear infinite, chrome-sheen-drift 16s ease-in-out infinite;
-}
-
-.section.section--accent::before,
-.section.section--cta::before {
-  content: '';
-  display: block;
-  position: absolute;
-  inset: -15%;
-  z-index: 0;
-  pointer-events: none;
-  background-image:
-    var(--chrome-brushed-lines),
-    var(--chrome-specular),
-    var(--chrome-sheen-flow);
-  background-size: auto, 100% 100%, 260% 140%;
-  background-position: center, 88% 0, 140% 50%;
-  mix-blend-mode: overlay;
+  background-image: var(--chrome-ambient);
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
   opacity: 0.55;
-  animation: chrome-sheen-shift 12s linear infinite, chrome-sheen-drift 14s ease-in-out infinite;
 }
 
-#consultation .container,
-.booking-form,
-.footer__inner {
-  position: relative;
-  overflow: hidden;
+.btn--primary,
+.btn--light,
+.cta-block .btn--primary {
+  background-size: 100% 100%, 100% 100%;
+  background-repeat: no-repeat;
 }
 
-#consultation .container::before,
-.footer::before {
-  content: '';
-  position: absolute;
-  inset: -8%;
-  border-radius: inherit;
-  pointer-events: none;
-  z-index: 0;
-  background-image:
-    var(--chrome-brushed-lines),
-    var(--chrome-sheen-flow);
-  background-size: auto, 250% 120%;
-  background-position: center, 130% 50%;
-  mix-blend-mode: overlay;
-  opacity: 0.5;
-  animation: chrome-sheen-shift 11s linear infinite;
+.btn--primary {
+  background-image: var(--chrome-surface-sheen), var(--btn-primary-bg);
 }
 
-.footer::before {
-  opacity: 0.38;
-  mix-blend-mode: soft-light;
+.btn--primary:hover {
+  background-image: var(--chrome-surface-sheen), var(--btn-primary-bg-hover);
 }
 
-#consultation .container > * {
-  position: relative;
-  z-index: 1;
+.btn--light {
+  background-image: var(--chrome-surface-sheen), var(--btn-light-bg);
 }
 
-.hero__bg::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image:
-    var(--chrome-specular),
-    var(--chrome-sheen-flow);
-  background-size: 100% 100%, 240% 100%;
-  background-position: 78% 6%, 150% 50%;
-  mix-blend-mode: soft-light;
-  opacity: 0.46;
-  animation: chrome-sheen-shift 18s linear infinite;
+.btn--light:hover {
+  background-image: var(--chrome-surface-sheen), linear-gradient(135deg, #FFFFFF 0%, var(--color-mint-light) 100%);
 }
 
-.btn {
-  isolation: isolate;
-  overflow: hidden;
+.cta-block .btn--primary {
+  background-image: var(--chrome-surface-sheen), var(--btn-on-green-bg);
 }
 
-.btn::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  z-index: 0;
-  background-image: var(--chrome-brushed-lines), var(--chrome-sheen-flow);
-  background-size: auto, 240% 100%;
-  background-position: center, 120% 50%;
-  mix-blend-mode: overlay;
-  opacity: 0.52;
-  animation: chrome-sheen-shift 6.5s linear infinite;
-}
-
-.btn--glow::after {
-  background-image: var(--chrome-sheen-flow);
-  background-size: 220% 100%;
-  background-position: 100% 50%;
-  transform: translate3d(0, 0, 0);
-  opacity: 0.58;
-  mix-blend-mode: soft-light;
-  animation: chrome-sheen-shift 4.8s ease-in-out infinite;
-  transition: opacity 0.35s ease;
-}
-
-.btn--glow:hover::after {
-  transform: translate3d(0, 0, 0);
-  opacity: 0.78;
-}
-
-.btn--ghost-light::before,
-.btn--primary::before {
-  opacity: 0.62;
-  mix-blend-mode: soft-light;
-}
-
-.format-card,
-.review-card,
-.booking-form,
-.approach-card,
-.benefits-list li,
-.faq-item,
-.free-card,
-.footer__card,
-.master__info,
-.audience-list,
-.checklist li,
-.service-card__body {
-  position: relative;
-  isolation: isolate;
-}
-
-.service-card__body::before,
-.format-card::before,
-.review-card::before,
-.booking-form::before,
-.approach-card::before,
-.benefits-list li::before,
-.faq-item::before,
-.free-card::before,
-.footer__card::before,
-.master__info::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  z-index: 0;
-  background-image:
-    var(--chrome-brushed-lines),
-    var(--chrome-sheen-flow);
-  background-size: auto, 230% 100%;
-  background-position: center, 125% 50%;
-  mix-blend-mode: soft-light;
-  opacity: 0.4;
-  animation: chrome-sheen-shift 9s linear infinite;
-}
-
-.service-card:hover .service-card__body::before,
-.format-card:hover::before,
-.review-card:hover::before,
-.faq-item:hover::before,
-.free-card:hover::before {
-  opacity: 0.56;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html::before,
-  .section.section--accent::before,
-  .section.section--cta::before,
-  #consultation .container::before,
-  .footer::before,
-  .hero__bg::after,
-  .btn::before,
-  .btn--glow::after,
-  .service-card__body::before,
-  .format-card::before,
-  .review-card::before,
-  .booking-form::before,
-  .approach-card::before,
-  .benefits-list li::before,
-  .faq-item::before,
-  .free-card::before,
-  .footer__card::before,
-  .master__info::before {
-    animation: none !important;
-  }
+.cta-block .btn--primary:hover {
+  background-image: var(--chrome-surface-sheen), var(--btn-on-green-hover);
 }
