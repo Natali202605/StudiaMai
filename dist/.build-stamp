@@ -1,4 +1,4 @@
 ﻿studia-mai public artifact
-built=2026-11-11T17:07:00+03:00
+built=2026-11-11T17:19:00+03:00
 excluded=docs,ops,operator-docs,operator-ops,.env
-deploy=d6c5e60+timeweb-redeploy
+deploy=c51a0d5+timeweb-redeploy
