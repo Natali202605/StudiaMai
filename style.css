@@ -100,27 +100,77 @@
   --header-bg-scrolled: rgba(251, 251, 252, 0.95);
   --header-line: rgba(var(--rgb-sage), 0.28);
   --section-line: rgba(var(--rgb-sage), 0.15);
-  --btn-primary-bg: linear-gradient(135deg, #E4E7EB 0%, #A8B0BA 50%, #6E7782 100%);
-  --btn-primary-bg-hover: linear-gradient(135deg, #A8B0BA 0%, #6E7782 50%, #5C6570 100%);
+  --btn-primary-bg: linear-gradient(
+    135deg,
+    #F3F4F6 0%,
+    #E4E7EB 22%,
+    #C5CBD2 46%,
+    #A8B0BA 62%,
+    #8E97A3 82%,
+    #6E7782 100%
+  );
+  --btn-primary-bg-hover: linear-gradient(
+    135deg,
+    #E4E7EB 0%,
+    #A8B0BA 28%,
+    #8E97A3 52%,
+    #6E7782 76%,
+    #5C6570 100%
+  );
   --btn-primary-border: rgba(110, 119, 130, 0.45);
-  --btn-light-bg: linear-gradient(135deg, #FFFFFF 0%, #EEF0F3 100%);
+  --btn-light-bg: linear-gradient(135deg, #FFFFFF 0%, #F7F8F9 35%, #EEF0F3 68%, #E4E7EB 100%);
   --btn-light-border: rgba(var(--rgb-mint), 0.4);
   --btn-ghost-border: rgba(var(--rgb-mint), 0.42);
-  --btn-on-green-bg: linear-gradient(135deg, #FFFFFF 0%, var(--color-mint-light) 100%);
-  --btn-on-green-hover: linear-gradient(135deg, #FFFFFF 0%, #F0F2F4 100%);
+  --btn-on-green-bg: linear-gradient(135deg, #FFFFFF 0%, #F7F8F9 40%, var(--color-mint-light) 100%);
+  --btn-on-green-hover: linear-gradient(135deg, #FFFFFF 0%, #F0F2F4 55%, #E8EAED 100%);
   --section-accent-bg:
-    radial-gradient(ellipse at 15% 0%, rgba(255, 255, 255, 0.32) 0%, transparent 50%),
-    linear-gradient(155deg, rgba(92, 101, 112, 0.86) 0%, rgba(142, 151, 163, 0.80) 48%, rgba(197, 203, 210, 0.74) 100%);
+    radial-gradient(ellipse at 15% 0%, rgba(255, 255, 255, 0.34) 0%, transparent 56%),
+    linear-gradient(
+      155deg,
+      rgba(92, 101, 112, 0.88) 0%,
+      rgba(110, 119, 130, 0.84) 26%,
+      rgba(142, 151, 163, 0.80) 52%,
+      rgba(168, 176, 186, 0.76) 74%,
+      rgba(197, 203, 210, 0.76) 100%
+    );
   --consultation-bg:
-    radial-gradient(ellipse at 15% 0%, rgba(255, 255, 255, 0.26) 0%, transparent 52%),
-    linear-gradient(155deg, rgba(62, 70, 80, 0.82) 0%, rgba(110, 119, 130, 0.72) 52%, rgba(168, 176, 186, 0.64) 100%);
+    radial-gradient(ellipse at 15% 0%, rgba(255, 255, 255, 0.28) 0%, transparent 54%),
+    linear-gradient(
+      155deg,
+      rgba(62, 70, 80, 0.84) 0%,
+      rgba(82, 90, 98, 0.80) 28%,
+      rgba(110, 119, 130, 0.76) 54%,
+      rgba(142, 151, 163, 0.72) 78%,
+      rgba(168, 176, 186, 0.68) 100%
+    );
   --section-cta-bg:
-    radial-gradient(ellipse at 100% 50%, rgba(228, 231, 235, 0.34) 0%, transparent 50%),
-    linear-gradient(160deg, rgba(52, 59, 68, 0.88) 0%, rgba(92, 101, 112, 0.80) 48%, rgba(142, 151, 163, 0.72) 100%);
+    radial-gradient(ellipse at 100% 50%, rgba(228, 231, 235, 0.36) 0%, transparent 54%),
+    linear-gradient(
+      160deg,
+      rgba(52, 59, 68, 0.90) 0%,
+      rgba(72, 80, 88, 0.86) 24%,
+      rgba(92, 101, 112, 0.82) 48%,
+      rgba(122, 132, 144, 0.78) 72%,
+      rgba(142, 151, 163, 0.76) 100%
+    );
   --theme-glow: rgba(228, 231, 235, 0.40);
   --footer-bg:
-    radial-gradient(ellipse at 20% 0%, rgba(228, 231, 235, 0.16) 0%, transparent 50%),
-    linear-gradient(168deg, rgba(36, 40, 46, 0.92) 0%, rgba(52, 58, 66, 0.86) 48%, rgba(72, 78, 86, 0.80) 100%);
+    radial-gradient(ellipse at 22% 0%, rgba(228, 231, 235, 0.2) 0%, transparent 56%),
+    radial-gradient(ellipse at 88% 100%, rgba(197, 203, 210, 0.12) 0%, transparent 48%),
+    linear-gradient(
+      168deg,
+      rgba(36, 40, 46, 0.94) 0%,
+      rgba(46, 52, 60, 0.90) 20%,
+      rgba(52, 58, 66, 0.88) 40%,
+      rgba(62, 68, 76, 0.84) 62%,
+      rgba(72, 78, 86, 0.82) 100%
+    );
+  --footer-card-bg: linear-gradient(
+    152deg,
+    rgba(255, 255, 255, 0.24) 0%,
+    rgba(255, 255, 255, 0.15) 42%,
+    rgba(255, 255, 255, 0.2) 100%
+  );
   --review-card-solid: #FFFFFF;
   --review-card-bg: linear-gradient(125deg, #FFFFFF 0%, #F7F8F9 42%, #EEF0F2 100%);
   --chip-bg: linear-gradient(145deg, #F7F8F9, #E4E7EB);
@@ -135,28 +185,15 @@
   --card-gradient-hero: linear-gradient(158deg, rgba(255, 255, 255, 0.50) 0%, rgba(242, 243, 245, 0.38) 22%, rgba(206, 210, 216, 0.28) 55%, rgba(248, 248, 249, 0.36) 100%);
 
   --chrome-ambient: radial-gradient(
-    ellipse 125% 85% at 48% -18%,
-    rgba(255, 255, 255, 0.38) 0%,
-    rgba(255, 255, 255, 0) 58%
+    ellipse 130% 92% at 50% -22%,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0.08) 38%,
+    rgba(255, 255, 255, 0) 64%
   ),
   radial-gradient(
-    ellipse 95% 70% at 100% 100%,
-    rgba(238, 240, 243, 0.22) 0%,
-    rgba(255, 255, 255, 0) 52%
-  ),
-  linear-gradient(
-    168deg,
-    rgba(255, 255, 255, 0.12) 0%,
-    rgba(238, 240, 243, 0.08) 38%,
-    rgba(255, 255, 255, 0.1) 72%,
-    rgba(246, 247, 248, 0.06) 100%
-  );
-  --chrome-surface-sheen: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.26) 0%,
-    rgba(255, 255, 255, 0.06) 42%,
-    rgba(238, 240, 243, 0.1) 68%,
-    rgba(255, 255, 255, 0.18) 100%
+    ellipse 85% 58% at 100% 100%,
+    rgba(238, 240, 243, 0.16) 0%,
+    rgba(255, 255, 255, 0) 50%
   );
 }
 
@@ -300,7 +337,7 @@ ul {
 }
 
 .btn--light:hover {
-  background: linear-gradient(135deg, #FFFFFF 0%, var(--color-mint-light) 100%);
+  background: linear-gradient(135deg, #FFFFFF 0%, #F7F8F9 38%, var(--color-mint-light) 100%);
   color: var(--color-emerald-dark);
   transform: translateY(-3px);
   box-shadow: var(--shadow-float-btn-hover), var(--neon-emerald);
@@ -3400,9 +3437,9 @@ a.format-card {
   border-radius: var(--radius-xl);
   border: 1px solid rgba(255, 255, 255, 0.22);
   background-image: var(--footer-bg);
-  background-size: 100% 100%, 100% 100%;
-  background-position: center, center;
-  background-repeat: no-repeat, no-repeat;
+  background-size: 100% 100%, 100% 100%, 100% 100%;
+  background-position: center, center, center;
+  background-repeat: no-repeat, no-repeat, no-repeat;
   color: rgba(255, 255, 255, 0.92);
   padding-top: clamp(60px, 8vw, 80px);
   box-shadow: var(--shadow-float-card-dark);
@@ -3469,7 +3506,7 @@ a.format-card {
 }
 
 .footer__card {
-  background: rgba(255, 255, 255, 0.16);
+  background: var(--footer-card-bg);
   border: 1px solid rgba(255, 255, 255, 0.24);
   border-radius: var(--radius-xl);
   padding: clamp(22px, 3vw, 32px) clamp(32px, 4vw, 44px) clamp(32px, 4vw, 44px);
@@ -5223,39 +5260,8 @@ html::before {
   pointer-events: none;
   z-index: -1;
   background-image: var(--chrome-ambient);
-  background-size: 100% 100%;
-  background-position: center;
-  background-repeat: no-repeat;
-  opacity: 0.55;
-}
-
-.btn--primary,
-.btn--light,
-.cta-block .btn--primary {
   background-size: 100% 100%, 100% 100%;
+  background-position: center, center;
   background-repeat: no-repeat;
-}
-
-.btn--primary {
-  background-image: var(--chrome-surface-sheen), var(--btn-primary-bg);
-}
-
-.btn--primary:hover {
-  background-image: var(--chrome-surface-sheen), var(--btn-primary-bg-hover);
-}
-
-.btn--light {
-  background-image: var(--chrome-surface-sheen), var(--btn-light-bg);
-}
-
-.btn--light:hover {
-  background-image: var(--chrome-surface-sheen), linear-gradient(135deg, #FFFFFF 0%, var(--color-mint-light) 100%);
-}
-
-.cta-block .btn--primary {
-  background-image: var(--chrome-surface-sheen), var(--btn-on-green-bg);
-}
-
-.cta-block .btn--primary:hover {
-  background-image: var(--chrome-surface-sheen), var(--btn-on-green-hover);
+  opacity: 0.32;
 }
