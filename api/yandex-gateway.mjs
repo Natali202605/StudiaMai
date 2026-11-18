@@ -18,14 +18,6 @@ export const SURVEYS = {
       answer_short_text_9008991681974672: 2000,
       answer_boolean_9008991682017890: 0
     }
-  },
-  review: {
-    id: '6ad64997c45c0750253c7ad8',
-    page: 'https://forms.yandex.ru/u/6ad64997c45c0750253c7ad8/?iframe=1',
-    fields: {
-      answer_long_text_96199: 4000,
-      answer_short_text_9008991683293520: 8000
-    }
   }
 };
 
@@ -175,6 +167,7 @@ async function postSurvey(session, surveyId, pageUrl, body) {
  */
 export async function handleYandexFormSubmit(reqBody) {
   const formKey = String(reqBody?.form || '');
+  if (formKey !== 'booking') return { ok: false, status: 400, error: 'form' };
   const config = SURVEYS[formKey];
   if (!config) return { ok: false, status: 400, error: 'form' };
 

@@ -26,14 +26,6 @@ const SURVEYS = [
             'answer_boolean_9008991682017890' => 0,
         ],
     ],
-    'review' => [
-        'id' => '6ad64997c45c0750253c7ad8',
-        'page' => 'https://forms.yandex.ru/u/6ad64997c45c0750253c7ad8/?iframe=1',
-        'fields' => [
-            'answer_long_text_96199' => 4000,
-            'answer_short_text_9008991683293520' => 8000,
-        ],
-    ],
 ];
 
 header('Content-Type: application/json; charset=utf-8');
@@ -78,8 +70,8 @@ if (!is_array($data)) {
     exit;
 }
 
-$formKey = isset($data['form']) ? (string) $data['form'] : '';
-if (!isset(SURVEYS[$formKey])) {
+$formKey = isset($data['form']) ? (string) $data['form'] : 'booking';
+if ($formKey !== 'booking' || !isset(SURVEYS[$formKey])) {
     http_response_code(400);
     echo json_encode(['ok' => false, 'error' => 'form'], JSON_UNESCAPED_UNICODE);
     exit;

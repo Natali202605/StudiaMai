@@ -104,7 +104,7 @@
   <link rel="preload" as="image" href="images/logo.png">
   <link rel="preload" as="image" href="images/brand-title-composed.png?v=shadow3">
   <link rel="stylesheet" href="css/fonts.css?v=fonts1">
-  <link rel="stylesheet" href="style.css?v=sync48">
+  <link rel="stylesheet" href="style.css?v=sync49">
   <link rel="stylesheet" href="css/themes.css?v=themes6">
 </head>
 <body>
@@ -1312,127 +1312,6 @@
 
     document.querySelectorAll('.reveal').forEach(el => el.classList.add('is-visible'));
 
-    function escapeReviewHtml(str) {
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    }
-
-    function formatReviewDate(date = new Date()) {
-      const day = String(date.getDate()).padStart(2, '0');
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      return `${day}.${month}.${date.getFullYear()}`;
-    }
-
-    const OWN_REVIEWS_KEY = 'studia_mai_own_review_ids';
-    const SESSION_REVIEWS_KEY = 'studia_mai_session_reviews';
-    const REVIEW_DELETE_TOKENS_KEY = 'studia_mai_review_delete_tokens';
-
-    function reviewApiPath(subpath) {
-      const base = String(window.STUDIA_MAI_API || '').replace(/\/$/, '');
-      return `${base}${subpath}`;
-    }
-
-    function readDeleteTokens() {
-      try {
-        const raw = sessionStorage.getItem(REVIEW_DELETE_TOKENS_KEY);
-        const map = raw ? JSON.parse(raw) : {};
-        return map && typeof map === 'object' ? map : {};
-      } catch {
-        return {};
-      }
-    }
-
-    function writeDeleteToken(id, token) {
-      if (!id || !token) return;
-      const map = readDeleteTokens();
-      map[String(id)] = String(token);
-      try {
-        sessionStorage.setItem(REVIEW_DELETE_TOKENS_KEY, JSON.stringify(map));
-      } catch { /* ignore */ }
-    }
-
-    function removeDeleteToken(id) {
-      const map = readDeleteTokens();
-      delete map[String(id)];
-      try {
-        sessionStorage.setItem(REVIEW_DELETE_TOKENS_KEY, JSON.stringify(map));
-      } catch { /* ignore */ }
-    }
-
-    function readOwnReviewIds() {
-      try {
-        const raw = sessionStorage.getItem(OWN_REVIEWS_KEY);
-        const list = raw ? JSON.parse(raw) : [];
-        return Array.isArray(list) ? list.map(String) : [];
-      } catch {
-        return [];
-      }
-    }
-
-    function writeOwnReviewIds(ids) {
-      try {
-        sessionStorage.setItem(OWN_REVIEWS_KEY, JSON.stringify(ids.slice(0, 50)));
-      } catch { /* ignore */ }
-    }
-
-    function markOwnReviewId(id) {
-      if (!id) return;
-      const ids = readOwnReviewIds();
-      if (!ids.includes(id)) {
-        ids.unshift(id);
-        writeOwnReviewIds(ids);
-      }
-    }
-
-    function unmarkOwnReviewId(id) {
-      writeOwnReviewIds(readOwnReviewIds().filter((item) => item !== id));
-    }
-
-    function readSessionReviews() {
-      try {
-        const raw = sessionStorage.getItem(SESSION_REVIEWS_KEY);
-        const list = raw ? JSON.parse(raw) : [];
-        return Array.isArray(list) ? list : [];
-      } catch {
-        return [];
-      }
-    }
-
-    function writeSessionReviews(list) {
-      try {
-        sessionStorage.setItem(SESSION_REVIEWS_KEY, JSON.stringify(list.slice(0, 50)));
-      } catch { /* ignore */ }
-    }
-
-    function saveSessionReview(review) {
-      const list = readSessionReviews().filter((item) => item.id !== review.id);
-      list.unshift(review);
-      writeSessionReviews(list);
-      markOwnReviewId(review.id);
-    }
-
-    function removeSessionReview(id) {
-      writeSessionReviews(readSessionReviews().filter((item) => item.id !== id));
-      unmarkOwnReviewId(id);
-    }
-
-    function createReviewCardEl(author, date, text, id) {
-      const card = document.createElement('div');
-      card.className = 'review-card';
-      if (id) card.dataset.reviewId = id;
-      const dateLabel = date ? `, ${escapeReviewHtml(date)}` : '';
-      card.innerHTML = `
-        <span class="review-card__quote" aria-hidden="true">"</span>
-        <div class="review-card__stars">★★★★★</div>
-        <p class="review-card__text">«${escapeReviewHtml(text)}»</p>
-        <span class="review-card__author">— Клиент${dateLabel}</span>
-      `;
-      return card;
-    }
-
     const track = document.getElementById('reviewsTrack');
     const counterEl = document.getElementById('reviewsCounter');
     let reviewCards = [];
@@ -1454,7 +1333,7 @@
       }
 
       function sanitizeReviewCards() {
-        track.querySelectorAll('.review-card[data-review-id]').forEach(card => {
+        track.querySelectorAll('.review-card').forEach(card => {
           const textEl = card.querySelector('.review-card__text');
           const text = textEl?.textContent?.replace(/[«»"' \s]/g, '') || '';
           if (!text) card.remove();
@@ -1475,40 +1354,6 @@
           counterEl.textContent = total ? `${reviewIndex + 1} / ${total}` : '0 / 0';
         }
         updateHeroReviewsCount();
-      }
-
-      async function removeReviewCardById(id, { skipApi = false } = {}) {
-        if (!id) return false;
-        const card = track.querySelector(`[data-review-id="${id}"]`);
-        if (!card) return false;
-        if (!skipApi) {
-          const tokens = readDeleteTokens();
-          const deleteToken = tokens[String(id)];
-          if (deleteToken) {
-            try {
-              const res = await fetch(reviewApiPath(`/api/reviews/${encodeURIComponent(id)}`), {
-                method: 'DELETE',
-                headers: {
-                  'X-Studia-Mai': '1',
-                  'X-Review-Delete-Token': deleteToken
-                }
-              });
-              if (!res.ok) return false;
-            } catch {
-              return false;
-            }
-          }
-        }
-        card.remove();
-        removeSessionReview(id);
-        removeDeleteToken(id);
-        refreshReviewCards();
-        if (reviewIndex >= reviewCards.length) reviewIndex = Math.max(0, reviewCards.length - 1);
-        syncReviewSlider();
-        updateReviewCounter();
-        stopAutoplay();
-        startAutoplay();
-        return true;
       }
 
       function getReviewSlideWidth() {
@@ -1565,37 +1410,7 @@
         });
       }
 
-      function prependUserReviews(reviews) {
-        const fragment = document.createDocumentFragment();
-        reviews.forEach(review => {
-          if (!track.querySelector(`[data-review-id="${review.id}"]`)) {
-            fragment.appendChild(createReviewCardEl(review.author, review.date, review.text, review.id));
-          }
-        });
-        if (fragment.childNodes.length) {
-          track.insertBefore(fragment, track.firstChild);
-          reviewIndex = 0;
-          refreshReviewCards();
-          syncReviewSlider();
-        }
-      }
-
-      function addReviewCard(author, date, text, id) {
-        if (id && track.querySelector(`[data-review-id="${id}"]`)) {
-          return track.querySelector(`[data-review-id="${id}"]`);
-        }
-        const card = createReviewCardEl(author, date, text, id);
-        track.insertBefore(card, track.firstChild);
-        reviewIndex = 0;
-        refreshReviewCards();
-        syncReviewSlider();
-        updateReviewCounter();
-        stopAutoplay();
-        startAutoplay();
-        return card;
-      }
-
-      reviewSliderApi = { addReviewCard, goToReview, syncReviewSlider, removeReviewCardById, updateReviewCounter };
+      reviewSliderApi = { syncReviewSlider, updateReviewCounter };
       window.reviewSliderApi = reviewSliderApi;
 
       document.addEventListener('studia-mai-cms-applied', () => {
@@ -1610,41 +1425,6 @@
       });
 
       sanitizeReviewCards();
-
-      function restoreSessionReviews() {
-        const saved = readSessionReviews();
-        if (!saved.length) return;
-        prependUserReviews(saved);
-        refreshReviewCards();
-        updateReviewCounter();
-      }
-
-      restoreSessionReviews();
-
-      function loadRemoteReviews() {
-        fetch(reviewApiPath('/api/reviews'), { credentials: 'omit', cache: 'no-store' })
-          .then((res) => (res.ok ? res.json() : null))
-          .then((data) => {
-            if (!data || !Array.isArray(data.reviews) || !data.reviews.length) return;
-            prependUserReviews(data.reviews);
-            updateReviewCounter();
-          })
-          .catch(() => {});
-      }
-
-      const reviewsSection = document.getElementById('reviews');
-      if (reviewsSection && 'IntersectionObserver' in window) {
-        const reviewsLoadObs = new IntersectionObserver((entries) => {
-          if (entries[0]?.isIntersecting) {
-            loadRemoteReviews();
-            reviewsLoadObs.disconnect();
-          }
-        }, { rootMargin: '180px 0px' });
-        reviewsLoadObs.observe(reviewsSection);
-      } else {
-        loadRemoteReviews();
-      }
-
       refreshReviewCards();
       updateReviewCounter();
       if (progressBar && reviewCards.length) {
