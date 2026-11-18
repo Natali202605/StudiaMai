@@ -2,7 +2,7 @@
   const API = window.STUDIA_MAI_API;
   const DATA_BASE = window.STUDIA_MAI_DATA_BASE || 'data';
   const DEFAULT_ADMIN_EMAIL = 'brow_studia_may@mail.ru';
-  const DATA_CACHE_VERSION = 'cms14';
+  const DATA_CACHE_VERSION = 'cms15';
   let cacheBust = DATA_CACHE_VERSION;
 
   function apiUrl(path) {
@@ -91,6 +91,34 @@
     return out;
   }
 
+  const MESOTHERAPY_PRICE_RE = /мезотерап|дермапен|биоревитал|микронидлинг/i;
+
+  function stripMesotherapyPriceItems(items) {
+    if (!Array.isArray(items)) return [];
+    const out = [];
+    let hideBlock = false;
+    items.forEach((item) => {
+      if (!item || typeof item !== 'object') return;
+      const isSubtitle = item.type === 'subtitle' || (item.text && !item.name);
+      if (isSubtitle) {
+        let text = String(item.text || '').trim();
+        text = text.replace(/\s*\/\s*мезотерап.*$/i, '').trim();
+        if (!text || /^мезотерап/i.test(text)) {
+          hideBlock = true;
+          return;
+        }
+        hideBlock = false;
+        out.push({ ...item, type: 'subtitle', text });
+        return;
+      }
+      if (hideBlock) return;
+      const name = String(item.name || '').trim();
+      if (MESOTHERAPY_PRICE_RE.test(name)) return;
+      out.push(item);
+    });
+    return out;
+  }
+
   function mergeServices(base, extra) {
     const out = { ...(base || {}) };
     if (!extra || typeof extra !== 'object') return out;
@@ -113,6 +141,12 @@
         if (!String(next.title_html || '').trim() && String(prev.title_html || '').trim()) merged.title_html = prev.title_html;
       }
       out[key] = merged;
+    });
+    Object.keys(out).forEach((key) => {
+      const block = out[key];
+      if (block && Array.isArray(block.items)) {
+        block.items = stripMesotherapyPriceItems(block.items);
+      }
     });
     return out;
   }
@@ -704,7 +738,7 @@
       const key = ul.dataset.servicePrices;
       if (!Object.prototype.hasOwnProperty.call(services, key)) return;
       const data = services[key];
-      const items = normalizeServiceItems(data?.items);
+      const items = stripMesotherapyPriceItems(normalizeServiceItems(data?.items));
       const pricesWrap = ul.closest('.service-card__prices, .rituals__prices');
 
       if (!items.length) return;
