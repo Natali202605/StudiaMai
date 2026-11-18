@@ -1075,10 +1075,8 @@
           </button>
         </div>
         <div class="reviews-slider__actions">
-          <div class="reviews-slider__actions-row">
-            <button type="button" class="btn btn--ghost reviews-write-btn" id="openReviewModalAdd" data-cms="reviews_add_label">Добавить отзыв</button>
-            <button type="button" class="btn btn--ghost reviews-write-btn reviews-write-btn--continue" id="openReviewModalContinue" data-cms="reviews_continue_label">Дополнить отзыв</button>
-          </div>
+          <p class="section__lead reviews-slider__more-text">Чтобы ознакомиться с другими отзывами, вы можете перейти по&nbsp;ссылке:</p>
+          <a href="https://mst.link/bolotova_galina/reviews?cid=007fbjp9ofvpi41s80s5ekmku5" class="btn btn--ghost reviews-write-btn" target="_blank" rel="noopener noreferrer">Смотреть отзывы клиентов</a>
         </div>
       </div>
         </div>
@@ -1202,22 +1200,6 @@
     </div>
   </footer>
 
-  <div class="review-modal" id="reviewModal" hidden>
-    <div class="review-modal__backdrop" id="reviewModalBackdrop" aria-hidden="true"></div>
-    <div class="review-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="reviewModalTitle">
-      <button type="button" class="review-modal__close" id="closeReviewModal" aria-label="Закрыть">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-      </button>
-      <span class="review-card__quote" aria-hidden="true">"</span>
-      <div class="review-card__stars" aria-hidden="true">★★★★★</div>
-      <h3 class="review-modal__title" id="reviewModalTitle">Добавить отзыв</h3>
-      <div class="review-modal__yandex-wrap" id="reviewYandexWrap">
-        <p class="review-modal__lead" id="reviewModalLead" data-cms="review_modal_lead">Поделитесь впечатлениями о визите в студию «Май»</p>
-        <iframe class="review-modal__yandex" id="reviewYandexIframe" src="https://forms.yandex.ru/u/6ad64997c45c0750253c7ad8?iframe=1" frameborder="0" name="ya-form-6ad64997c45c0750253c7ad8" width="650" title="Форма отзыва — студия «Май»"></iframe>
-      </div>
-    </div>
-  </div>
-
   <script src="https://forms.yandex.ru/_static/embed.js"></script>
   <script src="js/config.js"></script>
   <script src="js/live-store.js?v=live2"></script>
@@ -1233,8 +1215,6 @@
     const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
     const coarsePointer = window.matchMedia('(hover: none), (pointer: coarse)');
     let menuScrollY = 0;
-    let reviewScrollY = 0;
-
     function isMobile() {
       return mobileMq.matches;
     }
@@ -1445,16 +1425,11 @@
       if (id) card.dataset.reviewId = id;
       const dateLabel = date ? `, ${escapeReviewHtml(date)}` : '';
       card.innerHTML = `
-        <button type="button" class="review-card__delete" hidden aria-label="Удалить мой отзыв">Удалить</button>
         <span class="review-card__quote" aria-hidden="true">"</span>
         <div class="review-card__stars">★★★★★</div>
         <p class="review-card__text">«${escapeReviewHtml(text)}»</p>
         <span class="review-card__author">— Клиент${dateLabel}</span>
       `;
-      const deleteBtn = card.querySelector('.review-card__delete');
-      if (deleteBtn && id && readOwnReviewIds().includes(String(id))) {
-        deleteBtn.hidden = false;
-      }
       return card;
     }
 
@@ -1535,17 +1510,6 @@
         startAutoplay();
         return true;
       }
-
-      track.addEventListener('click', async (e) => {
-        const btn = e.target.closest('.review-card__delete');
-        if (!btn || !track.contains(btn)) return;
-        const card = btn.closest('.review-card');
-        const id = card?.dataset?.reviewId;
-        if (!id || !readOwnReviewIds().includes(String(id))) return;
-        btn.disabled = true;
-        await removeReviewCardById(id);
-        btn.disabled = false;
-      });
 
       function getReviewSlideWidth() {
         const measureEl = viewport || track.parentElement || track;
@@ -1652,11 +1616,6 @@
         if (!saved.length) return;
         prependUserReviews(saved);
         refreshReviewCards();
-        track.querySelectorAll('.review-card[data-review-id]').forEach((card) => {
-          const btn = card.querySelector('.review-card__delete');
-          if (!btn) return;
-          btn.hidden = !readOwnReviewIds().includes(String(card.dataset.reviewId || ''));
-        });
         updateReviewCounter();
       }
 
@@ -1765,50 +1724,6 @@
         else startAutoplay();
       });
     }
-
-    const reviewModal = document.getElementById('reviewModal');
-
-    function setReviewModalOpen(open, mode = 'add') {
-      if (!reviewModal) return;
-      reviewModal.hidden = !open;
-      document.documentElement.classList.toggle('review-modal-open', open);
-      const title = document.getElementById('reviewModalTitle');
-      if (open) {
-        if (nav?.classList.contains('nav--open')) setMenuOpen(false);
-        reviewScrollY = window.scrollY;
-        document.body.classList.add('review-modal-open');
-        document.body.style.top = `-${reviewScrollY}px`;
-        if (title) title.textContent = mode === 'continue' ? 'Дополнить отзыв' : 'Добавить отзыв';
-        const reviewYandexIframe = document.getElementById('reviewYandexIframe');
-        if (reviewYandexIframe && !reviewYandexIframe.src.includes('6ad64997c45c0750253c7ad8')) {
-          reviewYandexIframe.src = 'https://forms.yandex.ru/u/6ad64997c45c0750253c7ad8?iframe=1';
-        }
-      } else {
-        document.body.classList.remove('review-modal-open');
-        document.body.style.top = '';
-        window.scrollTo(0, reviewScrollY);
-      }
-    }
-
-    function closeReviewModal() {
-      const wasOpen = reviewModal && !reviewModal.hidden;
-      if (reviewModal) reviewModal.hidden = true;
-      document.documentElement.classList.remove('review-modal-open');
-      document.body.classList.remove('review-modal-open');
-      if (wasOpen) {
-        document.body.style.top = '';
-        window.scrollTo(0, reviewScrollY);
-      }
-    }
-
-    document.getElementById('openReviewModalAdd')?.addEventListener('click', () => setReviewModalOpen(true, 'add'));
-    document.getElementById('openReviewModalContinue')?.addEventListener('click', () => setReviewModalOpen(true, 'continue'));
-    document.getElementById('closeReviewModal')?.addEventListener('click', closeReviewModal);
-    document.getElementById('reviewModalBackdrop')?.addEventListener('click', closeReviewModal);
-
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape' && reviewModal && !reviewModal.hidden) closeReviewModal();
-    });
 
     function bindBookingPhoneCopy(link) {
       link?.addEventListener('click', async (e) => {

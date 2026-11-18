@@ -2599,6 +2599,12 @@ img[data-cms-img].is-cms-empty {
   opacity: 1;
 }
 
+.reviews-slider__more-text {
+  text-align: center;
+  max-width: 36rem;
+  margin: 0;
+}
+
 .reviews-slider__actions-row {
   display: flex;
   flex-wrap: wrap;
