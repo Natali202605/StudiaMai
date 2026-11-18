@@ -88,9 +88,9 @@
 
   --pattern-vector: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cg fill='none' stroke='%23A8C4B8' stroke-width='0.4' opacity='0.14'%3E%3Cpath d='M10 70c25-35 45-35 60 0s35 35 60 0'/%3E%3C/g%3E%3C/svg%3E");
   --bg-light-image: url('images/bg-light.png');
-  --bg-light-overlay: linear-gradient(150deg, rgba(255, 255, 255, 0.74) 0%, rgba(246, 247, 248, 0.68) 50%, rgba(206, 210, 216, 0.64) 100%);
-  --bg-light-overlay-soft: linear-gradient(165deg, rgba(255, 255, 255, 0.72) 0%, rgba(238, 240, 243, 0.66) 100%);
-  --bg-light-overlay-hero: linear-gradient(180deg, rgba(255, 255, 255, 0.68) 0%, rgba(251, 251, 252, 0.58) 55%, rgba(248, 248, 249, 0.50) 100%);
+  --bg-light-overlay: linear-gradient(150deg, rgba(255, 255, 255, 0.82) 0%, rgba(246, 247, 248, 0.76) 42%, rgba(206, 210, 216, 0.72) 100%);
+  --bg-light-overlay-soft: linear-gradient(165deg, rgba(255, 255, 255, 0.80) 0%, rgba(238, 240, 243, 0.74) 100%);
+  --bg-light-overlay-hero: linear-gradient(180deg, rgba(255, 255, 255, 0.76) 0%, rgba(251, 251, 252, 0.66) 55%, rgba(248, 248, 249, 0.58) 100%);
   --bg-section-image: url('images/bg-section.png');
   --bg-section-filter: brightness(1.34) contrast(0.76) saturate(0.56) opacity(0.54);
   --bg-section-bright: #FFFFFF;
@@ -177,22 +177,22 @@
   --chip-border: rgba(var(--rgb-mint), 0.42);
   --glass-blur: none;
 
-  --card-gradient: linear-gradient(152deg, rgba(255, 255, 255, 0.50) 0%, rgba(242, 243, 245, 0.36) 28%, rgba(210, 214, 220, 0.28) 62%, rgba(248, 248, 249, 0.36) 100%);
-  --card-gradient-soft: linear-gradient(148deg, rgba(255, 255, 255, 0.48) 0%, rgba(242, 243, 245, 0.34) 34%, rgba(206, 210, 216, 0.26) 72%, rgba(246, 247, 248, 0.34) 100%);
-  --card-gradient-mint: linear-gradient(145deg, rgba(238, 240, 243, 0.42) 0%, rgba(206, 210, 216, 0.28) 40%, rgba(255, 255, 255, 0.34) 100%);
-  --card-gradient-beige: linear-gradient(150deg, rgba(250, 250, 251, 0.44) 0%, rgba(236, 238, 241, 0.34) 46%, rgba(206, 210, 216, 0.26) 100%);
-  --card-gradient-warm: linear-gradient(155deg, rgba(255, 255, 255, 0.48) 0%, rgba(240, 241, 243, 0.36) 30%, rgba(206, 210, 216, 0.28) 65%, rgba(246, 247, 248, 0.34) 100%);
-  --card-gradient-hero: linear-gradient(158deg, rgba(255, 255, 255, 0.50) 0%, rgba(242, 243, 245, 0.38) 22%, rgba(206, 210, 216, 0.28) 55%, rgba(248, 248, 249, 0.36) 100%);
+  --card-gradient: linear-gradient(152deg, rgba(255, 255, 255, 0.60) 0%, rgba(242, 243, 245, 0.46) 26%, rgba(210, 214, 220, 0.38) 58%, rgba(248, 248, 249, 0.46) 100%);
+  --card-gradient-soft: linear-gradient(148deg, rgba(255, 255, 255, 0.58) 0%, rgba(242, 243, 245, 0.44) 32%, rgba(206, 210, 216, 0.36) 70%, rgba(246, 247, 248, 0.44) 100%);
+  --card-gradient-mint: linear-gradient(145deg, rgba(238, 240, 243, 0.52) 0%, rgba(206, 210, 216, 0.38) 38%, rgba(255, 255, 255, 0.44) 100%);
+  --card-gradient-beige: linear-gradient(150deg, rgba(250, 250, 251, 0.54) 0%, rgba(236, 238, 241, 0.44) 44%, rgba(206, 210, 216, 0.36) 100%);
+  --card-gradient-warm: linear-gradient(155deg, rgba(255, 255, 255, 0.58) 0%, rgba(240, 241, 243, 0.46) 28%, rgba(206, 210, 216, 0.38) 62%, rgba(246, 247, 248, 0.44) 100%);
+  --card-gradient-hero: linear-gradient(158deg, rgba(255, 255, 255, 0.60) 0%, rgba(242, 243, 245, 0.48) 20%, rgba(206, 210, 216, 0.38) 52%, rgba(248, 248, 249, 0.46) 100%);
 
   --chrome-ambient: radial-gradient(
     ellipse 130% 92% at 50% -22%,
-    rgba(255, 255, 255, 0.3) 0%,
-    rgba(255, 255, 255, 0.08) 38%,
+    rgba(255, 255, 255, 0.42) 0%,
+    rgba(255, 255, 255, 0.14) 38%,
     rgba(255, 255, 255, 0) 64%
   ),
   radial-gradient(
     ellipse 85% 58% at 100% 100%,
-    rgba(238, 240, 243, 0.16) 0%,
+    rgba(238, 240, 243, 0.26) 0%,
     rgba(255, 255, 255, 0) 50%
   );
 }
@@ -1057,11 +1057,11 @@ ul {
 @keyframes section-bg-shimmer {
   0% {
     transform: translate3d(0, 0, 0) scale(1);
-    opacity: 0.32;
+    opacity: 0.42;
   }
   100% {
     transform: translate3d(-2%, 2%, 0) scale(1.06);
-    opacity: 0.48;
+    opacity: 0.58;
   }
 }
 
@@ -5269,5 +5269,5 @@ html::before {
   background-size: 100% 100%, 100% 100%;
   background-position: center, center;
   background-repeat: no-repeat;
-  opacity: 0.32;
+  opacity: 0.44;
 }
