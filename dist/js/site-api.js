@@ -2,7 +2,7 @@
   const API = window.STUDIA_MAI_API;
   const DATA_BASE = window.STUDIA_MAI_DATA_BASE || 'data';
   const DEFAULT_ADMIN_EMAIL = 'brow_studia_may@mail.ru';
-  const DATA_CACHE_VERSION = 'cms15';
+  const DATA_CACHE_VERSION = 'cms16';
   let cacheBust = DATA_CACHE_VERSION;
 
   function apiUrl(path) {
@@ -119,6 +119,17 @@
     return out;
   }
 
+  function normalizeBrowsCategoryPrices(services) {
+    const block = services && services.brows;
+    if (!block || !Array.isArray(block.items)) return;
+    block.items = block.items.map((item) => {
+      if (!item || item.type === 'subtitle' || !item.price) return item;
+      const price = String(item.price).trim();
+      const next = price.replace(/^от\s+/i, '');
+      return next === price ? item : { ...item, price: next };
+    });
+  }
+
   function mergeServices(base, extra) {
     const out = { ...(base || {}) };
     if (!extra || typeof extra !== 'object') return out;
@@ -148,6 +159,7 @@
         block.items = stripMesotherapyPriceItems(block.items);
       }
     });
+    normalizeBrowsCategoryPrices(out);
     return out;
   }
 
@@ -721,6 +733,7 @@
 
   function applyServices(services) {
     if (!services || typeof services !== 'object') return;
+    normalizeBrowsCategoryPrices(services);
 
     document.querySelectorAll('[data-service-title]').forEach((el) => {
       const key = el.dataset.serviceTitle;
