@@ -119,14 +119,45 @@
     return out;
   }
 
-  function normalizeBrowsCategoryPrices(services) {
-    const block = services && services.brows;
-    if (!block || !Array.isArray(block.items)) return;
-    block.items = block.items.map((item) => {
-      if (!item || item.type === 'subtitle' || !item.price) return item;
-      const price = String(item.price).trim();
-      const next = price.replace(/^от\s+/i, '');
-      return next === price ? item : { ...item, price: next };
+  function stripPriceFromPrefix(price) {
+    return String(price || '').trim().replace(/^от\s+/i, '');
+  }
+
+  function isCosmetologyPriceWithOt(name, strippedPrice) {
+    const n = String(name || '').trim();
+    const p = String(strippedPrice || '').replace(/\u00a0/g, ' ').trim();
+    if (/жёлтый\s+ретиноловый\s+пилинг/i.test(n)) return true;
+    if (/карбокситерап/i.test(n)) return true;
+    if (/пилинг/i.test(n) && /^1\s*500\s*₽$/i.test(p)) return true;
+    return false;
+  }
+
+  function formatCosmetologyOtPrice(name) {
+    const n = String(name || '').trim();
+    if (/жёлтый\s+ретиноловый\s+пилинг/i.test(n)) return 'от 2 500 ₽';
+    if (/карбокситерап/i.test(n)) return 'от 1 500 ₽';
+    if (/пилинг/i.test(n)) return 'от 1 500 ₽';
+    return '';
+  }
+
+  function normalizeWebsiteServiceItemPrice(categoryKey, item) {
+    if (!item || item.type === 'subtitle' || !item.price) return item;
+    const raw = String(item.price).trim();
+    if (!raw || /стоимость по запросу/i.test(raw)) return item;
+    const stripped = stripPriceFromPrefix(raw);
+    if (categoryKey === 'cosmetology' && isCosmetologyPriceWithOt(item.name, stripped)) {
+      const next = formatCosmetologyOtPrice(item.name) || `от ${stripped}`;
+      return next === raw ? item : { ...item, price: next };
+    }
+    return stripped === raw ? item : { ...item, price: stripped };
+  }
+
+  function normalizeWebsiteServicePrices(services) {
+    if (!services || typeof services !== 'object') return;
+    Object.keys(services).forEach((key) => {
+      const block = services[key];
+      if (!block || !Array.isArray(block.items)) return;
+      block.items = block.items.map((item) => normalizeWebsiteServiceItemPrice(key, item));
     });
   }
 
@@ -159,7 +190,7 @@
         block.items = stripMesotherapyPriceItems(block.items);
       }
     });
-    normalizeBrowsCategoryPrices(out);
+    normalizeWebsiteServicePrices(out);
     return out;
   }
 
@@ -733,7 +764,7 @@
 
   function applyServices(services) {
     if (!services || typeof services !== 'object') return;
-    normalizeBrowsCategoryPrices(services);
+    normalizeWebsiteServicePrices(services);
 
     document.querySelectorAll('[data-service-title]').forEach((el) => {
       const key = el.dataset.serviceTitle;
