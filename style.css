@@ -1153,7 +1153,8 @@ ul {
   font-weight: 400;
   font-style: italic;
   text-align: center;
-  color: var(--color-emerald-bright);
+  color: var(--color-emerald-accent);
+  -webkit-text-fill-color: var(--color-emerald-accent);
   margin-bottom: 24px;
 }
 
